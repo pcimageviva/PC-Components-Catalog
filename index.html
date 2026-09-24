@@ -17,7 +17,9 @@
         .glass-card { background: rgba(17, 24, 39, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(59, 130, 246, 0.2); }
         .scrollbar-none::-webkit-scrollbar { display: none; }
         .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+        /* 强制全站商品名称、品牌、分类全部以大写整齐显示 */
         .uniform-text { text-transform: uppercase; }
+        /* 拖拽相关样式 */
         .draggable-item { cursor: grab; }
         .draggable-item:active { cursor: grabbing; }
         .dragging { opacity: 0.4; border: 2px dashed #3b82f6; }
@@ -240,11 +242,11 @@
         const WHATSAPP_NUMBER = "60123456789";
 
         // ==========================================
-        // 🛠️ GitHub 配置区
+        // 🛠️ GitHub 配置区 (已更新新 Token)
         // ==========================================
         const GITHUB_USERNAME = "pcimageviva"; 
         const GITHUB_REPO = "PC-Components-Catalog"; 
-        const GITHUB_TOKEN = "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"; 
+        const GITHUB_TOKEN = "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"; 
         const FILE_PATH = "products.json";
         // ==========================================
 
@@ -258,19 +260,31 @@
         let adminCategoryFilter = 'all';
         let adminSubcategoryFilter = 'all';
 
-        // 1. 采用公开 Raw 链接只读加载数据（100% 成功，绝无 401 报错）
+        // 1. 从 GitHub 仓库读取 products.json (现代标准 UTF-8 Base64 解码)
         async function fetchProductsFromCloud() {
             try {
-                const rawUrl = `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${GITHUB_REPO}/main/${FILE_PATH}?t=${Date.now()}`;
-                const response = await fetch(rawUrl);
+                const url = `https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/contents/${FILE_PATH}`;
+                const response = await fetch(url, {
+                    headers: {
+                        'Authorization': `token ${GITHUB_TOKEN}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
                 
                 if (response.ok) {
-                    const parsed = await response.json();
+                    const data = await response.json();
+                    const binaryString = atob(data.content);
+                    const bytes = new Uint8Array(binaryString.length);
+                    for (let i = 0; i < binaryString.length; i++) {
+                        bytes[i] = binaryString.charCodeAt(i);
+                    }
+                    const decodedContent = new TextDecoder().decode(bytes);
+                    const parsed = JSON.parse(decodedContent);
                     if (parsed && Array.isArray(parsed.products)) {
                         products = parsed.products;
                     }
                 } else {
-                    console.error("Failed to fetch from Raw URL, status:", response.status);
+                    console.error("Failed to fetch from GitHub, status:", response.status);
                 }
             } catch (error) {
                 console.error("Failed to load from cloud:", error);
@@ -279,7 +293,7 @@
             renderProducts();
         }
 
-        // 2. 后台保存时使用 Token 同步回 GitHub 仓库
+        // 2. 将修改后的商品数据自动保存并同步回 GitHub 仓库 (现代标准 UTF-8 Base64 编码)
         async function saveProductsToCloud() {
             try {
                 const url = `https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/contents/${FILE_PATH}`;
