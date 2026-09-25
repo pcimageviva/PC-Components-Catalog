@@ -242,9 +242,11 @@
         const WHATSAPP_NUMBER = "60123456789";
 
         // ==========================================
-        // 🛠️ npoint.io 云端配置区
+        // 🛠️ JSONbin.io 云端配置区
         // ==========================================
-        const NPOINT_URL = "https://api.npoint.io/728091ea6714c324e0c2";
+        const BIN_ID = "6ab4109cac6210605aede323";
+        const MASTER_KEY = "$2a$10$zeBH9B99dbyUKoeoZ9LgeuST8Z72umn8WZWziMvrJ.Qed4kFkcmnC";
+        const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
         // ==========================================
 
         let products = [];
@@ -257,17 +259,23 @@
         let adminCategoryFilter = 'all';
         let adminSubcategoryFilter = 'all';
 
-        // 1. 从 npoint.io 读取商品数据
+        // 1. 从 JSONbin.io 读取商品数据
         async function fetchProductsFromCloud() {
             try {
-                const response = await fetch(NPOINT_URL);
+                const response = await fetch(JSONBIN_URL, {
+                    headers: {
+                        'X-Master-Key': MASTER_KEY
+                    }
+                });
                 if (response.ok) {
-                    const parsed = await response.json();
-                    if (parsed && Array.isArray(parsed.products)) {
-                        products = parsed.products;
+                    const data = await response.json();
+                    // JSONbin v3 返回的数据在 data.record 里面
+                    const record = data.record;
+                    if (record && Array.isArray(record.products)) {
+                        products = record.products;
                     }
                 } else {
-                    console.error("Failed to fetch from npoint.io, status:", response.status);
+                    console.error("Failed to fetch from JSONbin, status:", response.status);
                 }
             } catch (error) {
                 console.error("Failed to load from cloud:", error);
@@ -276,19 +284,20 @@
             renderProducts();
         }
 
-        // 2. 将修改后的商品数据同步保存回 npoint.io
+        // 2. 将修改后的商品数据同步保存回 JSONbin.io
         async function saveProductsToCloud() {
             try {
-                const response = await fetch(NPOINT_URL, {
+                const response = await fetch(JSONBIN_URL, {
                     method: 'PUT',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': MASTER_KEY
                     },
                     body: JSON.stringify({ products: products })
                 });
 
                 if (!response.ok) {
-                    alert("Failed to sync changes to npoint.io!");
+                    alert("Failed to sync changes to JSONbin.io!");
                 }
             } catch (error) {
                 console.error("Failed to save to cloud:", error);
