@@ -17,12 +17,12 @@
         .glass-card { background: rgba(17, 24, 39, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(59, 130, 246, 0.2); }
         .scrollbar-none::-webkit-scrollbar { display: none; }
         .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
-        /* 强制全站商品名称、品牌、分类全部以大写整齐显示 */
         .uniform-text { text-transform: uppercase; }
-        /* 拖拽相关样式 */
         .draggable-item { cursor: grab; }
         .draggable-item:active { cursor: grabbing; }
         .dragging { opacity: 0.4; border: 2px dashed #3b82f6; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .spinner { animation: spin 1s linear infinite; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -44,7 +44,8 @@
         <div id="customer-view">
             <div class="mb-6 text-center py-6 bg-gradient-to-r from-blue-900/20 via-slate-900/40 to-blue-900/20 rounded-2xl border border-blue-500/10">
                 <h1 class="text-2xl md:text-3xl font-bold font-orbitron text-white mb-2">PC Components Showcase</h1>
-                <p class="text-sm text-slate-400">Explore high-performance hardware, check specifications, and inquire via WhatsApps</p>
+                <p class="text-sm text-slate-400 mb-3">Explore high-performance hardware, check specifications, and inquire via WhatsApp</p>
+                <button onclick="openTermsModal()" class="text-xs text-blue-400 hover:underline">📄 View Terms & Conditions</button>
             </div>
 
             <!-- Search Bar, Sort & Filters Section -->
@@ -154,6 +155,22 @@
         </div>
     </div>
 
+    <!-- Terms & Conditions Modal (排版已调宽/松散) -->
+    <div id="terms-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="glass-card w-full max-w-lg rounded-2xl p-7 border border-slate-700 max-h-[90vh] overflow-y-auto relative shadow-2xl">
+            <h3 class="text-lg font-bold text-white mb-5 tracking-wide">Terms & Conditions</h3>
+            <div class="text-xs text-slate-300 space-y-4 leading-relaxed tracking-wide">
+                <p><strong>1. Prices & Member Price:</strong> All prices are in Malaysian Ringgit (RM) and for reference only; the final selling price is confirmed at purchase. Member prices require valid membership details.</p>
+                <p><strong>2. Product Availability:</strong> Products are subject to stock availability and may change without prior notice. Some items require pre-order, and prices do not guarantee availability.</p>
+                <p><strong>3. Product Information:</strong> Specifications, descriptions, and images are for reference only. Actual products may vary slightly, and specifications are subject to manufacturer changes without notice.</p>
+                <p><strong>4. Price Errors:</strong> In the event of any pricing or product information error, we reserve the right to correct it and provide the correct information before completing the purchase.</p>
+                <p><strong>5. Warranty:</strong> Warranty coverage is subject to the manufacturer’s terms and conditions and excludes damage caused by misuse, accidents, or unauthorized modifications.</p>
+                <p><strong>6. General:</strong> We reserve the right to amend these terms without prior notice. For the latest prices, stock availability, and details, please contact our staff before purchasing.</p>
+            </div>
+            <button onclick="closeTermsModal()" class="mt-7 w-full bg-blue-600 hover:bg-blue-500 text-white py-3 rounded-xl text-xs font-bold transition shadow-lg shadow-blue-600/30">I Understand</button>
+        </div>
+    </div>
+
     <!-- Add/Edit Product Modal -->
     <div id="product-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="glass-card w-full max-w-md rounded-2xl p-6 border border-slate-700 max-h-[90vh] overflow-y-auto relative">
@@ -242,12 +259,13 @@
         const WHATSAPP_NUMBER = "60123456789";
 
         // ==========================================
-        // 🛠️ JSONbin.io 云端配置区
+        // 🛠 GitHub Gist 配置信息
         // ==========================================
-        const BIN_ID = "6ab4109cac6210605aede323";
-        const MASTER_KEY = "$2a$10$zeBH9B99dbyUKoeoZ9LgeuST8Z72umn8WZWziMvrJ.Qed4kFkcmnC";
-        const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+        const GIST_ID = "75c4db4ed63287424ad4df4db6d839a9";       
+        const GITHUB_TOKEN = "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"; 
         // ==========================================
+
+        const GIST_API_URL = `https://api.github.com/gists/${GIST_ID}`;
 
         let products = [];
         let currentCategory = 'all';
@@ -259,23 +277,42 @@
         let adminCategoryFilter = 'all';
         let adminSubcategoryFilter = 'all';
 
-        // 1. 从 JSONbin.io 读取商品数据
+        // 页面刚加载时立即显示加载动效
+        showLoadingState("Loading components from cloud...");
+
+        function showLoadingState(message = "Loading components from cloud...") {
+            const loadingHTML = `
+                <div class="col-span-full flex flex-col items-center justify-center py-20">
+                    <div class="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full spinner mb-3"></div>
+                    <p class="text-xs text-slate-400 font-medium tracking-wider uppercase">${message}</p>
+                </div>
+            `;
+            document.getElementById('product-grid').innerHTML = loadingHTML;
+            document.getElementById('admin-product-list').innerHTML = loadingHTML;
+        }
+
+        // 1. 从 GitHub Gist 读取商品数据
         async function fetchProductsFromCloud() {
             try {
-                const response = await fetch(JSONBIN_URL, {
+                const response = await fetch(GIST_API_URL, {
                     headers: {
-                        'X-Master-Key': MASTER_KEY
+                        'Authorization': `token ${GITHUB_TOKEN}`,
+                        'Accept': 'application/vnd.github.v3+json'
                     }
                 });
                 if (response.ok) {
                     const data = await response.json();
-                    // JSONbin v3 返回的数据在 data.record 里面
-                    const record = data.record;
-                    if (record && Array.isArray(record.products)) {
-                        products = record.products;
+                    const filename = Object.keys(data.files)[0]; 
+                    if (filename && data.files[filename].content) {
+                        const parsed = JSON.parse(data.files[filename].content);
+                        if (Array.isArray(parsed)) {
+                            products = parsed;
+                        } else if (parsed.products && Array.isArray(parsed.products)) {
+                            products = parsed.products;
+                        }
                     }
                 } else {
-                    console.error("Failed to fetch from JSONbin, status:", response.status);
+                    console.error("Failed to fetch from GitHub Gist, status:", response.status);
                 }
             } catch (error) {
                 console.error("Failed to load from cloud:", error);
@@ -284,20 +321,33 @@
             renderProducts();
         }
 
-        // 2. 将修改后的商品数据同步保存回 JSONbin.io
+        // 2. 将修改后的商品数据同步保存回 GitHub Gist
         async function saveProductsToCloud() {
             try {
-                const response = await fetch(JSONBIN_URL, {
-                    method: 'PUT',
+                const getResp = await fetch(GIST_API_URL, {
+                    headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
+                });
+                const getData = await getResp.json();
+                const filename = Object.keys(getData.files)[0] || "products.json";
+
+                const response = await fetch(GIST_API_URL, {
+                    method: 'PATCH',
                     headers: {
+                        'Authorization': `token ${GITHUB_TOKEN}`,
                         'Content-Type': 'application/json',
-                        'X-Master-Key': MASTER_KEY
+                        'Accept': 'application/vnd.github.v3+json'
                     },
-                    body: JSON.stringify({ products: products })
+                    body: JSON.stringify({
+                        files: {
+                            [filename]: {
+                                content: JSON.stringify(products, null, 2)
+                            }
+                        }
+                    })
                 });
 
                 if (!response.ok) {
-                    alert("Failed to sync changes to JSONbin.io!");
+                    alert("Failed to sync changes to GitHub Gist!");
                 }
             } catch (error) {
                 console.error("Failed to save to cloud:", error);
@@ -625,6 +675,7 @@
                 const movedItem = products.splice(fromIndex, 1)[0];
                 products.splice(toIndex, 0, movedItem);
 
+                showLoadingState("Saving reorder to cloud...");
                 await saveProductsToCloud();
                 updateFilterBars();
                 renderProducts();
@@ -713,12 +764,20 @@
                 ${descHtml}
                 
                 ${websiteBtnHtml}
-                <a href="https://wa.me/${WHATSAPP_NUMBER}?text=${waText}" target="_blank" class="block w-full bg-emerald-600 hover:bg-emerald-500 text-white text-center font-medium py-2.5 rounded-xl transition text-sm">Inquiry via WhatsApp</a>
+                <a href="https://wa.me/${WHATSAPP_NUMBER}?text=${waText}" target="_blank" class="block w-full bg-emerald-600 hover:bg-emerald-500 text-white text-center font-medium py-2.5 rounded-xl transition text-sm mb-3">Inquiry via WhatsApp</a>
             `;
             document.getElementById('detail-modal').classList.remove('hidden');
         }
 
         function closeDetailModal() { document.getElementById('detail-modal').classList.add('hidden'); }
+        
+        function openTermsModal() {
+            document.getElementById('terms-modal').classList.remove('hidden');
+        }
+        function closeTermsModal() {
+            document.getElementById('terms-modal').classList.add('hidden');
+        }
+
         function openProductModal() {
             document.getElementById('modal-title').textContent = "Add New Component";
             document.getElementById('product-form').reset();
@@ -744,6 +803,10 @@
                 spec2: document.getElementById('p-spec2').value.trim(),
                 desc: document.getElementById('p-desc').value.trim()
             };
+
+            closeProductModal();
+            showLoadingState(id ? "Updating component in cloud..." : "Adding new component to cloud...");
+
             if(id) {
                 const idx = products.findIndex(p => p.id === id);
                 if(idx !== -1) products[idx] = data;
@@ -752,7 +815,6 @@
             }
             
             await saveProductsToCloud();
-            closeProductModal();
             updateFilterBars();
             updateAdminSubcategoryBar();
             renderProducts();
@@ -779,6 +841,7 @@
 
         async function deleteProduct(id) {
             if(confirm('Are you sure you want to delete this component?')) {
+                showLoadingState("Deleting component from cloud...");
                 products = products.filter(p => p.id !== id);
                 await saveProductsToCloud();
                 updateFilterBars();
@@ -793,11 +856,12 @@
             const currentUrl = window.location.href;
             document.getElementById('current-url-text').textContent = currentUrl;
             new QRCode(container, { text: currentUrl, width: 160, height: 160 });
-            document.getElementById('qrcode-modal').classList.remove('hidden');
+            document.getElementById('qrcode-modal').classList.add('hidden');
         }
 
         function closeQRCodeModal() { document.getElementById('qrcode-modal').classList.add('hidden'); }
 
+        // 启动时拉取云端数据
         fetchProductsFromCloud();
     </script>
 </body>
