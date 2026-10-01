@@ -155,11 +155,11 @@
         </div>
     </div>
 
-    <!-- Terms & Conditions Modal (排版已调宽/松散) -->
+    <!-- Terms & Conditions Modal (页面加载时默认弹出，带数字序号 1-6) -->
     <div id="terms-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
-        <div class="glass-card w-full max-w-lg rounded-2xl p-7 border border-slate-700 max-h-[90vh] overflow-y-auto relative shadow-2xl">
-            <h3 class="text-lg font-bold text-white mb-5 tracking-wide">Terms & Conditions</h3>
-            <div class="text-xs text-slate-300 space-y-4 leading-relaxed tracking-wide">
+        <div class="glass-card w-full max-w-lg rounded-2xl p-6 border border-slate-700 max-h-[90vh] overflow-y-auto relative shadow-2xl">
+            <h3 class="text-lg font-bold text-white mb-3">Terms & Conditions</h3>
+            <div class="text-xs text-slate-300 space-y-3 leading-relaxed">
                 <p><strong>1. Prices & Member Price:</strong> All prices are in Malaysian Ringgit (RM) and for reference only; the final selling price is confirmed at purchase. Member prices require valid membership details.</p>
                 <p><strong>2. Product Availability:</strong> Products are subject to stock availability and may change without prior notice. Some items require pre-order, and prices do not guarantee availability.</p>
                 <p><strong>3. Product Information:</strong> Specifications, descriptions, and images are for reference only. Actual products may vary slightly, and specifications are subject to manufacturer changes without notice.</p>
@@ -167,7 +167,7 @@
                 <p><strong>5. Warranty:</strong> Warranty coverage is subject to the manufacturer’s terms and conditions and excludes damage caused by misuse, accidents, or unauthorized modifications.</p>
                 <p><strong>6. General:</strong> We reserve the right to amend these terms without prior notice. For the latest prices, stock availability, and details, please contact our staff before purchasing.</p>
             </div>
-            <button onclick="closeTermsModal()" class="mt-7 w-full bg-blue-600 hover:bg-blue-500 text-white py-3 rounded-xl text-xs font-bold transition shadow-lg shadow-blue-600/30">I Understand</button>
+            <button onclick="closeTermsModal()" class="mt-6 w-full bg-blue-600 hover:bg-blue-500 text-white py-3 rounded-xl text-xs font-bold transition shadow-lg shadow-blue-600/30">I Understand</button>
         </div>
     </div>
 
@@ -262,7 +262,7 @@
         // 🛠 GitHub Gist 配置信息
         // ==========================================
         const GIST_ID = "75c4db4ed63287424ad4df4db6d839a9";       
-        const GITHUB_TOKEN = "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"; 
+        const GITHUB_TOKEN = "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"; 
         // ==========================================
 
         const GIST_API_URL = `https://api.github.com/gists/${GIST_ID}`;
