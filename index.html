@@ -274,7 +274,6 @@
         let adminCategoryFilter = 'all';
         let adminSubcategoryFilter = 'all';
 
-        // 页面刚加载时立即显示加载动效
         showLoadingState("Loading components from Google Sheets...");
 
         function showLoadingState(message = "Loading components from Google Sheets...") {
@@ -288,14 +287,13 @@
             document.getElementById('admin-product-list').innerHTML = loadingHTML;
         }
 
-        // 1. 从 Google Sheets 读取商品数据
         async function fetchProductsFromCloud() {
             try {
                 const response = await fetch(GOOGLE_SCRIPT_URL);
                 if (response.ok) {
                     const data = await response.json();
                     if (Array.isArray(data)) {
-                        products = data;
+                        products = data.filter(p => p && p.name && typeof p.name === 'string' && p.name.trim() !== '');
                     }
                 } else {
                     console.error("Failed to fetch from Google Sheets, status:", response.status);
@@ -307,7 +305,6 @@
             renderProducts();
         }
 
-        // 2. 将修改后的商品数据同步保存回 Google Sheets
         async function saveProductsToCloud() {
             try {
                 const response = await fetch(GOOGLE_SCRIPT_URL, {
@@ -341,7 +338,8 @@
         }
 
         function handleSearch() {
-            searchQuery = document.getElementById('search-input').value.toLowerCase().trim();
+            const inputVal = document.getElementById('search-input').value;
+            searchQuery = inputVal ? inputVal.toLowerCase().trim() : '';
             renderProducts();
         }
 
@@ -509,7 +507,12 @@
             const grid = document.getElementById('product-grid');
             const adminList = document.getElementById('admin-product-list');
             
+            // 💡 增强型模糊匹配：将搜索框内容按空格拆分成多个关键词，只要商品信息包含这些词的任意组合即可匹配
+            const searchTerms = searchQuery ? searchQuery.split(/\s+/).filter(Boolean) : [];
+
             let filtered = products.filter(p => {
+                if (!p || !p.name || typeof p.name !== 'string') return false;
+
                 const pCat = p.category ? p.category.trim().toLowerCase() : '';
                 const pBrand = p.brand ? p.brand.trim().toLowerCase() : '';
                 const pSub = p.subcategory ? p.subcategory.trim().toLowerCase() : '';
@@ -518,14 +521,16 @@
                 const matchesBrand = (currentBrand === 'all' || pBrand === currentBrand.toLowerCase());
                 const matchesSubcategory = (currentSubcategory === 'all' || pSub === currentSubcategory.toLowerCase());
                 
-                const matchesSearch = !searchQuery || 
-                    p.name.toLowerCase().includes(searchQuery) || 
-                    pCat.includes(searchQuery) ||
-                    pBrand.includes(searchQuery) ||
-                    pSub.includes(searchQuery) ||
-                    (p.spec1 && p.spec1.toLowerCase().includes(searchQuery)) ||
-                    (p.spec2 && p.spec2.toLowerCase().includes(searchQuery)) ||
-                    (p.desc && p.desc.toLowerCase().includes(searchQuery));
+                // 只要搜索词为空，或者商品资料包含输入的关键词（模糊匹配/部分关联）
+                const matchesSearch = searchTerms.length === 0 || searchTerms.every(term => {
+                    return p.name.toLowerCase().includes(term) || 
+                           pCat.includes(term) ||
+                           pBrand.includes(term) ||
+                           pSub.includes(term) ||
+                           (p.spec1 && p.spec1.toLowerCase().includes(term)) ||
+                           (p.spec2 && p.spec2.toLowerCase().includes(term)) ||
+                           (p.desc && p.desc.toLowerCase().includes(term));
+                });
 
                 return matchesCategory && matchesBrand && matchesSubcategory && matchesSearch;
             });
@@ -540,7 +545,7 @@
                     } else if (currentSort === 'price-high') {
                         return priceB - priceA;
                     } else if (currentSort === 'name-asc') {
-                        return a.name.localeCompare(b.name);
+                        return (a.name || '').localeCompare(b.name || '');
                     } else {
                         return 0;
                     }
@@ -829,12 +834,11 @@
             const currentUrl = window.location.href;
             document.getElementById('current-url-text').textContent = currentUrl;
             new QRCode(container, { text: currentUrl, width: 160, height: 160 });
-            document.getElementById('qrcode-modal').classList.remove('hidden');
+            document.getElementById('qrcode-modal').classList.add('hidden');
         }
 
         function closeQRCodeModal() { document.getElementById('qrcode-modal').classList.add('hidden'); }
 
-        // 启动时拉取云端数据
         fetchProductsFromCloud();
     </script>
 </body>
