@@ -155,7 +155,7 @@
         </div>
     </div>
 
-    <!-- Terms & Conditions Modal (页面加载时默认弹出，带数字序号 1-6) -->
+    <!-- Terms & Conditions Modal -->
     <div id="terms-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
         <div class="glass-card w-full max-w-lg rounded-2xl p-6 border border-slate-700 max-h-[90vh] overflow-y-auto relative shadow-2xl">
             <h3 class="text-lg font-bold text-white mb-3">Terms & Conditions</h3>
@@ -259,13 +259,10 @@
         const WHATSAPP_NUMBER = "60123456789";
 
         // ==========================================
-        // 🛠 GitHub Gist 配置信息
+        // 🛠 Google Sheets Web App 配置信息
         // ==========================================
-        const GIST_ID = "75c4db4ed63287424ad4df4db6d839a9";       
-        const GITHUB_TOKEN = "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"; 
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxBCgzOyVOFrbFg1mh1KzIvlUwCWBeMpa4AGmFc1yBzyGAZpcaE-eNcRXDrgJOLbRn3/exec"; 
         // ==========================================
-
-        const GIST_API_URL = `https://api.github.com/gists/${GIST_ID}`;
 
         let products = [];
         let currentCategory = 'all';
@@ -278,9 +275,9 @@
         let adminSubcategoryFilter = 'all';
 
         // 页面刚加载时立即显示加载动效
-        showLoadingState("Loading components from cloud...");
+        showLoadingState("Loading components from Google Sheets...");
 
-        function showLoadingState(message = "Loading components from cloud...") {
+        function showLoadingState(message = "Loading components from Google Sheets...") {
             const loadingHTML = `
                 <div class="col-span-full flex flex-col items-center justify-center py-20">
                     <div class="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full spinner mb-3"></div>
@@ -291,28 +288,17 @@
             document.getElementById('admin-product-list').innerHTML = loadingHTML;
         }
 
-        // 1. 从 GitHub Gist 读取商品数据
+        // 1. 从 Google Sheets 读取商品数据
         async function fetchProductsFromCloud() {
             try {
-                const response = await fetch(GIST_API_URL, {
-                    headers: {
-                        'Authorization': `token ${GITHUB_TOKEN}`,
-                        'Accept': 'application/vnd.github.v3+json'
-                    }
-                });
+                const response = await fetch(GOOGLE_SCRIPT_URL);
                 if (response.ok) {
                     const data = await response.json();
-                    const filename = Object.keys(data.files)[0]; 
-                    if (filename && data.files[filename].content) {
-                        const parsed = JSON.parse(data.files[filename].content);
-                        if (Array.isArray(parsed)) {
-                            products = parsed;
-                        } else if (parsed.products && Array.isArray(parsed.products)) {
-                            products = parsed.products;
-                        }
+                    if (Array.isArray(data)) {
+                        products = data;
                     }
                 } else {
-                    console.error("Failed to fetch from GitHub Gist, status:", response.status);
+                    console.error("Failed to fetch from Google Sheets, status:", response.status);
                 }
             } catch (error) {
                 console.error("Failed to load from cloud:", error);
@@ -321,33 +307,20 @@
             renderProducts();
         }
 
-        // 2. 将修改后的商品数据同步保存回 GitHub Gist
+        // 2. 将修改后的商品数据同步保存回 Google Sheets
         async function saveProductsToCloud() {
             try {
-                const getResp = await fetch(GIST_API_URL, {
-                    headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
-                });
-                const getData = await getResp.json();
-                const filename = Object.keys(getData.files)[0] || "products.json";
-
-                const response = await fetch(GIST_API_URL, {
-                    method: 'PATCH',
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
                     headers: {
-                        'Authorization': `token ${GITHUB_TOKEN}`,
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/vnd.github.v3+json'
+                        'Content-Type': 'text/plain;charset=utf-8',
                     },
-                    body: JSON.stringify({
-                        files: {
-                            [filename]: {
-                                content: JSON.stringify(products, null, 2)
-                            }
-                        }
-                    })
+                    body: JSON.stringify(products)
                 });
 
-                if (!response.ok) {
-                    alert("Failed to sync changes to GitHub Gist!");
+                const result = await response.json().catch(() => null);
+                if (result && result.status === "error") {
+                    alert("Failed to sync changes to Google Sheets: " + result.message);
                 }
             } catch (error) {
                 console.error("Failed to save to cloud:", error);
@@ -596,11 +569,11 @@
                         <div class="mb-3 bg-slate-900/50 p-2.5 rounded-lg border border-slate-800 flex items-center justify-between">
                             <div>
                                 <span class="text-[10px] text-slate-400 block uppercase">Normal</span>
-                                <span class="text-xs text-slate-300 font-orbitron">RM ${p.price.toFixed(2)}</span>
+                                <span class="text-xs text-slate-300 font-orbitron">RM ${Number(p.price || 0).toFixed(2)}</span>
                             </div>
                             <div class="text-right">
                                 <span class="text-[10px] text-amber-400 font-bold block uppercase">Member Price</span>
-                                <span class="text-lg text-amber-400 font-orbitron font-black">RM ${mPrice.toFixed(2)}</span>
+                                <span class="text-lg text-amber-400 font-orbitron font-black">RM ${Number(mPrice || 0).toFixed(2)}</span>
                             </div>
                         </div>
                         <div class="text-xs text-slate-400 grid grid-cols-2 gap-1 mb-3">
@@ -635,7 +608,7 @@
                         <img src="${p.image || 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=600&q=80'}" class="w-12 h-12 object-cover rounded-lg bg-slate-900">
                         <div>
                             <div class="font-bold text-white text-sm uniform-text">${p.name}</div>
-                            <div class="text-xs text-blue-400">Normal: RM ${p.price.toFixed(2)} | <span class="text-amber-400 font-bold">Member: RM ${mPrice.toFixed(2)}</span></div>
+                            <div class="text-xs text-blue-400">Normal: RM ${Number(p.price || 0).toFixed(2)} | <span class="text-amber-400 font-bold">Member: RM ${Number(mPrice || 0).toFixed(2)}</span></div>
                             <div class="text-[11px] text-slate-400 mt-0.5 space-x-1">
                                 <span class="bg-blue-900/40 text-blue-300 px-1.5 py-0.5 rounded border border-blue-500/25 uppercase">${p.category || 'N/A'}</span>
                                 ${p.brand ? `<span class="bg-amber-900/40 text-amber-300 px-1.5 py-0.5 rounded border border-amber-500/25 uppercase">${p.brand}</span>` : ''}
@@ -675,7 +648,7 @@
                 const movedItem = products.splice(fromIndex, 1)[0];
                 products.splice(toIndex, 0, movedItem);
 
-                showLoadingState("Saving reorder to cloud...");
+                showLoadingState("Saving reorder to Google Sheets...");
                 await saveProductsToCloud();
                 updateFilterBars();
                 renderProducts();
@@ -752,11 +725,11 @@
                 <div class="grid grid-cols-2 gap-3 mb-4 bg-slate-900/80 p-3.5 rounded-xl border border-amber-500/30">
                     <div>
                         <div class="text-[10px] text-slate-400 uppercase">Standard Price</div>
-                        <div class="text-base font-orbitron text-slate-300">RM ${p.price.toFixed(2)}</div>
+                        <div class="text-base font-orbitron text-slate-300">RM ${Number(p.price || 0).toFixed(2)}</div>
                     </div>
                     <div>
                         <div class="text-[10px] text-amber-400 uppercase font-bold">Member Price</div>
-                        <div class="text-xl font-orbitron font-black text-amber-400">RM ${mPrice.toFixed(2)}</div>
+                        <div class="text-xl font-orbitron font-black text-amber-400">RM ${Number(mPrice || 0).toFixed(2)}</div>
                     </div>
                 </div>
 
@@ -805,7 +778,7 @@
             };
 
             closeProductModal();
-            showLoadingState(id ? "Updating component in cloud..." : "Adding new component to cloud...");
+            showLoadingState(id ? "Updating component in Google Sheets..." : "Adding new component to Google Sheets...");
 
             if(id) {
                 const idx = products.findIndex(p => p.id === id);
@@ -841,7 +814,7 @@
 
         async function deleteProduct(id) {
             if(confirm('Are you sure you want to delete this component?')) {
-                showLoadingState("Deleting component from cloud...");
+                showLoadingState("Deleting component from Google Sheets...");
                 products = products.filter(p => p.id !== id);
                 await saveProductsToCloud();
                 updateFilterBars();
@@ -856,7 +829,7 @@
             const currentUrl = window.location.href;
             document.getElementById('current-url-text').textContent = currentUrl;
             new QRCode(container, { text: currentUrl, width: 160, height: 160 });
-            document.getElementById('qrcode-modal').classList.add('hidden');
+            document.getElementById('qrcode-modal').classList.remove('hidden');
         }
 
         function closeQRCodeModal() { document.getElementById('qrcode-modal').classList.add('hidden'); }
