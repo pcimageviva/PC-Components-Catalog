@@ -1,15 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" id="html-root" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PC Image Viva | Components Catalog</title>
+    <title>PC Image Viva | Advanced Components Catalog & Builder</title>
     
     <!-- 浏览器标签页小图标 -->
     <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAOCAYAAAAmL5yKAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAEMSURBVDhPfVK/yocwDDw7dAgUCh1cnBx8//fwFbrX0UFQ6XDf4JfSVvkdBPLHay6JmKaJAIo555r4V+2f2wQvQk/qvzX4gLUWAHAcB47jaHIvhBAYQmCMkT1yzsw592nGGKk8qBRFSon7vjcEktz3nSmlEpeRQgh0zvG6Lq7rymVZKCK01jYmIlyWheu68rouOue+FXx1V9S1ZokiUnZynicA4L7vkuuxbRumaXoC7z1FhDlnxhjpnKOIUESa043j+OmjH8EYQwA6X4nr/2EYBhpjniaqIKXElFJ5XYm1WWvpve9rjzPPc+mq8usLGGMaYlGgiXpm7/0rV5ueGQBRS+4JulCtK1n9cRz5B0qGXZpSF98bAAAAAElFTkSuQmCC" />
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Noto+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Noto Sans', sans-serif; background-color: #0b0f19; color: #f3f4f6; }
@@ -23,9 +24,32 @@
         .dragging { opacity: 0.4; border: 2px dashed #3b82f6; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .spinner { animation: spin 1s linear infinite; }
+
+        /* 苹果 iOS 风格滑动开关 */
+        .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #334155; transition: .3s; border-radius: 24px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
+        input:checked + .slider { background-color: #06b6d4; }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        /* 动态跑马灯 CSS */
+        .marquee-container { overflow: hidden; white-space: nowrap; position: relative; width: 100%; }
+        .marquee-content { display: inline-block; padding-left: 100%; animation: marquee linear infinite; }
+        .marquee-container:hover .marquee-content { animation-play-state: paused; }
+        @keyframes marquee { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
+    <!-- Top Announcement Banner -->
+    <div id="announcement-banner" class="font-bold py-1 px-4 overflow-hidden hidden shadow-sm border-b border-white/10" style="background-color: #0891b2; color: #020617;">
+        <div class="marquee-container">
+            <div class="marquee-content text-xs" id="announcement-text" style="animation-duration: 18s;">
+                🔥 Welcome to PC Image VIVA! Check out our latest hardware components and build your custom PC today.
+            </div>
+        </div>
+    </div>
+
     <!-- Top Navigation -->
     <header class="glass-card sticky top-0 z-50 border-b border-blue-900/40 px-4 py-3 flex justify-between items-center">
         <div onclick="goHome()" class="flex items-center space-x-2 cursor-pointer group">
@@ -35,7 +59,10 @@
                 <span class="text-[10px] text-blue-400 tracking-wider uppercase">COMPONENTS CATALOG</span>
             </div>
         </div>
-        <button onclick="handleAdminClick()" id="admin-btn" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 transition">Admin Panel</button>
+        <div class="flex items-center space-x-2">
+            <button id="nav-builder-btn" onclick="openBuilderModal()" class="text-xs bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg transition font-medium flex items-center gap-1">🖥️ PC Builder <span id="builder-badge" class="bg-amber-400 text-slate-950 px-1.5 py-0.2 rounded-full text-[10px] font-bold hidden">0</span></button>
+            <button onclick="handleAdminClick()" id="admin-btn" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 transition">Admin Panel</button>
+        </div>
     </header>
 
     <!-- Main Content -->
@@ -43,9 +70,11 @@
         <!-- Customer View -->
         <div id="customer-view">
             <div class="mb-6 text-center py-6 bg-gradient-to-r from-blue-900/20 via-slate-900/40 to-blue-900/20 rounded-2xl border border-blue-500/10">
-                <h1 class="text-2xl md:text-3xl font-bold font-orbitron text-white mb-2">PC Components Showcase</h1>
-                <p class="text-sm text-slate-400 mb-3">Explore high-performance hardware, check specifications, and inquire via </p>
-                <button onclick="openTermsModal()" class="text-xs text-blue-400 hover:underline">📄 View Terms & Conditions</button>
+                <h1 id="main-hero-title" class="text-2xl md:text-3xl font-bold font-orbitron text-white mb-2">PC Components Showcase & Builder</h1>
+                <p id="main-hero-desc" class="text-sm text-slate-400 mb-3">Explore high-performance hardware, check specifications, or build your custom PC</p>
+                <div class="flex justify-center items-center gap-4 text-xs">
+                    <button onclick="openTermsModal()" class="text-blue-400 hover:underline">📄 View Terms & Conditions</button>
+                </div>
             </div>
 
             <!-- Search Bar, Sort & Filters Section -->
@@ -60,6 +89,7 @@
                             <option value="name-asc">Name: A to Z</option>
                             <option value="price-low">Price: Low to High</option>
                             <option value="price-high">Price: High to Low</option>
+                            <option value="popular">Most Viewed (Today)</option>
                         </select>
                     </div>
                 </div>
@@ -96,54 +126,272 @@
         </div>
 
         <!-- Admin View -->
-        <div id="admin-view" class="hidden">
-            <div class="flex justify-between items-center mb-6">
-                <div>
-                    <h2 class="text-xl font-bold text-white">Manage Components</h2>
-                    <p class="text-xs text-slate-400 mt-0.5">Tip: Drag and drop items using the grab handle (⠿) to change their display order.</p>
+        <div id="admin-view" class="hidden space-y-4">
+            <div class="glass-card p-2.5 rounded-xl border border-slate-800 flex flex-wrap gap-2 items-center justify-between">
+                <div class="flex flex-wrap gap-1.5">
+                    <button onclick="switchAdminTab('products')" id="tab-btn-products" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-blue-600 text-white transition shadow-sm flex items-center space-x-1.5"><span>📦</span> <span>Components</span></button>
+                    <button onclick="switchAdminTab('whatsapp')" id="tab-btn-whatsapp" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-900 text-slate-300 hover:bg-slate-800 transition flex items-center space-x-1.5"><span>💬</span> <span>WhatsApp</span></button>
+                    <button onclick="switchAdminTab('analytics')" id="tab-btn-analytics" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-900 text-slate-300 hover:bg-slate-800 transition flex items-center space-x-1.5"><span>📊</span> <span>Analytics</span></button>
+                    <button onclick="switchAdminTab('settings')" id="tab-btn-settings" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-900 text-slate-300 hover:bg-slate-800 transition flex items-center space-x-1.5"><span>⚙️</span> <span>Settings & Toggles</span></button>
                 </div>
-                <div class="space-x-2">
-                    <button onclick="showQRCodeModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs px-3 py-2 rounded-lg transition">Generate QR Code</button>
-                    <button onclick="openProductModal()" class="bg-blue-600 hover:bg-blue-500 text-white text-xs px-3 py-2 rounded-lg transition">+ Add New Item</button>
+                <div class="text-[11px] text-slate-400 px-2 font-mono">Admin Mode</div>
+            </div>
+
+            <!-- Tab 1: Products -->
+            <div id="admin-tab-products" class="space-y-3">
+                <div class="flex justify-between items-center glass-card p-3.5 rounded-xl border border-slate-800">
+                    <div>
+                        <h2 class="text-sm font-bold text-white">Manage Components</h2>
+                        <p class="text-[11px] text-slate-400">Drag & drop using (⠿) to reorder.</p>
+                    </div>
+                    <div class="space-x-1.5 flex">
+                        <button onclick="showQRCodeModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs px-3 py-1.5 rounded-lg transition">QR Code</button>
+                        <button onclick="openProductModal()" class="bg-blue-600 hover:bg-blue-500 text-white text-xs px-3 py-1.5 rounded-lg transition">+ Add Item</button>
+                    </div>
+                </div>
+
+                <!-- 后台分类筛选栏 -->
+                <div class="glass-card p-3 rounded-xl border border-slate-800 space-y-2">
+                    <div class="flex flex-wrap gap-1.5 items-center" id="admin-category-filters">
+                        <span class="text-xs text-slate-400 font-medium mr-1">Category:</span>
+                        <button onclick="adminFilterCategory('all')" class="admin-cat-btn px-3 py-1 rounded-lg text-xs font-medium bg-blue-600 text-white transition">All</button>
+                        <button onclick="adminFilterCategory('CPU')" class="admin-cat-btn px-3 py-1 rounded-lg text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">CPU</button>
+                        <button onclick="adminFilterCategory('GPU')" class="admin-cat-btn px-3 py-1 rounded-lg text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">GPU</button>
+                        <button onclick="adminFilterCategory('Motherboard')" class="admin-cat-btn px-3 py-1 rounded-lg text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Motherboard</button>
+                        <button onclick="adminFilterCategory('RAM')" class="admin-cat-btn px-3 py-1 rounded-lg text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">RAM</button>
+                        <button onclick="adminFilterCategory('Storage')" class="admin-cat-btn px-3 py-1 rounded-lg text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Storage</button>
+                        <button onclick="adminFilterCategory('PSU')" class="admin-cat-btn px-3 py-1 rounded-lg text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">PSU</button>
+                        <button onclick="adminFilterCategory('Cooler')" class="admin-cat-btn px-3 py-1 rounded-lg text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Cooler</button>
+                        <button onclick="adminFilterCategory('Casing')" class="admin-cat-btn px-3 py-1 rounded-lg text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Casing</button>
+                        <button onclick="adminFilterCategory('Accessories')" class="admin-cat-btn px-3 py-1 rounded-lg text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Accessories</button>
+                    </div>
+                </div>
+
+                <div id="admin-product-list" class="space-y-2.5"></div>
+            </div>
+
+            <!-- Tab 2: WhatsApp -->
+            <div id="admin-tab-whatsapp" class="hidden space-y-3">
+                <div class="glass-card p-4 rounded-xl border border-slate-800">
+                    <div class="flex justify-between items-center mb-3">
+                        <h2 class="text-sm font-bold text-white">WhatsApp Contacts</h2>
+                        <button onclick="openWhatsAppModal()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs px-3 py-1.5 rounded-lg transition">+ Add Contact</button>
+                    </div>
+                    <div id="admin-whatsapp-list" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
                 </div>
             </div>
 
-            <!-- 管理员后台的分类与子分类筛选栏 -->
-            <div class="mb-4 glass-card p-3 rounded-xl border border-slate-800 space-y-2">
-                <div class="flex flex-wrap gap-2 items-center" id="admin-category-filters">
-                    <span class="text-xs text-slate-400 font-medium mr-2">Main Category:</span>
-                    <button onclick="adminFilterCategory('all')" class="admin-cat-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-blue-600 text-white transition">All</button>
-                    <button onclick="adminFilterCategory('CPU')" class="admin-cat-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">CPU</button>
-                    <button onclick="adminFilterCategory('GPU')" class="admin-cat-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">GPU</button>
-                    <button onclick="adminFilterCategory('Motherboard')" class="admin-cat-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Motherboard</button>
-                    <button onclick="adminFilterCategory('RAM')" class="admin-cat-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">RAM</button>
-                    <button onclick="adminFilterCategory('Storage')" class="admin-cat-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Storage</button>
-                    <button onclick="adminFilterCategory('PSU')" class="admin-cat-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">PSU</button>
-                    <button onclick="adminFilterCategory('Cooler')" class="admin-cat-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Cooler</button>
-                    <button onclick="adminFilterCategory('Casing')" class="admin-cat-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Casing</button>
-                    <button onclick="adminFilterCategory('Accessories')" class="admin-cat-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Accessories</button>
-                </div>
-                <!-- 后台子分类筛选 -->
-                <div id="admin-subcat-bar" class="hidden flex flex-wrap gap-2 items-center pt-2 border-t border-slate-800">
-                    <span class="text-xs text-blue-400 font-medium mr-2">Sub-Category / Series:</span>
-                    <div id="admin-subcat-buttons" class="flex flex-wrap gap-2"></div>
+            <!-- Tab 3: Analytics -->
+            <div id="admin-tab-analytics" class="hidden space-y-3">
+                <div class="glass-card p-4 rounded-xl border border-slate-800 space-y-4">
+                    <div class="flex flex-wrap justify-between items-center gap-3 border-b border-slate-800 pb-3">
+                        <div>
+                            <h2 class="text-sm font-bold text-white">Item Views Statistics</h2>
+                            <p class="text-[11px] text-slate-400">All-time cumulative counts & custom date range filtering.</p>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <button onclick="switchAnalyticsView('total')" id="analytics-btn-total" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-600 text-white transition">All-Time Total (总累计)</button>
+                            <button onclick="switchAnalyticsView('range')" id="analytics-btn-range" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 transition">Date Range (日期范围)</button>
+                        </div>
+                    </div>
+
+                    <!-- 日期范围日历选择器工具栏 -->
+                    <div id="analytics-date-picker-container" class="hidden bg-slate-900/90 p-3 rounded-xl border border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="text-slate-300 font-medium">From (从):</span>
+                            <input type="date" id="analytics-start-date" onchange="handleAnalyticsDateChange()" class="bg-slate-950 border border-slate-700 text-white px-3 py-1.5 rounded-lg text-xs cursor-pointer">
+                            <span class="text-slate-300 font-medium ml-2">To (到):</span>
+                            <input type="date" id="analytics-end-date" onchange="handleAnalyticsDateChange()" class="bg-slate-950 border border-slate-700 text-white px-3 py-1.5 rounded-lg text-xs cursor-pointer">
+                        </div>
+                        <button onclick="setTodayAnalyticsRange()" class="bg-blue-600/30 text-blue-300 hover:bg-blue-600 hover:text-white px-3 py-1.5 rounded-lg transition border border-blue-500/30">Today Only (仅今天)</button>
+                    </div>
+
+                    <div id="admin-analytics-list" class="space-y-2"></div>
                 </div>
             </div>
 
-            <div id="admin-product-list" class="space-y-3"></div>
+            <!-- Tab 4: Settings & Feature Toggles -->
+            <div id="admin-tab-settings" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4">
+                
+                <!-- 卡片 1: 店铺标识设置 -->
+                <div class="glass-card p-4 rounded-xl border border-slate-800 space-y-3">
+                    <div class="border-b border-slate-800 pb-2">
+                        <h2 class="text-sm font-bold text-white flex items-center gap-1.5">🎨 Store Identity (店铺标题设置)</h2>
+                        <p class="text-[11px] text-slate-400">Customize main catalog titles and descriptions.</p>
+                    </div>
+                    <div class="space-y-2.5 text-xs">
+                        <div>
+                            <label class="block text-slate-300 mb-1 font-medium">Main Hero Title (主标题):</label>
+                            <input type="text" id="setting-hero-title" oninput="updateHeroTitle()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white">
+                        </div>
+                        <div>
+                            <label class="block text-slate-300 mb-1 font-medium">Subtitle / Description (副标题):</label>
+                            <textarea id="setting-hero-desc" oninput="updateHeroDesc()" rows="2" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 卡片 2: 跑马灯公告栏设置 -->
+                <div class="glass-card p-4 rounded-xl border border-slate-800 space-y-3">
+                    <div class="border-b border-slate-800 pb-2">
+                        <h2 class="text-sm font-bold text-white flex items-center gap-1.5">📢 Announcement Banner (跑马灯公告栏样式)</h2>
+                        <p class="text-[11px] text-slate-400">Configure text, colors, font size and speed.</p>
+                    </div>
+                    <div class="space-y-2.5 text-xs">
+                        <div class="flex items-center justify-between bg-slate-900 p-2.5 rounded-xl border border-slate-800">
+                            <span class="font-bold text-white">Enable Banner (开启跑马灯公告)</span>
+                            <label class="switch">
+                                <input type="checkbox" id="toggle-banner" onchange="updateFeatureToggles()">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div>
+                            <label class="block text-slate-300 mb-1 font-medium">Banner Message (公告文字):</label>
+                            <input type="text" id="setting-banner-text" oninput="updateAnnouncementText()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white">
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-slate-300 mb-1">Background Color (背景颜色):</label>
+                                <input type="color" id="setting-banner-bg" onchange="updateBannerStyles()" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer">
+                            </div>
+                            <div>
+                                <label class="block text-slate-300 mb-1">Text Color (文字颜色):</label>
+                                <input type="color" id="setting-banner-color" onchange="updateBannerStyles()" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-slate-300 mb-1">Font Size (字号大小):</label>
+                                <select id="setting-banner-fontsize" onchange="updateBannerStyles()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white">
+                                    <option value="10px">Small (小 - 10px)</option>
+                                    <option value="12px">Normal (标准 - 12px)</option>
+                                    <option value="14px">Large (大 - 14px)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-slate-300 mb-1">Scroll Speed (滚动速度):</label>
+                                <select id="setting-banner-speed" onchange="updateBannerStyles()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white">
+                                    <option value="28s">Slow (慢)</option>
+                                    <option value="18s">Normal (标准)</option>
+                                    <option value="10s">Fast (快)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 卡片 3: 功能管理开关 -->
+                <div class="glass-card p-4 rounded-xl border border-slate-800 space-y-3 md:col-span-2">
+                    <div class="border-b border-slate-800 pb-2">
+                        <h2 class="text-sm font-bold text-white flex items-center gap-1.5">🎛️ Feature Switches (功能模块开关)</h2>
+                        <p class="text-[11px] text-slate-400">Instantly toggle layout features for customers.</p>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                        <div class="flex items-center justify-between bg-slate-900 p-3 rounded-xl border border-slate-800">
+                            <div>
+                                <span class="font-bold text-white block">🖥️ PC Builder (电脑组装配置器)</span>
+                                <span class="text-[10px] text-slate-400">Allow customers to build custom PCs</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="toggle-builder" onchange="updateFeatureToggles()">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="flex items-center justify-between bg-slate-900 p-3 rounded-xl border border-slate-800">
+                            <div>
+                                <span class="font-bold text-white block">📦 Stock Status Badges (库存状态标签)</span>
+                                <span class="text-[10px] text-slate-400">Display In Stock / Low Stock badges</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="toggle-stock" onchange="updateFeatureToggles()">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="flex items-center justify-between bg-slate-900 p-3 rounded-xl border border-slate-800">
+                            <div>
+                                <span class="font-bold text-white block">💰 Member Pricing Tier (会员价显示)</span>
+                                <span class="text-[10px] text-slate-400">Show specialized member pricing tier</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="toggle-member" onchange="updateFeatureToggles()">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="flex items-center justify-between bg-slate-900 p-3 rounded-xl border border-slate-800">
+                            <div>
+                                <span class="font-bold text-white block">🏷️ Promotional Badges (促销标签 HOT/SALE)</span>
+                                <span class="text-[10px] text-slate-400">Show promotional badges on cards</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="toggle-badges" onchange="updateFeatureToggles()">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="flex items-center justify-between bg-slate-900 p-3 rounded-xl border border-slate-800 sm:col-span-2">
+                            <div>
+                                <span class="font-bold text-white block">📥 PDF Quotation Export (PDF 报价单导出)</span>
+                                <span class="text-[10px] text-slate-400">Allow downloading quotation PDF in Builder</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="toggle-pdf" onchange="updateFeatureToggles()">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 卡片 4: 修改后台安全密码 -->
+                <div class="glass-card p-4 rounded-xl border border-slate-800 space-y-3 md:col-span-2">
+                    <div class="border-b border-slate-800 pb-2">
+                        <h2 class="text-sm font-bold text-white flex items-center gap-1.5">🔐 Security Settings (修改后台密码)</h2>
+                    </div>
+                    <form onsubmit="changePassword(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                        <div>
+                            <label class="block text-slate-300 mb-1">Current Password (当前密码)</label>
+                            <input type="password" id="current-pwd" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white">
+                        </div>
+                        <div>
+                            <label class="block text-slate-300 mb-1">New Password (新密码)</label>
+                            <input type="password" id="new-pwd" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white">
+                        </div>
+                        <div>
+                            <label class="block text-slate-300 mb-1">Confirm Password (确认密码)</label>
+                            <input type="password" id="confirm-pwd" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white">
+                        </div>
+                        <div class="sm:col-span-3">
+                            <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2 rounded-lg text-xs font-medium">Update Password (更新密码)</button>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
         </div>
     </main>
 
-    <!-- Password Prompt Modal -->
-    <div id="password-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="glass-card w-full max-w-sm rounded-2xl p-6 border border-slate-700 text-center relative">
-            <button onclick="closePasswordModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">✕</button>
-            <h3 class="text-lg font-bold text-white mb-2">Admin Authentication</h3>
-            <p class="text-xs text-slate-400 mb-4">Please enter your password to access the admin panel</p>
-            <form onsubmit="verifyPassword(event)" class="space-y-3">
-                <input type="password" id="admin-password-input" placeholder="Enter password" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-center focus:outline-none focus:border-blue-500 text-sm">
-                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium py-2 rounded-lg transition text-xs">Login</button>
-            </form>
+    <!-- PC Builder Modal -->
+    <div id="builder-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-card w-full max-w-2xl rounded-2xl p-6 border border-slate-700 max-h-[90vh] overflow-y-auto relative shadow-2xl">
+            <button onclick="closeBuilderModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">✕</button>
+            <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-800">
+                <div>
+                    <h3 class="text-base font-bold font-orbitron text-white">🖥️ Custom PC Builder</h3>
+                    <p class="text-[11px] text-slate-400">Select components for your custom build and calculate total price</p>
+                </div>
+                <button onclick="clearBuilder()" class="text-xs bg-red-900/30 text-red-400 border border-red-800/40 px-2.5 py-1 rounded-lg">Clear All</button>
+            </div>
+            
+            <div id="builder-slots-container" class="space-y-3 mb-5"></div>
+
+            <div class="bg-slate-900/90 p-4 rounded-xl border border-slate-800 mb-4 flex justify-between items-center">
+                <div>
+                    <span class="text-xs text-slate-400 block uppercase">Total Configuration Price</span>
+                    <span class="text-xl font-orbitron font-black text-amber-400" id="builder-total-price">RM 0.00</span>
+                </div>
+                <div class="space-x-2 flex">
+                    <button id="builder-pdf-btn" onclick="exportBuilderPDF()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs px-3.5 py-2 rounded-xl font-medium transition">📥 Export PDF</button>
+                    <button onclick="inquireBuilderWhatsApp()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs px-3.5 py-2 rounded-xl font-medium transition">💬 Inquiry via WhatsApp</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -155,90 +403,103 @@
         </div>
     </div>
 
-    <!-- Terms & Conditions Modal -->
-    <div id="terms-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
-        <div class="glass-card w-full max-w-lg rounded-2xl p-6 border border-slate-700 max-h-[90vh] overflow-y-auto relative shadow-2xl">
-            <h3 class="text-lg font-bold text-white mb-3">Terms & Conditions</h3>
-            <div class="text-xs text-slate-300 space-y-3 leading-relaxed">
-                <p><strong>1. Prices & Member Price:</strong> All prices are in Malaysian Ringgit (RM) and for reference only; the final selling price is confirmed at purchase. Member prices require valid membership details.</p>
-                <p><strong>2. Product Availability:</strong> Products are subject to stock availability and may change without prior notice. Some items require pre-order, and prices do not guarantee availability.</p>
-                <p><strong>3. Product Information:</strong> Specifications, descriptions, and images are for reference only. Actual products may vary slightly, and specifications are subject to manufacturer changes without notice.</p>
-                <p><strong>4. Price Errors:</strong> In the event of any pricing or product information error, we reserve the right to correct it and provide the correct information before completing the purchase.</p>
-                <p><strong>5. Warranty:</strong> Warranty coverage is subject to the manufacturer’s terms and conditions and excludes damage caused by misuse, accidents, or unauthorized modifications.</p>
-                <p><strong>6. General:</strong> We reserve the right to amend these terms without prior notice. For the latest prices, stock availability, and details, please contact our staff before purchasing.</p>
-            </div>
-            <button onclick="closeTermsModal()" class="mt-6 w-full bg-blue-600 hover:bg-blue-500 text-white py-3 rounded-xl text-xs font-bold transition shadow-lg shadow-blue-600/30">I Understand</button>
+    <!-- WhatsApp Contact Selection Modal -->
+    <div id="whatsapp-select-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-card w-full max-w-sm rounded-2xl p-6 border border-slate-700 text-center relative">
+            <button onclick="closeWhatsAppSelectModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">✕</button>
+            <h3 class="text-base font-bold text-white mb-1">Select WhatsApp Contact</h3>
+            <p class="text-[11px] text-slate-400 mb-4">Choose a representative to inquire about this item:</p>
+            <div id="whatsapp-contacts-list" class="space-y-2 max-h-60 overflow-y-auto"></div>
         </div>
     </div>
 
-    <!-- Add/Edit Product Modal -->
+    <!-- PDF Export Template (Hidden) -->
+    <div id="pdf-export-container" class="hidden bg-white text-slate-900 p-8 max-w-xl mx-auto font-sans">
+        <div class="text-center mb-6 border-b pb-4">
+            <h1 class="text-xl font-bold uppercase tracking-wider text-blue-900">PC Image VIVA - Quotation</h1>
+            <p class="text-xs text-slate-500">Custom PC Build Configuration Summary</p>
+            <p class="text-[10px] text-slate-400 mt-1" id="pdf-date"></p>
+        </div>
+        <div id="pdf-items-list" class="space-y-2 mb-6 text-xs"></div>
+        <div class="border-t pt-4 flex justify-between font-bold text-sm">
+            <span>Total Estimated Price:</span>
+            <span id="pdf-total-price" class="text-blue-900 font-orbitron"></span>
+        </div>
+        <div class="mt-8 text-[10px] text-slate-400 text-center border-t pt-2">
+            Prices are subject to stock availability and confirmation. Thank you for choosing PC Image VIVA!
+        </div>
+    </div>
+
+    <!-- Password Prompt Modal -->
+    <div id="password-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-card w-full max-w-sm rounded-2xl p-6 border border-slate-700 text-center relative">
+            <button onclick="closePasswordModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">✕</button>
+            <h3 class="text-lg font-bold text-white mb-2">Admin Authentication</h3>
+            <p class="text-xs text-slate-400 mb-4">Enter password to access admin panel</p>
+            <form onsubmit="verifyPassword(event)" class="space-y-3">
+                <input type="password" id="admin-password-input" placeholder="Enter password" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-center text-sm">
+                <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg text-xs">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Product Modal -->
     <div id="product-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="glass-card w-full max-w-md rounded-2xl p-6 border border-slate-700 max-h-[90vh] overflow-y-auto relative">
-            <button onclick="closeProductModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">✕</button>
+            <button onclick="closeProductModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">✕</button>
             <h3 id="modal-title" class="text-lg font-bold text-white mb-4">Add New Component</h3>
             <form id="product-form" onsubmit="saveProduct(event)" class="space-y-3 text-sm">
                 <input type="hidden" id="product-id">
-                <div>
-                    <label class="block text-slate-400 mb-1">Item Name</label>
-                    <input type="text" id="p-name" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500">
+                <input type="text" id="p-name" placeholder="Item Name" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white">
+                <div class="grid grid-cols-2 gap-2">
+                    <input type="number" id="p-price" step="0.01" placeholder="Normal Price" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white">
+                    <input type="number" id="p-member-price" step="0.01" placeholder="Member Price" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white">
+                </div>
+                <select id="p-category" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white">
+                    <option value="CPU">CPU</option><option value="GPU">GPU</option><option value="Motherboard">Motherboard</option>
+                    <option value="RAM">RAM</option><option value="Storage">Storage</option><option value="PSU">PSU</option>
+                    <option value="Cooler">Cooler</option><option value="Casing">Casing</option><option value="Accessories">Accessories</option>
+                </select>
+                <div class="grid grid-cols-2 gap-2">
+                    <input type="text" id="p-brand" placeholder="Brand" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white">
+                    <input type="text" id="p-subcategory" placeholder="Series / Subcategory" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white">
                 </div>
                 <div class="grid grid-cols-2 gap-2">
-                    <div>
-                        <label class="block text-slate-400 mb-1">Normal Price (RM)</label>
-                        <input type="number" id="p-price" step="0.01" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-slate-400 mb-1">Member Price (RM)</label>
-                        <input type="number" id="p-member-price" step="0.01" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-slate-400 mb-1">Main Category</label>
-                    <select id="p-category" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500">
-                        <option value="CPU">CPU</option>
-                        <option value="GPU">Graphics Card (GPU)</option>
-                        <option value="Motherboard">Motherboard</option>
-                        <option value="RAM">Memory (RAM)</option>
-                        <option value="Storage">SSD / Storage</option>
-                        <option value="PSU">Power Supply (PSU)</option>
-                        <option value="Cooler">Cooler</option>
-                        <option value="Casing">PC Casing</option>
-                        <option value="Accessories">Accessories</option>
+                    <select id="p-stock" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white">
+                        <option value="In Stock">In Stock (Green)</option>
+                        <option value="Low Stock">Low Stock (Yellow)</option>
+                        <option value="Pre-order">Pre-order (Blue)</option>
+                        <option value="">Leave Blank (留空)</option>
+                    </select>
+                    <select id="p-badge" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white">
+                        <option value="">No Badge</option>
+                        <option value="HOT">🔥 HOT</option>
+                        <option value="SALE">⚡ SALE</option>
+                        <option value="NEW">✨ NEW</option>
                     </select>
                 </div>
+                <input type="url" id="p-image" placeholder="Image URL" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white">
+                <input type="url" id="p-url" placeholder="Official Website Detail URL (官方详情网址)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white">
                 <div class="grid grid-cols-2 gap-2">
-                    <div>
-                        <label class="block text-slate-400 mb-1">Brand (Optional)</label>
-                        <input type="text" id="p-brand" placeholder="e.g. ASUS, Corsair" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-slate-400 mb-1">Sub-Category / Series (Optional)</label>
-                        <input type="text" id="p-subcategory" placeholder="e.g. RTX 50 Series" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500">
-                    </div>
+                    <input type="text" id="p-spec1" placeholder="Spec 1" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white">
+                    <input type="text" id="p-spec2" placeholder="Spec 2" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white">
                 </div>
-                <div>
-                    <label class="block text-slate-400 mb-1">Image URL (Optional)</label>
-                    <input type="url" id="p-image" placeholder="https://..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500">
-                </div>
-                <div>
-                    <label class="block text-slate-400 mb-1">Official Website Link (Optional)</label>
-                    <input type="url" id="p-website" placeholder="https://..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500">
-                </div>
-                <div class="grid grid-cols-2 gap-2">
-                    <div>
-                        <label class="block text-slate-400 mb-1">Spec 1 (Optional)</label>
-                        <input type="text" id="p-spec1" placeholder="e.g. 16GB" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-slate-400 mb-1">Spec 2 (Optional)</label>
-                        <input type="text" id="p-spec2" placeholder="e.g. 850W" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-slate-400 mb-1">Description / Key Features (Optional)</label>
-                    <textarea id="p-desc" rows="3" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500"></textarea>
-                </div>
-                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium py-2.5 rounded-lg transition mt-2">Save Item</button>
+                <textarea id="p-desc" rows="2" placeholder="Description" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white"></textarea>
+                <button type="submit" class="w-full bg-blue-600 text-white py-2.5 rounded-lg text-xs font-medium">Save Item</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- WhatsApp Contact Edit Modal -->
+    <div id="whatsapp-edit-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-card w-full max-w-sm rounded-2xl p-6 border border-slate-700 relative">
+            <button onclick="closeWhatsAppModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">✕</button>
+            <h3 id="wa-modal-title" class="text-base font-bold text-white mb-3">Add WhatsApp Contact</h3>
+            <form onsubmit="saveWhatsAppContact(event)" class="space-y-3 text-sm">
+                <input type="hidden" id="wa-contact-id">
+                <input type="text" id="wa-name" placeholder="Name" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-xs">
+                <input type="text" id="wa-phone" placeholder="Phone (e.g. 60123456789)" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-xs">
+                <button type="submit" class="w-full bg-emerald-600 text-white py-2 rounded-lg text-xs">Save</button>
             </form>
         </div>
     </div>
@@ -246,25 +507,55 @@
     <!-- QR Code Modal -->
     <div id="qrcode-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="glass-card w-full max-w-sm rounded-2xl p-6 border border-slate-700 text-center relative">
-            <button onclick="closeQRCodeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">✕</button>
+            <button onclick="closeQRCodeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">✕</button>
             <h3 class="text-lg font-bold text-white mb-2">Store QR Code</h3>
-            <p class="text-xs text-slate-400 mb-4">Let customers scan this code to view your catalog on their phones</p>
             <div id="qrcode-container" class="bg-white p-4 rounded-xl inline-block mb-4"></div>
-            <p id="current-url-text" class="text-xs text-blue-400 break-all bg-slate-900 p-2 rounded border border-slate-800"></p>
+            <p id="current-url-text" class="text-xs text-blue-400 break-all bg-slate-900 p-2 rounded"></p>
+        </div>
+    </div>
+
+    <!-- Terms Modal -->
+    <div id="terms-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[100] flex items-center justify-center p-4">
+        <div class="glass-card w-full max-w-lg rounded-2xl p-6 border border-slate-700 max-h-[90vh] overflow-y-auto relative">
+            <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">📄 Terms & Conditions</h3>
+            <div class="text-xs text-slate-300 space-y-4 leading-relaxed">
+                <p><strong>1. Prices & Member Price:</strong> All prices are in Malaysian Ringgit (RM) and for reference only; the final selling price is confirmed at purchase. Member prices require valid membership details.</p>
+                <p><strong>2. Product Availability:</strong> Products are subject to stock availability and may change without prior notice. Some items require pre-order, and prices do not guarantee availability.</p>
+                <p><strong>3. Product Information:</strong> Specifications, descriptions, and images are for reference only. Actual products may vary slightly, and specifications are subject to manufacturer changes without notice.</p>
+                <p><strong>4. Price Errors:</strong> In the event of any pricing or product information error, we reserve the right to correct it and provide the correct information before completing the purchase.</p>
+                <p><strong>5. Warranty:</strong> Warranty coverage is subject to the manufacturer's terms and conditions and excludes damage caused by misuse, accidents, or unauthorized modifications.</p>
+                <p><strong>6. General:</strong> We reserve the right to amend these terms without prior notice. For the latest prices, stock availability, and details, please contact our staff before purchasing.</p>
+            </div>
+            <button onclick="closeTermsModal()" class="mt-6 w-full bg-blue-600 hover:bg-blue-500 text-white py-2.5 rounded-xl text-xs font-bold transition">I Understand</button>
         </div>
     </div>
 
     <script>
-        const ADMIN_PASSWORD = "123456";
-        const WHATSAPP_NUMBER = "60123456789";
-
-        // ==========================================
-        // 🛠 Google Sheets Web App 配置信息
-        // ==========================================
+        let adminPassword = localStorage.getItem('pc_admin_pwd') || "123456";
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxBCgzOyVOFrbFg1mh1KzIvlUwCWBeMpa4AGmFc1yBzyGAZpcaE-eNcRXDrgJOLbRn3/exec"; 
-        // ==========================================
 
         let products = [];
+        let whatsappContacts = [{ id: '1', name: 'Sales Support (Main)', phone: '60123456789' }];
+        let pcBuilder = {}; 
+
+        let clickStatsAllTotal = JSON.parse(localStorage.getItem('pc_click_stats_all_total') || '{}');
+        let clickStatsByDate = JSON.parse(localStorage.getItem('pc_click_stats_by_date') || '{}');
+
+        let featureToggles = JSON.parse(localStorage.getItem('pc_feature_toggles') || '{"builder":true,"stock":true,"member":true,"pdf":true,"banner":true,"badges":true}');
+        let announcementMessage = localStorage.getItem('pc_announcement_text') || '🔥 Welcome to PC Image VIVA! Check out our latest hardware components and build your custom PC today.';
+        let bannerBgColor = localStorage.getItem('pc_banner_bg') || '#0891b2';
+        let bannerTextColor = localStorage.getItem('pc_banner_color') || '#020617';
+        let bannerFontSize = localStorage.getItem('pc_banner_fontsize') || '12px';
+        let bannerSpeed = localStorage.getItem('pc_banner_speed') || '18s';
+
+        let heroTitleText = localStorage.getItem('pc_hero_title') || 'PC Components Showcase & Builder';
+        let heroDescText = localStorage.getItem('pc_hero_desc') || 'Explore high-performance hardware, check specifications, or build your custom PC';
+        
+        let analyticsView = 'total';
+        let todayStr = new Date().toISOString().split('T')[0];
+        let analyticsStartDate = todayStr;
+        let analyticsEndDate = todayStr;
+
         let currentCategory = 'all';
         let currentBrand = 'all';
         let currentSubcategory = 'all';
@@ -272,20 +563,110 @@
         let searchQuery = '';
         let isAdmin = false;
         let adminCategoryFilter = 'all';
-        let adminSubcategoryFilter = 'all';
+        let pendingInquiryText = '';
 
-        showLoadingState("Loading components from Google Sheets...");
+        function initTogglesUI() {
+            document.getElementById('toggle-builder').checked = featureToggles.builder;
+            document.getElementById('toggle-stock').checked = featureToggles.stock;
+            document.getElementById('toggle-member').checked = featureToggles.member;
+            document.getElementById('toggle-pdf').checked = featureToggles.pdf;
+            document.getElementById('toggle-banner').checked = featureToggles.banner;
+            document.getElementById('toggle-badges').checked = featureToggles.badges !== undefined ? featureToggles.badges : true;
+            
+            document.getElementById('setting-banner-text').value = announcementMessage;
+            document.getElementById('setting-banner-bg').value = bannerBgColor;
+            document.getElementById('setting-banner-color').value = bannerTextColor;
+            document.getElementById('setting-banner-fontsize').value = bannerFontSize;
+            document.getElementById('setting-banner-speed').value = bannerSpeed;
 
-        function showLoadingState(message = "Loading components from Google Sheets...") {
-            const loadingHTML = `
-                <div class="col-span-full flex flex-col items-center justify-center py-20">
-                    <div class="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full spinner mb-3"></div>
-                    <p class="text-xs text-slate-400 font-medium tracking-wider uppercase">${message}</p>
-                </div>
-            `;
-            document.getElementById('product-grid').innerHTML = loadingHTML;
-            document.getElementById('admin-product-list').innerHTML = loadingHTML;
+            document.getElementById('setting-hero-title').value = heroTitleText;
+            document.getElementById('setting-hero-desc').value = heroDescText;
+            
+            document.getElementById('analytics-start-date').value = analyticsStartDate;
+            document.getElementById('analytics-end-date').value = analyticsEndDate;
+
+            applyFeatureToggles();
+            applyCustomTitles();
+            applyBannerStyles();
         }
+
+        function applyCustomTitles() {
+            const titleElem = document.getElementById('main-hero-title');
+            if (titleElem) titleElem.textContent = heroTitleText;
+            const descElem = document.getElementById('main-hero-desc');
+            if (descElem) descElem.textContent = heroDescText;
+        }
+
+        function updateHeroTitle() {
+            heroTitleText = document.getElementById('setting-hero-title').value;
+            localStorage.setItem('pc_hero_title', heroTitleText);
+            applyCustomTitles();
+        }
+
+        function updateHeroDesc() {
+            heroDescText = document.getElementById('setting-hero-desc').value;
+            localStorage.setItem('pc_hero_desc', heroDescText);
+            applyCustomTitles();
+        }
+
+        function applyBannerStyles() {
+            const banner = document.getElementById('announcement-banner');
+            const content = document.getElementById('announcement-text');
+            if (banner && content) {
+                banner.style.backgroundColor = bannerBgColor;
+                banner.style.color = bannerTextColor;
+                content.style.fontSize = bannerFontSize;
+                content.style.animationDuration = bannerSpeed;
+                content.textContent = announcementMessage;
+            }
+        }
+
+        function updateBannerStyles() {
+            bannerBgColor = document.getElementById('setting-banner-bg').value;
+            bannerTextColor = document.getElementById('setting-banner-color').value;
+            bannerFontSize = document.getElementById('setting-banner-fontsize').value;
+            bannerSpeed = document.getElementById('setting-banner-speed').value;
+
+            localStorage.setItem('pc_banner_bg', bannerBgColor);
+            localStorage.setItem('pc_banner_color', bannerTextColor);
+            localStorage.setItem('pc_banner_fontsize', bannerFontSize);
+            localStorage.setItem('pc_banner_speed', bannerSpeed);
+
+            applyBannerStyles();
+        }
+
+        function applyFeatureToggles() {
+            const builderBtn = document.getElementById('nav-builder-btn');
+            if (builderBtn) builderBtn.classList.toggle('hidden', !featureToggles.builder);
+            
+            const banner = document.getElementById('announcement-banner');
+            if (banner) banner.classList.toggle('hidden', !featureToggles.banner);
+
+            const pdfBtn = document.getElementById('builder-pdf-btn');
+            if (pdfBtn) pdfBtn.classList.toggle('hidden', !featureToggles.pdf);
+        }
+
+        function updateFeatureToggles() {
+            featureToggles.builder = document.getElementById('toggle-builder').checked;
+            featureToggles.stock = document.getElementById('toggle-stock').checked;
+            featureToggles.member = document.getElementById('toggle-member').checked;
+            featureToggles.pdf = document.getElementById('toggle-pdf').checked;
+            featureToggles.banner = document.getElementById('toggle-banner').checked;
+            featureToggles.badges = document.getElementById('toggle-badges').checked;
+            
+            localStorage.setItem('pc_feature_toggles', JSON.stringify(featureToggles));
+            applyFeatureToggles();
+            renderProducts();
+        }
+
+        function updateAnnouncementText() {
+            announcementMessage = document.getElementById('setting-banner-text').value;
+            localStorage.setItem('pc_announcement_text', announcementMessage);
+            applyBannerStyles();
+        }
+
+        showLoadingState();
+        initTogglesUI();
 
         async function fetchProductsFromCloud() {
             try {
@@ -293,128 +674,53 @@
                 if (response.ok) {
                     const data = await response.json();
                     if (Array.isArray(data)) {
-                        products = data.filter(p => p && p.name && typeof p.name === 'string' && p.name.trim() !== '');
+                        products = data.filter(p => p && p.name && typeof p.name === 'string');
                     }
-                } else {
-                    console.error("Failed to fetch from Google Sheets, status:", response.status);
                 }
-            } catch (error) {
-                console.error("Failed to load from cloud:", error);
-            }
+            } catch (error) { console.error(error); }
             updateFilterBars();
             renderProducts();
         }
 
         async function saveProductsToCloud() {
             try {
-                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'text/plain;charset=utf-8',
-                    },
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify(products)
                 });
+            } catch (error) { console.error(error); }
+        }
 
-                const result = await response.json().catch(() => null);
-                if (result && result.status === "error") {
-                    alert("Failed to sync changes to Google Sheets: " + result.message);
-                }
-            } catch (error) {
-                console.error("Failed to save to cloud:", error);
-                alert("Error saving data to cloud.");
-            }
+        function showLoadingState() {
+            document.getElementById('product-grid').innerHTML = `<div class="col-span-full text-center py-20"><div class="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full spinner mx-auto mb-3"></div><p class="text-xs text-slate-400">Loading catalog...</p></div>`;
         }
 
         function goHome() {
-            if (isAdmin) {
-                toggleAdmin(false);
-            }
+            if (isAdmin) toggleAdmin(false);
             document.getElementById('search-input').value = '';
-            document.getElementById('sort-select').value = 'custom';
             searchQuery = '';
-            currentSort = 'custom';
             filterCategory('all');
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function handleSearch() {
-            const inputVal = document.getElementById('search-input').value;
-            searchQuery = inputVal ? inputVal.toLowerCase().trim() : '';
-            renderProducts();
-        }
-
-        function handleSort() {
-            currentSort = document.getElementById('sort-select').value;
-            renderProducts();
-        }
+        function handleSearch() { searchQuery = document.getElementById('search-input').value.toLowerCase().trim(); renderProducts(); }
+        function handleSort() { currentSort = document.getElementById('sort-select').value; renderProducts(); }
 
         function filterCategory(cat) {
-            currentCategory = cat;
-            currentBrand = 'all';
-            currentSubcategory = 'all'; 
-            
+            currentCategory = cat; currentBrand = 'all'; currentSubcategory = 'all';
             document.querySelectorAll('.category-btn').forEach(btn => {
-                if(btn.textContent.toLowerCase().includes(cat === 'all' ? 'all' : cat.toLowerCase())) {
-                    btn.className = "category-btn px-4 py-2 rounded-full text-xs font-medium bg-blue-600 text-white transition";
-                } else {
-                    btn.className = "category-btn px-4 py-2 rounded-full text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition";
-                }
+                btn.className = `category-btn px-4 py-2 rounded-full text-xs font-medium transition ${btn.textContent.toLowerCase().includes(cat === 'all' ? 'all' : cat.toLowerCase()) ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'}`;
             });
-
-            updateFilterBars();
-            renderProducts();
+            updateFilterBars(); renderProducts();
         }
 
         function adminFilterCategory(cat) {
             adminCategoryFilter = cat;
-            adminSubcategoryFilter = 'all';
-
             document.querySelectorAll('.admin-cat-btn').forEach(btn => {
-                if(btn.textContent.toLowerCase().includes(cat.toLowerCase())) {
-                    btn.className = "admin-cat-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-blue-600 text-white transition";
-                } else {
-                    btn.className = "admin-cat-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition";
-                }
+                btn.className = `admin-cat-btn px-3 py-1 rounded-lg text-xs font-medium transition ${btn.textContent.toLowerCase().includes(cat.toLowerCase()) ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'}`;
             });
-            updateAdminSubcategoryBar();
             renderProducts();
-        }
-
-        function adminFilterSubcategory(sub) {
-            adminSubcategoryFilter = sub;
-            updateAdminSubcategoryBar();
-            renderProducts();
-        }
-
-        function updateAdminSubcategoryBar() {
-            const bar = document.getElementById('admin-subcat-bar');
-            const buttonsContainer = document.getElementById('admin-subcat-buttons');
-
-            let relevant = products;
-            if (adminCategoryFilter !== 'all') {
-                relevant = products.filter(p => p.category && p.category.trim().toLowerCase() === adminCategoryFilter.toLowerCase());
-            }
-
-            const subMap = new Map();
-            relevant.forEach(p => {
-                if (p.subcategory && p.subcategory.trim() !== '') {
-                    const original = p.subcategory.trim();
-                    subMap.set(original.toLowerCase(), original);
-                }
-            });
-
-            if (subMap.size > 0 && adminCategoryFilter !== 'all') {
-                bar.classList.remove('hidden');
-                let html = `<button onclick="adminFilterSubcategory('all')" class="px-3 py-1 rounded-md text-xs font-semibold ${adminSubcategoryFilter === 'all' ? 'bg-blue-500/30 text-blue-300 border border-blue-500/50' : 'bg-slate-900 text-slate-300 border border-slate-800'} transition">All Series</button>`;
-                subMap.forEach((original, lower) => {
-                    const isActive = adminSubcategoryFilter.toLowerCase() === lower;
-                    html += `<button onclick="adminFilterSubcategory('${original}')" class="px-3 py-1 rounded-md text-xs font-semibold uppercase ${isActive ? 'bg-blue-500/30 text-blue-300 border border-blue-500/50' : 'bg-slate-900 text-slate-300 border border-slate-800'} transition">${original}</button>`;
-                });
-                buttonsContainer.innerHTML = html;
-            } else {
-                bar.classList.add('hidden');
-                adminSubcategoryFilter = 'all';
-            }
         }
 
         function updateFilterBars() {
@@ -424,239 +730,428 @@
             const subcontainer = document.getElementById('subcategory-container');
             const subButtons = document.getElementById('subcategory-buttons');
 
-            let relevantProducts = products;
-            if (currentCategory !== 'all') {
-                relevantProducts = products.filter(p => p.category && p.category.trim().toLowerCase() === currentCategory.toLowerCase());
-            }
+            let relevant = currentCategory !== 'all' ? products.filter(p => p.category?.trim().toLowerCase() === currentCategory.toLowerCase()) : products;
+            const brandMap = new Map(); relevant.forEach(p => { if (p.brand?.trim()) brandMap.set(p.brand.trim().toLowerCase(), p.brand.trim()); });
 
-            const brandMap = new Map();
-            relevantProducts.forEach(p => {
-                if (p.brand && p.brand.trim() !== '') {
-                    const originalBrand = p.brand.trim();
-                    const lowerBrand = originalBrand.toLowerCase();
-                    if (!brandMap.has(lowerBrand)) {
-                        brandMap.set(lowerBrand, originalBrand);
-                    }
-                }
-            });
-
-            let subProducts = relevantProducts;
-            if (currentBrand !== 'all') {
-                subProducts = relevantProducts.filter(p => p.brand && p.brand.trim().toLowerCase() === currentBrand.toLowerCase());
-            }
-            const subMap = new Map();
-            subProducts.forEach(p => {
-                if (p.subcategory && p.subcategory.trim() !== '') {
-                    const originalSub = p.subcategory.trim();
-                    const lowerSub = originalSub.toLowerCase();
-                    if (!subMap.has(lowerSub)) {
-                        subMap.set(lowerSub, originalSub);
-                    }
-                }
-            });
+            let subProducts = currentBrand !== 'all' ? relevant.filter(p => p.brand?.trim().toLowerCase() === currentBrand.toLowerCase()) : relevant;
+            const subMap = new Map(); subProducts.forEach(p => { if (p.subcategory?.trim()) subMap.set(p.subcategory.trim().toLowerCase(), p.subcategory.trim()); });
 
             let hasFilter = false;
-
             if (brandMap.size > 0) {
-                brandContainer.classList.remove('hidden');
-                hasFilter = true;
-                let bHtml = `<button onclick="filterBrand('all')" class="px-3 py-1.5 rounded-lg text-xs font-semibold ${currentBrand === 'all' ? 'bg-amber-500/30 text-amber-300 border border-amber-500/50' : 'bg-slate-900 text-slate-300 hover:text-white border border-slate-800'} transition">All Brands</button>`;
-                brandMap.forEach((originalBrand, lowerBrand) => {
-                    const isActive = currentBrand.toLowerCase() === lowerBrand;
-                    bHtml += `<button onclick="filterBrand('${originalBrand}')" class="px-3 py-1.5 rounded-lg text-xs font-semibold uppercase ${isActive ? 'bg-amber-500/30 text-amber-300 border border-amber-500/50' : 'bg-slate-900 text-slate-300 hover:text-white border border-slate-800'} transition">${originalBrand}</button>`;
-                });
+                brandContainer.classList.remove('hidden'); hasFilter = true;
+                let bHtml = `<button onclick="filterBrand('all')" class="px-3 py-1.5 rounded-lg text-xs font-semibold ${currentBrand === 'all' ? 'bg-amber-500/30 text-amber-300 border border-amber-500/50' : 'bg-slate-900 text-slate-300 border border-slate-800'}">All Brands</button>`;
+                brandMap.forEach((orig, low) => { bHtml += `<button onclick="filterBrand('${orig}')" class="px-3 py-1.5 rounded-lg text-xs font-semibold uppercase ${currentBrand.toLowerCase() === low ? 'bg-amber-500/30 text-amber-300 border border-amber-500/50' : 'bg-slate-900 text-slate-300 border border-slate-800'}">${orig}</button>`; });
                 brandButtons.innerHTML = bHtml;
-            } else {
-                brandContainer.classList.add('hidden');
-            }
+            } else { brandContainer.classList.add('hidden'); }
 
             if (subMap.size > 0 && currentCategory !== 'all') {
-                subcontainer.classList.remove('hidden');
-                hasFilter = true;
-                let sHtml = `<button onclick="filterSubcategory('all')" class="px-3 py-1.5 rounded-lg text-xs font-semibold ${currentSubcategory === 'all' ? 'bg-blue-500/30 text-blue-300 border border-blue-500/50' : 'bg-slate-900 text-slate-300 hover:text-white border border-slate-800'} transition">All Series</button>`;
-                subMap.forEach((originalSub, lowerSub) => {
-                    const isActive = currentSubcategory.toLowerCase() === lowerSub;
-                    sHtml += `<button onclick="filterSubcategory('${originalSub}')" class="px-3 py-1.5 rounded-lg text-xs font-semibold uppercase ${isActive ? 'bg-blue-500/30 text-blue-300 border border-blue-500/50' : 'bg-slate-900 text-slate-300 hover:text-white border border-slate-800'} transition">${originalSub}</button>`;
-                });
+                subcontainer.classList.remove('hidden'); hasFilter = true;
+                let sHtml = `<button onclick="filterSubcategory('all')" class="px-3 py-1.5 rounded-lg text-xs font-semibold ${currentSubcategory === 'all' ? 'bg-blue-500/30 text-blue-300 border border-blue-500/50' : 'bg-slate-900 text-slate-300 border border-slate-800'}">All Series</button>`;
+                subMap.forEach((orig, low) => { sHtml += `<button onclick="filterSubcategory('${orig}')" class="px-3 py-1.5 rounded-lg text-xs font-semibold uppercase ${currentSubcategory.toLowerCase() === low ? 'bg-blue-500/30 text-blue-300 border border-blue-500/50' : 'bg-slate-900 text-slate-300 border border-slate-800'}">${orig}</button>`; });
                 subButtons.innerHTML = sHtml;
-            } else {
-                subcontainer.classList.add('hidden');
-            }
+            } else { subcontainer.classList.add('hidden'); }
 
-            if (hasFilter && currentCategory !== 'all') {
-                filterBarContainer.classList.remove('hidden');
-            } else {
-                filterBarContainer.classList.add('hidden');
-            }
+            filterBarContainer.classList.toggle('hidden', !(hasFilter && currentCategory !== 'all'));
         }
 
-        function filterBrand(brand) {
-            currentBrand = brand;
-            currentSubcategory = 'all'; 
-            updateFilterBars();
-            renderProducts();
-        }
-
-        function filterSubcategory(sub) {
-            currentSubcategory = sub;
-            updateFilterBars();
-            renderProducts();
-        }
+        function filterBrand(b) { currentBrand = b; currentSubcategory = 'all'; updateFilterBars(); renderProducts(); }
+        function filterSubcategory(s) { currentSubcategory = s; updateFilterBars(); renderProducts(); }
 
         function renderProducts() {
             const grid = document.getElementById('product-grid');
-            const adminList = document.getElementById('admin-product-list');
-            
-            // 💡 增强型模糊匹配：将搜索框内容按空格拆分成多个关键词，只要商品信息包含这些词的任意组合即可匹配
             const searchTerms = searchQuery ? searchQuery.split(/\s+/).filter(Boolean) : [];
 
             let filtered = products.filter(p => {
-                if (!p || !p.name || typeof p.name !== 'string') return false;
-
-                const pCat = p.category ? p.category.trim().toLowerCase() : '';
-                const pBrand = p.brand ? p.brand.trim().toLowerCase() : '';
-                const pSub = p.subcategory ? p.subcategory.trim().toLowerCase() : '';
-
-                const matchesCategory = (currentCategory === 'all' || pCat === currentCategory.toLowerCase());
-                const matchesBrand = (currentBrand === 'all' || pBrand === currentBrand.toLowerCase());
-                const matchesSubcategory = (currentSubcategory === 'all' || pSub === currentSubcategory.toLowerCase());
-                
-                // 只要搜索词为空，或者商品资料包含输入的关键词（模糊匹配/部分关联）
-                const matchesSearch = searchTerms.length === 0 || searchTerms.every(term => {
-                    return p.name.toLowerCase().includes(term) || 
-                           pCat.includes(term) ||
-                           pBrand.includes(term) ||
-                           pSub.includes(term) ||
-                           (p.spec1 && p.spec1.toLowerCase().includes(term)) ||
-                           (p.spec2 && p.spec2.toLowerCase().includes(term)) ||
-                           (p.desc && p.desc.toLowerCase().includes(term));
-                });
-
-                return matchesCategory && matchesBrand && matchesSubcategory && matchesSearch;
+                if (!p || !p.name) return false;
+                const matchesCat = (currentCategory === 'all' || p.category?.trim().toLowerCase() === currentCategory.toLowerCase());
+                const matchesBrand = (currentBrand === 'all' || p.brand?.trim().toLowerCase() === currentBrand.toLowerCase());
+                const matchesSub = (currentSubcategory === 'all' || p.subcategory?.trim().toLowerCase() === currentSubcategory.toLowerCase());
+                const matchesSearch = searchTerms.length === 0 || searchTerms.every(term => p.name.toLowerCase().includes(term) || p.category?.toLowerCase().includes(term) || p.brand?.toLowerCase().includes(term));
+                return matchesCat && matchesBrand && matchesSub && matchesSearch;
             });
+
+            const todayMap = clickStatsByDate[todayStr] || {};
 
             if (currentSort !== 'custom') {
                 filtered.sort((a, b) => {
                     const priceA = a.memberPrice !== undefined ? a.memberPrice : a.price;
                     const priceB = b.memberPrice !== undefined ? b.memberPrice : b.price;
-
-                    if (currentSort === 'price-low') {
-                        return priceA - priceB;
-                    } else if (currentSort === 'price-high') {
-                        return priceB - priceA;
-                    } else if (currentSort === 'name-asc') {
-                        return (a.name || '').localeCompare(b.name || '');
-                    } else {
-                        return 0;
-                    }
+                    if (currentSort === 'price-low') return priceA - priceB;
+                    if (currentSort === 'price-high') return priceB - priceA;
+                    if (currentSort === 'popular') return (todayMap[b.id] || 0) - (todayMap[a.id] || 0);
+                    return (a.name || '').localeCompare(b.name || '');
                 });
             }
-            
+
             grid.innerHTML = filtered.map(p => {
                 const mPrice = p.memberPrice !== undefined ? p.memberPrice : p.price;
-                const imgSrc = p.image ? p.image : 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=600&q=80';
+                const imgSrc = p.image || 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=600&q=80';
                 
-                let badgesHtml = `<span class="absolute top-2 right-2 bg-blue-600/80 text-white text-[10px] px-2 py-0.5 rounded backdrop-blur uppercase">${p.category || ''}</span>`;
-                if (p.brand) {
-                    badgesHtml += `<span class="absolute top-2 left-2 bg-amber-600/80 text-white text-[10px] px-2 py-0.5 rounded backdrop-blur uppercase">${p.brand}</span>`;
-                } else if (p.subcategory) {
-                    badgesHtml += `<span class="absolute top-2 left-2 bg-slate-900/80 text-blue-300 text-[10px] px-2 py-0.5 rounded backdrop-blur border border-blue-500/30 uppercase">${p.subcategory}</span>`;
-                }
-                
-                return `
-                <div onclick="openDetail('${p.id}')" class="glass-card rounded-xl overflow-hidden border border-slate-800 hover:border-blue-500/50 transition cursor-pointer group">
-                    <div class="h-48 overflow-hidden bg-slate-950/80 relative flex items-center justify-center p-2">
-                        <img src="${imgSrc}" alt="${p.name}" class="max-h-full max-w-full object-contain group-hover:scale-105 transition duration-300">
-                        ${badgesHtml}
-                    </div>
-                    <div class="p-4">
-                        <h3 class="font-bold text-white text-sm mb-2 truncate uniform-text">${p.name}</h3>
-                        <div class="mb-3 bg-slate-900/50 p-2.5 rounded-lg border border-slate-800 flex items-center justify-between">
-                            <div>
-                                <span class="text-[10px] text-slate-400 block uppercase">Normal</span>
-                                <span class="text-xs text-slate-300 font-orbitron">RM ${Number(p.price || 0).toFixed(2)}</span>
-                            </div>
-                            <div class="text-right">
-                                <span class="text-[10px] text-amber-400 font-bold block uppercase">Member Price</span>
-                                <span class="text-lg text-amber-400 font-orbitron font-black">RM ${Number(mPrice || 0).toFixed(2)}</span>
-                            </div>
-                        </div>
-                        <div class="text-xs text-slate-400 grid grid-cols-2 gap-1 mb-3">
-                            <div>${p.spec1 || ''}</div>
-                            <div>${p.spec2 || ''}</div>
-                        </div>
-                        <button class="w-full bg-slate-800 hover:bg-blue-600 text-slate-200 hover:text-white text-xs py-2 rounded-lg transition font-medium">View Specs / Inquiry</button>
-                    </div>
-                </div>
-            `;
-            }).join('') || `<div class="col-span-full text-center py-12 text-slate-500">No components found matching your search or filter</div>`;
+                const categoryBadgeHtml = p.category ? `<span class="absolute top-2 left-2 bg-blue-900/80 text-blue-200 border border-blue-500/40 text-[10px] px-2 py-0.5 rounded uppercase font-mono font-semibold backdrop-blur">${p.category}</span>` : '';
+                let brandBadgeHtml = p.brand ? `<span class="absolute top-2 right-2 bg-slate-900/80 text-amber-400 border border-amber-500/40 text-[10px] px-2 py-0.5 rounded uppercase font-bold backdrop-blur">${p.brand}</span>` : '';
 
+                let customBadgeHtml = '';
+                if (featureToggles.badges !== false && p.badge) {
+                    let bColor = 'bg-red-600 text-white';
+                    if (p.badge === 'SALE') bColor = 'bg-amber-500 text-slate-950 font-bold';
+                    if (p.badge === 'NEW') bColor = 'bg-blue-600 text-white';
+                    customBadgeHtml = `<span class="text-[10px] px-2 py-0.5 rounded shadow uppercase font-bold ${bColor}">${p.badge}</span>`;
+                }
+
+                let stockBadgeHtml = '';
+                if (featureToggles.stock && p.stock && p.stock.trim() !== '') {
+                    let stockColor = 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
+                    if (p.stock === 'Low Stock') stockColor = 'bg-amber-500/20 text-amber-300 border-amber-500/30';
+                    if (p.stock === 'Pre-order') stockColor = 'bg-blue-500/20 text-blue-300 border-blue-500/30';
+                    stockBadgeHtml = `<span class="text-[10px] px-2 py-0.5 rounded border uppercase font-medium ${stockColor}">${p.stock}</span>`;
+                }
+
+                let memberPriceHtml = featureToggles.member ? `
+                    <div class="text-right">
+                        <span class="text-[10px] text-amber-400 font-bold block uppercase">Member Price</span>
+                        <span class="text-lg text-amber-400 font-orbitron font-black">RM ${Number(mPrice || 0).toFixed(2)}</span>
+                    </div>
+                ` : '';
+
+                const builderBtnHtml = featureToggles.builder ? `<button onclick="addToBuilder('${p.id}')" class="w-full bg-blue-600/30 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/30 text-xs py-1.5 rounded-lg transition font-medium">+ Add to PC Builder</button>` : '';
+
+                const cardSpecsHtml = (p.spec1 || p.spec2) ? `
+                    <div class="space-y-1.5 mb-3 text-xs">
+                        ${p.spec1 ? `<div class="bg-slate-900/80 border border-slate-800 rounded-lg p-2 flex items-start gap-1.5"><span class="text-blue-400 font-bold shrink-0">⚡ Spec 1:</span> <span class="text-slate-300 break-words">${p.spec1}</span></div>` : ''}
+                        ${p.spec2 ? `<div class="bg-slate-900/80 border border-slate-800 rounded-lg p-2 flex items-start gap-1.5"><span class="text-slate-400 font-bold shrink-0">📌 Spec 2:</span> <span class="text-slate-300 break-words">${p.spec2}</span></div>` : ''}
+                    </div>
+                ` : '';
+
+                return `
+                <div class="glass-card rounded-xl overflow-hidden border border-slate-800 hover:border-blue-500/50 transition group flex flex-col justify-between">
+                    <div onclick="openDetail('${p.id}')" class="cursor-pointer">
+                        <div class="h-48 overflow-hidden bg-slate-950/85 relative flex items-center justify-center p-2">
+                            <img src="${imgSrc}" class="max-h-full max-w-full object-contain group-hover:scale-105 transition duration-300">
+                            ${categoryBadgeHtml}
+                            ${brandBadgeHtml}
+                        </div>
+                        <div class="p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                ${customBadgeHtml}
+                                ${stockBadgeHtml}
+                            </div>
+                            <h3 class="font-bold text-white text-sm mb-2 truncate uniform-text">${p.name}</h3>
+                            <div class="mb-3 bg-slate-900/50 p-2.5 rounded-lg border border-slate-800 flex items-center justify-between">
+                                <div>
+                                    <span class="text-[10px] text-slate-400 block uppercase">Normal</span>
+                                    <span class="text-xs text-slate-300 font-orbitron">RM ${Number(p.price || 0).toFixed(2)}</span>
+                                </div>
+                                ${memberPriceHtml}
+                            </div>
+                            ${cardSpecsHtml}
+                        </div>
+                    </div>
+                    <div class="px-4 pb-4 space-y-2">
+                        <button onclick="openDetail('${p.id}')" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs py-2 rounded-lg transition font-medium">View Specs / Inquiry</button>
+                        ${builderBtnHtml}
+                    </div>
+                </div>`;
+            }).join('') || `<div class="col-span-full text-center py-12 text-slate-500">No components found</div>`;
+
+            renderAdminProducts();
+        }
+
+        function renderAdminProducts() {
             let adminFiltered = products;
             if (adminCategoryFilter !== 'all') {
-                adminFiltered = adminFiltered.filter(p => p.category && p.category.trim().toLowerCase() === adminCategoryFilter.toLowerCase());
-            }
-            if (adminSubcategoryFilter !== 'all') {
-                adminFiltered = adminFiltered.filter(p => p.subcategory && p.subcategory.trim().toLowerCase() === adminSubcategoryFilter.toLowerCase());
+                adminFiltered = adminFiltered.filter(p => p.category?.trim().toLowerCase() === adminCategoryFilter.toLowerCase());
             }
 
-            adminList.innerHTML = adminFiltered.map(p => {
-                const mPrice = p.memberPrice !== undefined ? p.memberPrice : p.price;
-                return `
-                <div draggable="true" 
-                     ondragstart="drag(event)" 
-                     ondragover="allowDrop(event)" 
-                     ondrop="drop(event, '${p.id}')" 
-                     data-id="${p.id}"
-                     class="draggable-item glass-card p-3 rounded-xl flex items-center justify-between border border-slate-800 hover:border-blue-500/40 transition">
+            const todayMap = clickStatsByDate[todayStr] || {};
+
+            document.getElementById('admin-product-list').innerHTML = adminFiltered.map(p => `
+                <div draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event, '${p.id}')" data-id="${p.id}"
+                     class="draggable-item glass-card p-3 rounded-xl flex items-center justify-between border border-slate-800">
                     <div class="flex items-center space-x-3">
-                        <span class="text-slate-500 hover:text-white cursor-grab text-lg select-none px-1" title="Drag to reorder">⠿</span>
-                        <img src="${p.image || 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=600&q=80'}" class="w-12 h-12 object-cover rounded-lg bg-slate-900">
-                        <div>
-                            <div class="font-bold text-white text-sm uniform-text">${p.name}</div>
-                            <div class="text-xs text-blue-400">Normal: RM ${Number(p.price || 0).toFixed(2)} | <span class="text-amber-400 font-bold">Member: RM ${Number(mPrice || 0).toFixed(2)}</span></div>
-                            <div class="text-[11px] text-slate-400 mt-0.5 space-x-1">
-                                <span class="bg-blue-900/40 text-blue-300 px-1.5 py-0.5 rounded border border-blue-500/25 uppercase">${p.category || 'N/A'}</span>
-                                ${p.brand ? `<span class="bg-amber-900/40 text-amber-300 px-1.5 py-0.5 rounded border border-amber-500/25 uppercase">${p.brand}</span>` : ''}
-                                ${p.subcategory ? `<span class="bg-slate-800 text-slate-300 px-1.5 py-0.5 rounded border border-slate-700 uppercase">${p.subcategory}</span>` : ''}
-                            </div>
+                        <span class="text-slate-500 cursor-grab text-lg select-none">⠿</span>
+                        <img src="${p.image || 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=600&q=80'}" class="w-12 h-12 object-cover rounded-lg bg-slate-900 shrink-0">
+                        <div class="min-w-0 pr-2">
+                            <div class="font-bold text-white text-sm uniform-text truncate">${p.name}</div>
+                            <div class="text-xs text-blue-400">Normal: RM ${p.price} | <span class="text-amber-400 font-bold">Member: RM ${p.memberPrice}</span> | Today: ${todayMap[p.id] || 0} | Total: ${clickStatsAllTotal[p.id] || 0}</div>
                         </div>
                     </div>
-                    <div class="space-x-2">
-                        <button onclick="editProduct('${p.id}')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs px-3 py-1.5 rounded-lg">Edit</button>
-                        <button onclick="deleteProduct('${p.id}')" class="bg-red-900/30 hover:bg-red-900/50 text-red-400 text-xs px-3 py-1.5 rounded-lg border border-red-800/30">Delete</button>
+                    <div class="space-x-1 shrink-0">
+                        <button onclick="editProduct('${p.id}')" class="bg-slate-800 text-slate-300 text-xs px-3 py-1 rounded">Edit</button>
+                        <button onclick="deleteProduct('${p.id}')" class="bg-red-900/30 text-red-400 text-xs px-3 py-1 rounded">Del</button>
                     </div>
-                </div>
-            `;
-            }).join('') || `<div class="text-center py-6 text-slate-500 text-xs">No items in this category</div>`;
+                </div>`).join('') || `<div class="text-center py-6 text-slate-500 text-xs">No items</div>`;
+            renderAnalyticsList();
         }
+
+        // PC Builder 逻辑
+        function addToBuilder(id) {
+            if (!featureToggles.builder) return;
+            const p = products.find(item => item.id === id);
+            if (!p) return;
+            pcBuilder[p.category] = p;
+            updateBuilderBadge();
+            alert(`Added ${p.name} to your PC Builder (${p.category})!`);
+        }
+
+        function updateBuilderBadge() {
+            const count = Object.keys(pcBuilder).length;
+            const badge = document.getElementById('builder-badge');
+            if (count > 0) { badge.textContent = count; badge.classList.remove('hidden'); }
+            else { badge.classList.add('hidden'); }
+        }
+
+        function openBuilderModal() {
+            if (!featureToggles.builder) return;
+            const container = document.getElementById('builder-slots-container');
+            const categories = ['CPU', 'GPU', 'Motherboard', 'RAM', 'Storage', 'PSU', 'Cooler', 'Casing', 'Accessories'];
+            let totalPrice = 0;
+
+            container.innerHTML = categories.map(cat => {
+                const item = pcBuilder[cat];
+                if (item) {
+                    const price = item.memberPrice !== undefined ? item.memberPrice : item.price;
+                    totalPrice += Number(price);
+                    return `
+                    <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800 flex justify-between items-center text-xs">
+                        <div>
+                            <span class="bg-blue-600/30 text-blue-300 px-2 py-0.5 rounded uppercase font-mono mr-2">${cat}</span>
+                            <span class="font-bold text-white">${item.name}</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <span class="text-amber-400 font-orbitron font-bold">RM ${Number(price).toFixed(2)}</span>
+                            <button onclick="removeBuilderSlot('${cat}')" class="text-red-400 hover:text-red-300">✕</button>
+                        </div>
+                    </div>`;
+                } else {
+                    return `
+                    <div class="bg-slate-900/40 p-2.5 rounded-xl border border-dashed border-slate-800 flex justify-between items-center text-xs text-slate-500">
+                        <span><span class="font-mono uppercase text-slate-400 mr-2">${cat}:</span> Not Selected</span>
+                        <span class="text-[10px]">Select from catalog</span>
+                    </div>`;
+                }
+            }).join('');
+
+            document.getElementById('builder-total-price').textContent = `RM ${totalPrice.toFixed(2)}`;
+            document.getElementById('builder-modal').classList.remove('hidden');
+        }
+
+        function removeBuilderSlot(cat) { delete pcBuilder[cat]; updateBuilderBadge(); openBuilderModal(); }
+        function clearBuilder() { pcBuilder = {}; updateBuilderBadge(); openBuilderModal(); }
+        function closeBuilderModal() { document.getElementById('builder-modal').classList.add('hidden'); }
+
+        function exportBuilderPDF() {
+            if (!featureToggles.pdf) return;
+            const items = Object.values(pcBuilder);
+            if (items.length === 0) { alert("Your PC build is empty!"); return; }
+            let totalPrice = 0;
+            document.getElementById('pdf-date').textContent = "Date: " + new Date().toLocaleDateString();
+            document.getElementById('pdf-items-list').innerHTML = items.map(i => {
+                const price = i.memberPrice !== undefined ? i.memberPrice : i.price;
+                totalPrice += Number(price);
+                return `<div class="flex justify-between border-b py-1"><span>[${i.category}] ${i.name}</span><span class="font-bold">RM ${Number(price).toFixed(2)}</span></div>`;
+            }).join('');
+            document.getElementById('pdf-total-price').textContent = `RM ${totalPrice.toFixed(2)}`;
+
+            const element = document.getElementById('pdf-export-container');
+            element.classList.remove('hidden');
+            html2pdf().from(element).save('PC_Quotation_PC_Image_VIVA.pdf').then(() => { element.classList.add('hidden'); });
+        }
+
+        function inquireBuilderWhatsApp() {
+            const items = Object.values(pcBuilder);
+            if (items.length === 0) { alert("Your PC build is empty!"); return; }
+            let text = "Hello, I would like to inquire about this custom PC build:\n";
+            let totalPrice = 0;
+            items.forEach(i => {
+                const price = i.memberPrice !== undefined ? i.memberPrice : i.price;
+                totalPrice += Number(price);
+                text += `- [${i.category}] ${i.name} (RM ${price})\n`;
+            });
+            text += `\nTotal Estimated Price: RM ${totalPrice.toFixed(2)}`;
+            pendingInquiryText = encodeURIComponent(text);
+            promptWhatsAppSelection(pendingInquiryText);
+        }
+
+        function openDetail(id) {
+            const p = products.find(item => item.id === id);
+            if(!p) return;
+            
+            clickStatsAllTotal[id] = (clickStatsAllTotal[id] || 0) + 1;
+            localStorage.setItem('pc_click_stats_all_total', JSON.stringify(clickStatsAllTotal));
+
+            if (!clickStatsByDate[todayStr]) clickStatsByDate[todayStr] = {};
+            clickStatsByDate[todayStr][id] = (clickStatsByDate[todayStr][id] || 0) + 1;
+            localStorage.setItem('pc_click_stats_by_date', JSON.stringify(clickStatsByDate));
+
+            const mPrice = p.memberPrice !== undefined ? p.memberPrice : p.price;
+            const waText = encodeURIComponent(`Hello, I am interested in: ${p.name} (Normal: RM ${p.price} | Member: RM ${mPrice})`);
+            
+            const specsHtml = (p.spec1 || p.spec2) ? `
+                <div class="glass-card rounded-xl p-3.5 border border-slate-800 text-xs space-y-2.5 mb-4">
+                    ${p.spec1 ? `<div class="flex justify-between items-center pb-2 border-b border-slate-800/80"><span class="text-blue-400 font-bold uppercase flex items-center gap-1">⚡ Primary Spec:</span> <span class="text-white font-semibold bg-slate-900 px-2.5 py-1 rounded border border-blue-500/30">${p.spec1}</span></div>` : ''}
+                    ${p.spec2 ? `<div class="flex justify-between items-center pt-0.5"><span class="text-slate-400 font-bold uppercase flex items-center gap-1">📌 Secondary Spec:</span> <span class="text-white font-semibold bg-slate-900 px-2.5 py-1 rounded border border-slate-700">${p.spec2}</span></div>` : ''}
+                </div>
+            ` : '';
+
+            let detailMemberPriceBlock = featureToggles.member ? `<div><span class="text-[10px] text-amber-400 uppercase font-bold">Member Price</span><div class="text-xl font-orbitron font-black text-amber-400">RM ${mPrice}</div></div>` : '';
+
+            let officialBtnHtml = '';
+            if (p.url) {
+                officialBtnHtml = `<a href="${p.url}" target="_blank" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-2.5 rounded-xl text-sm font-medium transition flex items-center justify-center gap-1.5 mb-2">🌐 View Detailed Specs on Official Site ↗</a>`;
+            } else {
+                officialBtnHtml = `<div class="w-full bg-slate-800 text-slate-400 py-2 rounded-xl text-xs text-center mb-2">No official link provided</div>`;
+            }
+
+            document.getElementById('modal-content').innerHTML = `
+                <div class="h-64 rounded-xl overflow-hidden bg-slate-950/80 mb-4 flex items-center justify-center p-2 relative">
+                    <img src="${p.image || 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=600&q=80'}" class="max-h-full max-w-full object-contain">
+                </div>
+                <h2 class="text-lg font-bold text-white mb-2 uniform-text">${p.name}</h2>
+                <div class="grid grid-cols-2 gap-3 mb-4 bg-slate-900/80 p-3.5 rounded-xl border border-amber-500/30">
+                    <div><span class="text-[10px] text-slate-400 uppercase">Standard</span><div class="text-base font-orbitron text-slate-300">RM ${p.price}</div></div>
+                    ${detailMemberPriceBlock}
+                </div>
+                ${specsHtml}
+                ${officialBtnHtml}
+                <button onclick="promptWhatsAppSelection('${waText}')" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-2.5 rounded-xl text-sm font-medium transition">💬 Inquiry via WhatsApp</button>
+            `;
+            document.getElementById('detail-modal').classList.remove('hidden');
+        }
+
+        function closeDetailModal() { document.getElementById('detail-modal').classList.add('hidden'); }
+        function openTermsModal() { document.getElementById('terms-modal').classList.remove('hidden'); }
+        function closeTermsModal() { document.getElementById('terms-modal').classList.add('hidden'); }
+
+        function switchAnalyticsView(mode) {
+            analyticsView = mode;
+            const datePickerContainer = document.getElementById('analytics-date-picker-container');
+            
+            if (mode === 'total') {
+                document.getElementById('analytics-btn-total').className = "px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-600 text-white transition";
+                document.getElementById('analytics-btn-range').className = "px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 transition";
+                datePickerContainer.classList.add('hidden');
+            } else {
+                document.getElementById('analytics-btn-total').className = "px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 transition";
+                document.getElementById('analytics-btn-range').className = "px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-600 text-white transition";
+                datePickerContainer.classList.remove('hidden');
+            }
+            renderAnalyticsList();
+        }
+
+        function handleAnalyticsDateChange() {
+            analyticsStartDate = document.getElementById('analytics-start-date').value;
+            analyticsEndDate = document.getElementById('analytics-end-date').value;
+            renderAnalyticsList();
+        }
+
+        function setTodayAnalyticsRange() {
+            analyticsStartDate = todayStr;
+            analyticsEndDate = todayStr;
+            document.getElementById('analytics-start-date').value = analyticsStartDate;
+            document.getElementById('analytics-end-date').value = analyticsEndDate;
+            renderAnalyticsList();
+        }
+
+        function renderAnalyticsList() {
+            const container = document.getElementById('admin-analytics-list');
+            
+            if (analyticsView === 'total') {
+                const sorted = [...products].sort((a, b) => (clickStatsAllTotal[b.id] || 0) - (clickStatsAllTotal[a.id] || 0));
+                container.innerHTML = sorted.map(p => `
+                    <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-800 flex justify-between items-center text-xs">
+                        <span class="font-bold text-white uniform-text truncate pr-4">${p.name}</span>
+                        <div class="flex items-center gap-2 shrink-0">
+                            <span class="text-[11px] text-slate-400">All-Time Total: <b class="text-amber-400 font-mono text-sm">${clickStatsAllTotal[p.id] || 0}</b></span>
+                        </div>
+                    </div>`).join('') || `<div class="text-center py-4 text-slate-500 text-xs">No records</div>`;
+            } else {
+                const rangeMap = {};
+                const startD = new Date(analyticsStartDate);
+                const endD = new Date(analyticsEndDate);
+
+                Object.keys(clickStatsByDate).forEach(dateStr => {
+                    const d = new Date(dateStr);
+                    if (d >= startD && d <= endD) {
+                        const dayData = clickStatsByDate[dateStr];
+                        Object.keys(dayData).forEach(prodId => {
+                            rangeMap[prodId] = (rangeMap[prodId] || 0) + dayData[prodId];
+                        });
+                    }
+                });
+
+                const sorted = [...products].sort((a, b) => (rangeMap[b.id] || 0) - (rangeMap[a.id] || 0));
+                container.innerHTML = sorted.map(p => `
+                    <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-800 flex justify-between items-center text-xs">
+                        <span class="font-bold text-white uniform-text truncate pr-4">${p.name}</span>
+                        <div class="flex items-center gap-2 shrink-0">
+                            <span class="text-[11px] text-slate-400">Range (${analyticsStartDate} ~ ${analyticsEndDate}): <b class="text-cyan-400 font-mono text-sm">${rangeMap[p.id] || 0}</b></span>
+                        </div>
+                    </div>`).join('') || `<div class="text-center py-4 text-slate-500 text-xs">No clicks recorded in this date range</div>`;
+            }
+        }
+
+        function switchAdminTab(tabName) {
+            ['products', 'whatsapp', 'analytics', 'settings'].forEach(t => {
+                const elem = document.getElementById(`admin-tab-${t}`);
+                if (elem) {
+                    elem.classList.toggle('hidden', t !== tabName);
+                    if (t === 'settings' && t === tabName) elem.classList.add('grid');
+                }
+                const btn = document.getElementById(`tab-btn-${t}`);
+                if (btn) btn.className = `px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 ${t === tabName ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-900 text-slate-300 hover:bg-slate-800'}`;
+            });
+        }
+
+        function changePassword(e) {
+            e.preventDefault();
+            if (document.getElementById('current-pwd').value !== adminPassword) { alert("Incorrect current password!"); return; }
+            if (document.getElementById('new-pwd').value !== document.getElementById('confirm-pwd').value) { alert("Passwords do not match!"); return; }
+            adminPassword = document.getElementById('new-pwd').value;
+            localStorage.setItem('pc_admin_pwd', adminPassword);
+            alert("Password updated!");
+        }
+
+        function renderWhatsAppAdminList() {
+            document.getElementById('admin-whatsapp-list').innerHTML = whatsappContacts.map(c => `
+                <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 flex justify-between items-center text-xs">
+                    <div><div class="font-bold text-white">${c.name}</div><div class="text-emerald-400 font-mono">+${c.phone}</div></div>
+                    <button onclick="deleteWhatsAppContact('${c.id}')" class="text-red-400 bg-red-900/30 px-2 py-1 rounded">Del</button>
+                </div>`).join('');
+        }
+
+        function openWhatsAppModal() { document.getElementById('whatsapp-edit-modal').classList.remove('hidden'); }
+        function closeWhatsAppModal() { document.getElementById('whatsapp-edit-modal').classList.add('hidden'); }
+        function saveWhatsAppContact(e) {
+            e.preventDefault();
+            whatsappContacts.push({ id: Date.now().toString(), name: document.getElementById('wa-name').value, phone: document.getElementById('wa-phone').value });
+            closeWhatsAppModal(); renderWhatsAppAdminList();
+        }
+        function deleteWhatsAppContact(id) { whatsappContacts = whatsappContacts.filter(c => c.id !== id); renderWhatsAppAdminList(); }
+
+        function promptWhatsAppSelection(textEncoded) {
+            pendingInquiryText = textEncoded;
+            document.getElementById('whatsapp-contacts-list').innerHTML = whatsappContacts.map(c => `
+                <a href="https://wa.me/${c.phone}?text=${pendingInquiryText}" target="_blank" onclick="closeWhatsAppSelectModal()" 
+                   class="flex items-center justify-between p-3 rounded-xl bg-slate-900 hover:bg-emerald-600/20 border border-slate-800 transition text-left">
+                    <div><div class="font-bold text-white text-xs">${c.name}</div><div class="text-[10px] text-slate-400">+${c.phone}</div></div>
+                    <span class="text-xs bg-emerald-600 text-white px-2.5 py-1 rounded-lg">Chat ↗</span>
+                </a>`).join('');
+            document.getElementById('whatsapp-select-modal').classList.remove('hidden');
+        }
+        function closeWhatsAppSelectModal() { document.getElementById('whatsapp-select-modal').classList.add('hidden'); }
 
         let draggedId = null;
-
-        function drag(e) {
-            draggedId = e.target.getAttribute('data-id');
-            e.dataTransfer.setData('text/plain', draggedId);
-            e.target.classList.add('dragging');
-        }
-
-        function allowDrop(e) {
-            e.preventDefault();
-        }
-
+        function drag(e) { draggedId = e.target.getAttribute('data-id'); }
+        function allowDrop(e) { e.preventDefault(); }
         async function drop(e, targetId) {
             e.preventDefault();
             if (!draggedId || draggedId === targetId) return;
-
-            const fromIndex = products.findIndex(p => p.id === draggedId);
-            const toIndex = products.findIndex(p => p.id === targetId);
-
-            if (fromIndex !== -1 && toIndex !== -1) {
-                const movedItem = products.splice(fromIndex, 1)[0];
-                products.splice(toIndex, 0, movedItem);
-
-                showLoadingState("Saving reorder to Google Sheets...");
-                await saveProductsToCloud();
-                updateFilterBars();
-                renderProducts();
+            const from = products.findIndex(p => p.id === draggedId);
+            const to = products.findIndex(p => p.id === targetId);
+            if (from !== -1 && to !== -1) {
+                const moved = products.splice(from, 1)[0];
+                products.splice(to, 0, moved);
+                await saveProductsToCloud(); renderProducts();
             }
             draggedId = null;
         }
@@ -673,87 +1168,27 @@
 
         function verifyPassword(e) {
             e.preventDefault();
-            const inputPwd = document.getElementById('admin-password-input').value;
-            if (inputPwd === ADMIN_PASSWORD) {
+            if (document.getElementById('admin-password-input').value === adminPassword) {
                 closePasswordModal();
                 toggleAdmin(true);
-            } else {
-                alert('Incorrect password!');
+            } else { 
+                alert("Incorrect password!"); 
             }
         }
 
-        function closePasswordModal() {
-            document.getElementById('password-modal').classList.add('hidden');
-        }
+        function closePasswordModal() { document.getElementById('password-modal').classList.add('hidden'); }
 
         function toggleAdmin(state) {
             isAdmin = state;
             document.getElementById('customer-view').classList.toggle('hidden', isAdmin);
             document.getElementById('admin-view').classList.toggle('hidden', !isAdmin);
             document.getElementById('admin-btn').textContent = isAdmin ? 'Exit Admin' : 'Admin Panel';
-            if(isAdmin) {
-                updateAdminSubcategoryBar();
-                renderProducts();
+            if (isAdmin) { 
+                switchAdminTab('products'); 
+                renderWhatsAppAdminList(); 
+                initTogglesUI();
+                renderProducts(); 
             }
-        }
-
-        function openDetail(id) {
-            const p = products.find(item => item.id === id);
-            if(!p) return;
-            const mPrice = p.memberPrice !== undefined ? p.memberPrice : p.price;
-            const waText = encodeURIComponent(`Hello, I am interested in this component: ${p.name} (Normal: RM ${p.price} | Member: RM ${mPrice})`);
-            
-            const imgSrc = p.image ? p.image : 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=600&q=80';
-            const websiteBtnHtml = p.website ? `
-                <a href="${p.website}" target="_blank" class="block w-full bg-slate-800 hover:bg-slate-700 text-blue-400 hover:text-blue-300 text-center font-medium py-2 rounded-xl transition text-xs border border-blue-500/30 mb-2">🌐 Visit Official Website</a>
-            ` : '';
-
-            const specsHtml = (p.spec1 || p.spec2) ? `
-                <div class="bg-slate-900/60 rounded-xl p-3 border border-slate-800 text-xs space-y-2 mb-4">
-                    ${p.spec1 ? `<div class="flex justify-between"><span class="text-slate-400">Primary Specification:</span> <span class="text-white">${p.spec1}</span></div>` : ''}
-                    ${p.spec2 ? `<div class="flex justify-between"><span class="text-slate-400">Secondary Specification:</span> <span class="text-white">${p.spec2}</span></div>` : ''}
-                </div>
-            ` : '';
-
-            const descHtml = p.desc ? `<p class="text-xs text-slate-300 mb-4 leading-relaxed">${p.desc}</p>` : '';
-
-            document.getElementById('modal-content').innerHTML = `
-                <div class="h-64 rounded-xl overflow-hidden bg-slate-950/80 mb-4 flex items-center justify-center p-2 relative">
-                    <img src="${imgSrc}" class="max-h-full max-w-full object-contain">
-                    ${p.brand ? `<span class="absolute top-2 left-2 bg-amber-600/80 text-white text-[10px] px-2 py-0.5 rounded backdrop-blur uppercase">${p.brand}</span>` : ''}
-                </div>
-                <div class="flex justify-between items-start mb-3">
-                    <h2 class="text-lg font-bold text-white uniform-text">${p.name}</h2>
-                    <span class="text-xs bg-blue-600/30 text-blue-300 px-2 py-0.5 rounded border border-blue-500/30 uppercase">${p.category || ''}</span>
-                </div>
-                
-                <div class="grid grid-cols-2 gap-3 mb-4 bg-slate-900/80 p-3.5 rounded-xl border border-amber-500/30">
-                    <div>
-                        <div class="text-[10px] text-slate-400 uppercase">Standard Price</div>
-                        <div class="text-base font-orbitron text-slate-300">RM ${Number(p.price || 0).toFixed(2)}</div>
-                    </div>
-                    <div>
-                        <div class="text-[10px] text-amber-400 uppercase font-bold">Member Price</div>
-                        <div class="text-xl font-orbitron font-black text-amber-400">RM ${Number(mPrice || 0).toFixed(2)}</div>
-                    </div>
-                </div>
-
-                ${specsHtml}
-                ${descHtml}
-                
-                ${websiteBtnHtml}
-                <a href="https://wa.me/${WHATSAPP_NUMBER}?text=${waText}" target="_blank" class="block w-full bg-emerald-600 hover:bg-emerald-500 text-white text-center font-medium py-2.5 rounded-xl transition text-sm mb-3">Inquiry via WhatsApp</a>
-            `;
-            document.getElementById('detail-modal').classList.remove('hidden');
-        }
-
-        function closeDetailModal() { document.getElementById('detail-modal').classList.add('hidden'); }
-        
-        function openTermsModal() {
-            document.getElementById('terms-modal').classList.remove('hidden');
-        }
-        function closeTermsModal() {
-            document.getElementById('terms-modal').classList.add('hidden');
         }
 
         function openProductModal() {
@@ -775,33 +1210,24 @@
                 category: document.getElementById('p-category').value,
                 brand: document.getElementById('p-brand').value.trim(),
                 subcategory: document.getElementById('p-subcategory').value.trim(),
+                stock: document.getElementById('p-stock').value,
+                badge: document.getElementById('p-badge').value,
                 image: document.getElementById('p-image').value.trim(),
-                website: document.getElementById('p-website').value.trim(),
+                url: document.getElementById('p-url').value.trim(),
                 spec1: document.getElementById('p-spec1').value.trim(),
                 spec2: document.getElementById('p-spec2').value.trim(),
                 desc: document.getElementById('p-desc').value.trim()
             };
-
             closeProductModal();
-            showLoadingState(id ? "Updating component in Google Sheets..." : "Adding new component to Google Sheets...");
-
-            if(id) {
-                const idx = products.findIndex(p => p.id === id);
-                if(idx !== -1) products[idx] = data;
-            } else {
-                products.unshift(data);
-            }
-            
-            await saveProductsToCloud();
-            updateFilterBars();
-            updateAdminSubcategoryBar();
-            renderProducts();
+            if (id) { const idx = products.findIndex(p => p.id === id); if (idx !== -1) products[idx] = data; }
+            else { products.unshift(data); }
+            await saveProductsToCloud(); renderProducts();
         }
 
         function editProduct(id) {
             const p = products.find(item => item.id === id);
             if(!p) return;
-            document.getElementById('modal-title').textContent = "Edit Component Details";
+            document.getElementById('modal-title').textContent = "Edit Component";
             document.getElementById('product-id').value = p.id;
             document.getElementById('p-name').value = p.name || '';
             document.getElementById('p-price').value = p.price || '';
@@ -809,8 +1235,10 @@
             document.getElementById('p-category').value = p.category || 'CPU';
             document.getElementById('p-brand').value = p.brand || '';
             document.getElementById('p-subcategory').value = p.subcategory || '';
+            document.getElementById('p-stock').value = p.stock || '';
+            document.getElementById('p-badge').value = p.badge || '';
             document.getElementById('p-image').value = p.image || '';
-            document.getElementById('p-website').value = p.website || '';
+            document.getElementById('p-url').value = p.url || '';
             document.getElementById('p-spec1').value = p.spec1 || '';
             document.getElementById('p-spec2').value = p.spec2 || '';
             document.getElementById('p-desc').value = p.desc || '';
@@ -818,25 +1246,18 @@
         }
 
         async function deleteProduct(id) {
-            if(confirm('Are you sure you want to delete this component?')) {
-                showLoadingState("Deleting component from Google Sheets...");
+            if(confirm('Delete this component?')) {
                 products = products.filter(p => p.id !== id);
-                await saveProductsToCloud();
-                updateFilterBars();
-                updateAdminSubcategoryBar();
-                renderProducts();
+                await saveProductsToCloud(); renderProducts();
             }
         }
 
         function showQRCodeModal() {
-            const container = document.getElementById('qrcode-container');
-            container.innerHTML = '';
-            const currentUrl = window.location.href;
-            document.getElementById('current-url-text').textContent = currentUrl;
-            new QRCode(container, { text: currentUrl, width: 160, height: 160 });
+            const container = document.getElementById('qrcode-container'); container.innerHTML = '';
+            new QRCode(container, { text: window.location.href, width: 160, height: 160 });
+            document.getElementById('current-url-text').textContent = window.location.href;
             document.getElementById('qrcode-modal').classList.add('hidden');
         }
-
         function closeQRCodeModal() { document.getElementById('qrcode-modal').classList.add('hidden'); }
 
         fetchProductsFromCloud();
