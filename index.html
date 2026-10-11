@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PC Image VIVA | Advanced Components Catalog & Builder</title>
+    <title>PC Image VIVA | Advanced Components Catalog</title>
     
     <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAOCAYAAAAmL5yKAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAEMSURBVDhPfVK/yocwDDw7dAgUCh1cnBx8//fwFbrX0UFQ6XDf4JfSVvkdBPLHay6JmKaJAIo555r4V+2f2wQvQk/qvzX4gLUWAHAcB47jaHIvhBAYQmCMkT1yzsw592nGGKk8qBRFSon7vjcEktz3nSmlEpeRQgh0zvG6Lq7rymVZKCK01jYmIlyWheu68rouOue+FXx1V9S1ZokiUnZynicA4L7vkuuxbRumaXoC7z1FhDlnxhjpnKOIUESa043j+OmjH8EYQwA6X4nr/2EYBhpjniaqIKXElFJ5XYm1WWvpve9rjzPPc+mq8usLGGMaYlGgiXpm7/0rV5ueGQBRS+4JulCtK1n9cRz5B0qGXZpSF98bAAAAAElFTkSuQmCC" />
 
@@ -90,10 +90,10 @@
     <main class="flex-grow max-w-6xl w-full mx-auto p-4">
         <div id="customer-view">
             <div class="mb-6 text-center py-5 bg-gradient-to-r from-blue-900/20 via-slate-900/40 to-blue-900/20 rounded-2xl border border-blue-500/10">
-                <h1 id="main-hero-title" class="text-2xl md:text-3xl font-bold font-orbitron text-white mb-2">PC Components Showcase & Builder</h1>
+                <h1 id="main-hero-title" class="text-2xl md:text-3xl font-bold font-orbitron text-white mb-2">PC Components Showcase</h1>
                 <p id="main-hero-desc" class="text-sm text-slate-400 mb-3">Explore high-performance hardware, check specifications, or build your custom PC</p>
                 <div class="flex justify-center items-center gap-4 text-xs">
-                    <button onclick="openTermsModal()" class="text-blue-400 hover:underline">📄 View Terms & Conditions</button>
+                    <button onclick="openTermsModal()" class="text-blue-400 hover:underline">📄 Terms & Conditions</button>
                 </div>
             </div>
 
@@ -108,7 +108,6 @@
                             <button onclick="nextSpotlight()" class="w-7 h-7 rounded-lg bg-slate-800/80 hover:bg-blue-600 text-white text-xs flex items-center justify-center transition border border-slate-700">❯</button>
                         </div>
                     </div>
-                    <!-- 模式一：底部条状进度条 -->
                     <div id="carousel-bottom-progress" class="w-full bg-slate-800 h-1 rounded-full mt-3 overflow-hidden hidden">
                         <div id="carousel-progress-bar" class="carousel-progress-bar h-full bg-amber-400"></div>
                     </div>
@@ -304,7 +303,6 @@
                     </div>
                 </div>
 
-                <!-- Feature Carousel 设置与实时预览 -->
                 <div class="glass-card p-4 rounded-xl border border-slate-800 space-y-3 md:col-span-2">
                     <div class="border-b border-slate-800 pb-2 flex justify-between items-center">
                         <div>
@@ -350,47 +348,6 @@
                             <input type="color" id="setting-carousel-accent" onchange="updateCarouselSettings()" value="#f59e0b" class="w-full h-9 bg-slate-900 border border-slate-700 rounded cursor-pointer p-1">
                         </div>
                     </div>
-                    
-                    <!-- 实时预览模式区域 -->
-                    <div class="mt-4 pt-3 border-t border-slate-800">
-                        <span class="text-[11px] text-amber-400 font-bold uppercase tracking-wider block mb-2">👁️ Live Preview Mode (实时预览效果)</span>
-                        <div id="carousel-preview-box" class="rounded-2xl border overflow-hidden relative shadow-xl p-5 md:p-6 transition-all duration-300">
-                            <div id="carousel-preview-content" class="min-h-[140px] flex items-center">
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full items-center">
-                                    <div class="md:col-span-2 space-y-2">
-                                        <div class="flex items-center gap-2 flex-wrap">
-                                            <span id="preview-badge-style" class="font-black text-[10px] px-2.5 py-0.5 rounded uppercase">🔥 FEATURED DEAL</span>
-                                            <span class="bg-blue-600/30 text-blue-300 border border-blue-500/40 text-[10px] px-2 py-0.5 rounded font-mono">GPU</span>
-                                        </div>
-                                        <h3 id="preview-title-text" class="font-bold text-white uniform-text leading-snug text-lg">ASUS ROG STRIX RTX 5080 O16G GAMING</h3>
-                                        <div class="flex items-center gap-6 pt-1">
-                                            <div>
-                                                <span class="text-[10px] text-slate-400 block uppercase font-medium">Normal</span>
-                                                <span class="text-xs text-slate-300 font-orbitron">RM 5,999.00</span>
-                                            </div>
-                                            <div>
-                                                <span class="text-[10px] block uppercase font-bold" style="color: #f59e0b;">Member Price</span>
-                                                <span id="preview-price-text" class="font-orbitron font-black text-lg text-amber-400">RM 5,799.00</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="h-32 rounded-xl bg-slate-950/80 overflow-hidden flex items-center justify-center p-3 border border-slate-800 text-xs text-slate-500">
-                                        [Product Image Preview]
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="mt-3 flex justify-between items-center z-10 border-t border-slate-800/80 pt-3">
-                                <div id="preview-dots-box" class="flex gap-2 items-center">
-                                    <div class="w-5 h-2 rounded-full bg-amber-400"></div>
-                                    <div class="w-2 h-2 rounded-full bg-slate-700"></div>
-                                </div>
-                            </div>
-                            <!-- 预览底部进度条 -->
-                            <div id="preview-bottom-progress" class="w-full bg-slate-800 h-1 rounded-full mt-3 overflow-hidden hidden">
-                                <div id="preview-progress-bar" class="carousel-progress-bar h-full bg-amber-400" style="animation-duration: 6s;"></div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
                 <div class="glass-card p-4 rounded-xl border border-slate-800 space-y-3 md:col-span-2">
@@ -431,6 +388,16 @@
                         </div>
                         <div class="flex items-center justify-between bg-slate-900 p-3 rounded-xl border border-slate-800">
                             <div>
+                                <span class="font-bold text-white block">⚡ Promo Pricing Tier</span>
+                                <span class="text-[10px] text-slate-400">Show promotional price and discounts</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="toggle-promo" onchange="updateFeatureToggles()">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="flex items-center justify-between bg-slate-900 p-3 rounded-xl border border-slate-800">
+                            <div>
                                 <span class="font-bold text-white block">🏷️ Promotional Badges</span>
                                 <span class="text-[10px] text-slate-400">Show promotional badges on cards</span>
                             </div>
@@ -439,7 +406,7 @@
                                 <span class="slider"></span>
                             </label>
                         </div>
-                        <div class="flex items-center justify-between bg-slate-900 p-3 rounded-xl border border-slate-800 sm:col-span-2">
+                        <div class="flex items-center justify-between bg-slate-900 p-3 rounded-xl border border-slate-800">
                             <div>
                                 <span class="font-bold text-white block">📥 PDF Quotation Export</span>
                                 <span class="text-[10px] text-slate-400">Allow downloading quotation PDF in Builder</span>
@@ -553,10 +520,22 @@
             <form id="product-form" onsubmit="saveProduct(event)" class="space-y-3 text-sm">
                 <input type="hidden" id="product-id">
                 <input type="text" id="p-name" placeholder="Item Name" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white">
-                <div class="grid grid-cols-2 gap-2">
-                    <input type="number" id="p-price" step="0.01" placeholder="Normal Price" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white">
-                    <input type="number" id="p-member-price" step="0.01" placeholder="Member Price" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white">
+                
+                <div class="grid grid-cols-3 gap-2">
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-1">Normal Price</label>
+                        <input type="number" id="p-price" step="0.01" placeholder="Normal" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-2 text-white text-xs">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-1">Member Price</label>
+                        <input type="number" id="p-member-price" step="0.01" placeholder="Member" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-2 text-white text-xs">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-1">Promo Price</label>
+                        <input type="number" id="p-promo-price" step="0.01" placeholder="Promo" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-2 text-white text-xs">
+                    </div>
                 </div>
+
                 <select id="p-category" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white">
                     <option value="CPU">CPU</option><option value="GPU">GPU</option><option value="Motherboard">Motherboard</option>
                     <option value="RAM">RAM</option><option value="Storage">Storage</option><option value="PSU">PSU</option>
@@ -586,7 +565,7 @@
                     <input type="text" id="p-spec1" placeholder="Spec 1" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white">
                     <input type="text" id="p-spec2" placeholder="Spec 2" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white">
                 </div>
-                <textarea id="p-desc" rows="2" placeholder="Description" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white"></textarea>
+                <textarea id="p-desc" rows="3" placeholder="Description (支持按回车换行排版)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white"></textarea>
                 
                 <div class="space-y-2 pt-1 border-t border-slate-800">
                     <div class="flex items-center gap-2">
@@ -648,9 +627,9 @@
         let clickStatsAllTotal = JSON.parse(localStorage.getItem('pc_click_stats_all_total') || '{}');
         let clickStatsByDate = JSON.parse(localStorage.getItem('pc_click_stats_by_date') || '{}');
 
-        let featureToggles = { builder: true, stock: true, member: true, pdf: true, banner: true, badges: true, carouselEnabled: true };
+        let featureToggles = { builder: true, stock: true, member: true, promo: true, pdf: true, banner: true, badges: true, carouselEnabled: true };
         let carouselSpeed = '6000';
-        let carouselProgressMode = 'bottom'; // 'none', 'bottom', 'dot'
+        let carouselProgressMode = 'bottom';
         let carouselFontSize = 'text-lg';
         let carouselBgColor = '#0f172a';
         let carouselAccentColor = '#f59e0b';
@@ -683,6 +662,16 @@
 
         showLoadingState();
 
+        function getEffectivePrice(p) {
+            const promo = (featureToggles.promo !== false && p.promoPrice !== undefined && p.promoPrice !== null && !isNaN(p.promoPrice) && Number(p.promoPrice) > 0) ? Number(p.promoPrice) : null;
+            const member = (featureToggles.member !== false && p.memberPrice !== undefined && p.memberPrice !== null && !isNaN(p.memberPrice) && Number(p.memberPrice) > 0) ? Number(p.memberPrice) : null;
+            const normal = Number(p.price || 0);
+
+            if (promo !== null && promo < normal) return promo;
+            if (member !== null && member < normal) return member;
+            return normal;
+        }
+
         async function fetchProductsFromCloud() {
             try {
                 const response = await fetch(GOOGLE_SCRIPT_URL);
@@ -699,6 +688,7 @@
                         if (s.builder !== undefined) featureToggles.builder = String(s.builder) === 'true';
                         if (s.stock !== undefined) featureToggles.stock = String(s.stock) === 'true';
                         if (s.member !== undefined) featureToggles.member = String(s.member) === 'true';
+                        if (s.promo !== undefined) featureToggles.promo = String(s.promo) === 'true';
                         if (s.pdf !== undefined) featureToggles.pdf = String(s.pdf) === 'true';
                         if (s.banner !== undefined) featureToggles.banner = String(s.banner) === 'true';
                         if (s.badges !== undefined) featureToggles.badges = String(s.badges) === 'true';
@@ -743,6 +733,7 @@
                     builder: featureToggles.builder,
                     stock: featureToggles.stock,
                     member: featureToggles.member,
+                    promo: featureToggles.promo,
                     pdf: featureToggles.pdf,
                     banner: featureToggles.banner,
                     badges: featureToggles.badges,
@@ -772,6 +763,7 @@
             document.getElementById('toggle-builder').checked = featureToggles.builder;
             document.getElementById('toggle-stock').checked = featureToggles.stock;
             document.getElementById('toggle-member').checked = featureToggles.member;
+            document.getElementById('toggle-promo').checked = featureToggles.promo !== undefined ? featureToggles.promo : true;
             document.getElementById('toggle-pdf').checked = featureToggles.pdf;
             document.getElementById('toggle-banner').checked = featureToggles.banner;
             document.getElementById('toggle-badges').checked = featureToggles.badges !== undefined ? featureToggles.badges : true;
@@ -807,55 +799,6 @@
             carouselFontSize = document.getElementById('setting-carousel-fontsize').value;
             carouselBgColor = document.getElementById('setting-carousel-bg').value;
             carouselAccentColor = document.getElementById('setting-carousel-accent').value;
-
-            const previewBox = document.getElementById('carousel-preview-box');
-            if (previewBox) {
-                previewBox.style.backgroundColor = carouselBgColor;
-                previewBox.style.borderColor = carouselAccentColor + '55';
-            }
-            const previewTitle = document.getElementById('preview-title-text');
-            if (previewTitle) {
-                previewTitle.className = `font-bold text-white uniform-text leading-snug ${carouselFontSize}`;
-            }
-            const previewPrice = document.getElementById('preview-price-text');
-            if (previewPrice) {
-                previewPrice.style.color = carouselAccentColor;
-            }
-            const previewBadge = document.getElementById('preview-badge-style');
-            if (previewBadge) {
-                previewBadge.style.backgroundColor = carouselAccentColor;
-                previewBadge.style.color = '#020617';
-            }
-
-            const bottomProg = document.getElementById('preview-bottom-progress');
-            const previewBar = document.getElementById('preview-progress-bar');
-            const previewDotsBox = document.getElementById('preview-dots-box');
-
-            if (carouselProgressMode === 'bottom') {
-                if (bottomProg) bottomProg.classList.remove('hidden');
-                if (previewBar) {
-                    previewBar.style.backgroundColor = carouselAccentColor;
-                    previewBar.style.animationDuration = (parseInt(carouselSpeed) / 1000) + 's';
-                }
-                if (previewDotsBox) {
-                    previewDotsBox.innerHTML = `<div class="w-2 h-2 rounded-full bg-amber-400"></div><div class="w-2 h-2 rounded-full bg-slate-700"></div>`;
-                }
-            } else if (carouselProgressMode === 'dot') {
-                if (bottomProg) bottomProg.classList.add('hidden');
-                if (previewDotsBox) {
-                    previewDotsBox.innerHTML = `
-                        <div class="rounded-full overflow-hidden bg-slate-700 relative" style="width: 24px; height: 8px;">
-                            <div class="carousel-progress-bar h-full" style="background-color: ${carouselAccentColor}; animation-duration: ${parseInt(carouselSpeed)/1000}s;"></div>
-                        </div>
-                        <div class="w-2 h-2 rounded-full bg-slate-700"></div>
-                    `;
-                }
-            } else {
-                if (bottomProg) bottomProg.classList.add('hidden');
-                if (previewDotsBox) {
-                    previewDotsBox.innerHTML = `<div class="w-2 h-2 rounded-full bg-amber-400"></div><div class="w-2 h-2 rounded-full bg-slate-700"></div>`;
-                }
-            }
         }
 
         async function updateCarouselSettings() {
@@ -921,12 +864,14 @@
             featureToggles.builder = document.getElementById('toggle-builder').checked;
             featureToggles.stock = document.getElementById('toggle-stock').checked;
             featureToggles.member = document.getElementById('toggle-member').checked;
+            featureToggles.promo = document.getElementById('toggle-promo').checked;
             featureToggles.pdf = document.getElementById('toggle-pdf').checked;
             featureToggles.banner = document.getElementById('toggle-banner').checked;
             featureToggles.badges = document.getElementById('toggle-badges').checked;
             
             applyFeatureToggles();
             renderProducts();
+            initSpotlightCarousel();
             await saveSettingsToCloud();
         }
 
@@ -1034,7 +979,11 @@
         function renderSpotlightSlide() {
             if (spotlightProducts.length === 0) return;
             const p = spotlightProducts[currentSpotlightIndex];
-            const mPrice = p.memberPrice !== undefined ? p.memberPrice : p.price;
+            const normalPrice = Number(p.price || 0);
+            const promoPrice = (featureToggles.promo !== false && p.promoPrice !== undefined && p.promoPrice !== null && !isNaN(p.promoPrice) && Number(p.promoPrice) > 0) ? Number(p.promoPrice) : null;
+            const memberPrice = (featureToggles.member !== false && p.memberPrice !== undefined && p.memberPrice !== null && !isNaN(p.memberPrice) && Number(p.memberPrice) > 0) ? Number(p.memberPrice) : null;
+            
+            const effectivePrice = getEffectivePrice(p);
             const imgSrc = p.image || 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=600&q=80';
 
             const containerCard = document.getElementById('spotlight-carousel-container').querySelector('.glass-card');
@@ -1084,6 +1033,45 @@
                 }
             }
 
+            const displayDesc = p.desc || (p.spec1 ? `${p.spec1}${p.spec2 ? '  |  ' + p.spec2 : ''}` : 'Explore our flagship recommended component for elite gaming and workstation setups.');
+
+            let priceDisplayHtml = `
+                <div>
+                    <span class="text-[10px] text-slate-400 block uppercase font-medium">Normal Price</span>
+                    <span class="text-lg font-orbitron font-bold text-white">RM ${normalPrice.toFixed(2)}</span>
+                </div>
+            `;
+
+            if (promoPrice !== null && promoPrice < normalPrice) {
+                const savePercent = Math.round(((normalPrice - promoPrice) / normalPrice) * 100);
+                priceDisplayHtml = `
+                    <div>
+                        <span class="text-[10px] text-slate-400 line-through block font-orbitron">RM ${normalPrice.toFixed(2)}</span>
+                        <span class="text-xs text-red-400 block uppercase font-bold">Promo Price</span>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="bg-red-500 text-white font-black px-2 py-0.5 rounded text-[10px] uppercase">-${savePercent}% OFF</span>
+                        </div>
+                        <span class="text-lg font-orbitron font-black text-red-400">RM ${promoPrice.toFixed(2)}</span>
+                    </div>
+                `;
+            } else if (memberPrice !== null && memberPrice < normalPrice) {
+                const savePercent = Math.round(((normalPrice - memberPrice) / normalPrice) * 100);
+                priceDisplayHtml = `
+                    <div>
+                        <span class="text-[10px] text-slate-400 line-through block font-orbitron">RM ${normalPrice.toFixed(2)}</span>
+                        <span class="text-xs text-amber-400 block uppercase font-bold">Member Price</span>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="bg-amber-500 text-slate-950 font-black px-2 py-0.5 rounded text-[10px] uppercase">-${savePercent}% OFF</span>
+                        </div>
+                        <span class="text-lg font-orbitron font-black text-amber-400">RM ${memberPrice.toFixed(2)}</span>
+                    </div>
+                `;
+            }
+
             document.getElementById('spotlight-slide-content').innerHTML = `
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full items-center">
                     <div class="md:col-span-2 space-y-3">
@@ -1093,17 +1081,9 @@
                             ${p.brand ? `<span class="font-bold text-xs uppercase" style="color: ${carouselAccentColor};">${p.brand}</span>` : ''}
                         </div>
                         <h2 class="font-bold text-white uniform-text leading-snug ${carouselFontSize}">${p.name}</h2>
-                        <p class="text-xs text-slate-300 line-clamp-2">${p.desc || p.spec1 || 'Explore our flagship recommended component for elite gaming and workstation setups.'}</p>
+                        <p class="text-xs text-slate-300 whitespace-pre-line leading-relaxed line-clamp-3">${displayDesc}</p>
                         <div class="flex items-center gap-6 pt-1">
-                            <div>
-                                <span class="text-[10px] text-slate-400 block uppercase font-medium">Normal</span>
-                                <span class="text-xs text-slate-300 font-orbitron">RM ${Number(p.price || 0).toFixed(2)}</span>
-                            </div>
-                            ${featureToggles.member ? `
-                            <div>
-                                <span class="text-[10px] block uppercase font-bold" style="color: ${carouselAccentColor};">Member Price</span>
-                                <span class="text-lg font-orbitron font-black" style="color: ${carouselAccentColor};">RM ${Number(mPrice || 0).toFixed(2)}</span>
-                            </div>` : ''}
+                            ${priceDisplayHtml}
                         </div>
                         <div class="pt-2 flex flex-wrap gap-2">
                             <button onclick="openDetail('${p.id}')" class="bg-blue-600 hover:bg-blue-500 text-white text-xs px-4 py-2 rounded-xl font-medium transition">View Details</button>
@@ -1157,8 +1137,8 @@
 
             if (currentSort !== 'custom') {
                 filtered.sort((a, b) => {
-                    const priceA = a.memberPrice !== undefined ? a.memberPrice : a.price;
-                    const priceB = b.memberPrice !== undefined ? b.memberPrice : b.price;
+                    const priceA = getEffectivePrice(a);
+                    const priceB = getEffectivePrice(b);
                     if (currentSort === 'price-low') return priceA - priceB;
                     if (currentSort === 'price-high') return priceB - priceA;
                     if (currentSort === 'popular') return (todayMap[b.id] || 0) - (todayMap[a.id] || 0);
@@ -1167,7 +1147,10 @@
             }
 
             grid.innerHTML = filtered.map(p => {
-                const mPrice = p.memberPrice !== undefined ? p.memberPrice : p.price;
+                const normalPrice = Number(p.price || 0);
+                const promoPrice = (featureToggles.promo !== false && p.promoPrice !== undefined && p.promoPrice !== null && !isNaN(p.promoPrice) && Number(p.promoPrice) > 0) ? Number(p.promoPrice) : null;
+                const memberPrice = (featureToggles.member !== false && p.memberPrice !== undefined && p.memberPrice !== null && !isNaN(p.memberPrice) && Number(p.memberPrice) > 0) ? Number(p.memberPrice) : null;
+
                 const imgSrc = p.image || 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=600&q=80';
                 
                 const categoryBadgeHtml = p.category ? `<span class="absolute top-2 left-2 bg-blue-900/80 text-blue-200 border border-blue-500/40 text-[10px] px-2 py-0.5 rounded uppercase font-mono font-semibold backdrop-blur">${p.category}</span>` : '';
@@ -1190,12 +1173,44 @@
                     stockBadgeHtml = `<span class="text-[10px] px-2 py-0.5 rounded border uppercase font-medium ${stockColor}">${p.stock}</span>`;
                 }
 
-                let memberPriceHtml = featureToggles.member ? `
-                    <div class="text-right">
-                        <span class="text-[10px] text-amber-400 font-bold block uppercase">Member Price</span>
-                        <span class="text-lg text-amber-400 font-orbitron font-black">RM ${Number(mPrice || 0).toFixed(2)}</span>
+                let priceBoxHtml = `
+                    <div class="mb-3 bg-slate-900/50 p-2.5 rounded-lg border border-slate-800 flex items-center justify-between">
+                        <div>
+                            <span class="text-[10px] text-slate-400 block uppercase">Normal Price</span>
+                            <span class="text-sm font-orbitron font-bold text-white">RM ${normalPrice.toFixed(2)}</span>
+                        </div>
                     </div>
-                ` : '';
+                `;
+
+                if (promoPrice !== null && promoPrice < normalPrice) {
+                    const savePercent = Math.round(((normalPrice - promoPrice) / normalPrice) * 100);
+                    priceBoxHtml = `
+                        <div class="mb-3 bg-gradient-to-r from-red-500/10 to-slate-900/80 p-2.5 rounded-lg border border-red-500/30 flex items-center justify-between">
+                            <div>
+                                <span class="text-[10px] text-slate-400 line-through block font-orbitron">RM ${normalPrice.toFixed(2)}</span>
+                                <span class="text-xs text-red-400 font-bold block uppercase">Promo Price</span>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-xs bg-red-500 text-white font-black px-1.5 py-0.5 rounded text-[10px] mb-0.5 inline-block">-${savePercent}% OFF</span>
+                                <div class="text-lg text-red-400 font-orbitron font-black">RM ${promoPrice.toFixed(2)}</div>
+                            </div>
+                        </div>
+                    `;
+                } else if (memberPrice !== null && memberPrice < normalPrice) {
+                    const savePercent = Math.round(((normalPrice - memberPrice) / normalPrice) * 100);
+                    priceBoxHtml = `
+                        <div class="mb-3 bg-gradient-to-r from-amber-500/10 to-slate-900/80 p-2.5 rounded-lg border border-amber-500/30 flex items-center justify-between">
+                            <div>
+                                <span class="text-[10px] text-slate-400 line-through block font-orbitron">RM ${normalPrice.toFixed(2)}</span>
+                                <span class="text-xs text-amber-400 font-bold block uppercase">Member Price</span>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-xs bg-amber-500 text-slate-950 font-black px-1.5 py-0.5 rounded text-[10px] mb-0.5 inline-block">-${savePercent}% OFF</span>
+                                <div class="text-lg text-amber-400 font-orbitron font-black">RM ${memberPrice.toFixed(2)}</div>
+                            </div>
+                        </div>
+                    `;
+                }
 
                 const builderBtnHtml = featureToggles.builder ? `<button onclick="addToBuilder('${p.id}')" class="w-full bg-blue-600/30 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/30 text-xs py-1.5 rounded-lg transition font-medium">+ Add to PC Builder</button>` : '';
 
@@ -1220,13 +1235,7 @@
                                 ${stockBadgeHtml}
                             </div>
                             <h3 class="font-bold text-white text-sm mb-2 truncate uniform-text">${p.name}</h3>
-                            <div class="mb-3 bg-slate-900/50 p-2.5 rounded-lg border border-slate-800 flex items-center justify-between">
-                                <div>
-                                    <span class="text-[10px] text-slate-400 block uppercase">Normal</span>
-                                    <span class="text-xs text-slate-300 font-orbitron">RM ${Number(p.price || 0).toFixed(2)}</span>
-                                </div>
-                                ${memberPriceHtml}
-                            </div>
+                            ${priceBoxHtml}
                             ${cardSpecsHtml}
                         </div>
                     </div>
@@ -1246,11 +1255,23 @@
                 adminFiltered = adminFiltered.filter(p => p.category?.trim().toLowerCase() === adminCategoryFilter.toLowerCase());
             }
 
-            const todayMap = clickStatsByDate[todayStr] || {};
-
-            document.getElementById('admin-product-list').innerHTML = adminFiltered.map((p, index) => {
+            document.getElementById('admin-product-list').innerHTML = adminFiltered.map((p) => {
                 const isVisible = !p.status || String(p.status).trim().toLowerCase() === 'visible';
                 const imgSrc = p.image || 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=600&q=80';
+                
+                // 管理员页价格明显高亮展示（字号放大、色彩分明）
+                const normVal = Number(p.price || 0).toFixed(2);
+                const membVal = (p.memberPrice !== undefined && p.memberPrice !== null && !isNaN(p.memberPrice) && Number(p.memberPrice) > 0) ? Number(p.memberPrice).toFixed(2) : null;
+                const promVal = (p.promoPrice !== undefined && p.promoPrice !== null && !isNaN(p.promoPrice) && Number(p.promoPrice) > 0) ? Number(p.promoPrice).toFixed(2) : null;
+
+                let adminPriceHtml = `<span class="text-white font-bold font-orbitron text-sm">N: RM ${normVal}</span>`;
+                if (membVal) {
+                    adminPriceHtml += ` <span class="text-amber-400 font-bold font-orbitron text-sm ml-1">M: RM ${membVal}</span>`;
+                }
+                if (promVal) {
+                    adminPriceHtml += ` <span class="text-red-400 font-black font-orbitron text-sm ml-1">P: RM ${promVal}</span>`;
+                }
+
                 return `
                 <div draggable="true" 
                      ondragstart="drag(event)" 
@@ -1271,7 +1292,10 @@
                         </div>
                         <div class="min-w-0 pr-2">
                             <div class="font-bold text-white text-sm uniform-text truncate">${p.name}</div>
-                            <div class="text-xs text-blue-400 truncate">Normal: RM ${p.price} | <span class="text-amber-400 font-bold">Member: RM ${p.memberPrice}</span> | Today: ${todayMap[p.id] || 0} | Total: ${clickStatsAllTotal[p.id] || 0}</div>
+                            <div class="mt-0.5 flex items-center gap-2 flex-wrap">
+                                ${adminPriceHtml}
+                                <span class="text-[11px] text-slate-400 font-mono ml-1">(Views: ${clickStatsAllTotal[p.id] || 0})</span>
+                            </div>
                         </div>
                     </div>
                     <div class="space-x-3 shrink-0 flex items-center">
@@ -1337,7 +1361,7 @@
             container.innerHTML = categories.map(cat => {
                 const item = pcBuilder[cat];
                 if (item) {
-                    const price = item.memberPrice !== undefined ? item.memberPrice : item.price;
+                    const price = getEffectivePrice(item);
                     totalPrice += Number(price);
                     return `
                     <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800 flex justify-between items-center text-xs">
@@ -1374,7 +1398,7 @@
             let totalPrice = 0;
             document.getElementById('pdf-date').textContent = "Date: " + new Date().toLocaleDateString();
             document.getElementById('pdf-items-list').innerHTML = items.map(i => {
-                const price = i.memberPrice !== undefined ? i.memberPrice : i.price;
+                const price = getEffectivePrice(i);
                 totalPrice += Number(price);
                 return `<div class="flex justify-between border-b py-1"><span>[${i.category}] ${i.name}</span><span class="font-bold">RM ${Number(price).toFixed(2)}</span></div>`;
             }).join('');
@@ -1391,7 +1415,7 @@
             let text = "Hello, I would like to inquire about this custom PC build:\n";
             let totalPrice = 0;
             items.forEach(i => {
-                const price = i.memberPrice !== undefined ? i.memberPrice : i.price;
+                const price = getEffectivePrice(i);
                 totalPrice += Number(price);
                 text += `- [${i.category}] ${i.name} (RM ${price})\n`;
             });
@@ -1411,17 +1435,54 @@
             clickStatsByDate[todayStr][id] = (clickStatsByDate[todayStr][id] || 0) + 1;
             localStorage.setItem('pc_click_stats_by_date', JSON.stringify(clickStatsByDate));
 
-            const mPrice = p.memberPrice !== undefined ? p.memberPrice : p.price;
-            const waText = encodeURIComponent(`Hello, I am interested in: ${p.name} (Normal: RM ${p.price} | Member: RM ${mPrice})`);
+            const normalPrice = Number(p.price || 0);
+            const promoPrice = (featureToggles.promo !== false && p.promoPrice !== undefined && p.promoPrice !== null && !isNaN(p.promoPrice) && Number(p.promoPrice) > 0) ? Number(p.promoPrice) : null;
+            const memberPrice = (featureToggles.member !== false && p.memberPrice !== undefined && p.memberPrice !== null && !isNaN(p.memberPrice) && Number(p.memberPrice) > 0) ? Number(p.memberPrice) : null;
+
+            const waText = encodeURIComponent(`Hello, I am interested in: ${p.name} (Normal: RM ${normalPrice}${memberPrice !== null ? ' | Member: RM ' + memberPrice : ''}${promoPrice !== null ? ' | Promo: RM ' + promoPrice : ''})`);
             
+            let priceColumns = [];
+            const isNormalStrikethrough = (memberPrice !== null || promoPrice !== null);
+            priceColumns.push(`
+                <div>
+                    <span class="text-[10px] text-slate-400 block uppercase">Normal</span>
+                    <div class="text-sm font-orbitron font-bold text-white ${isNormalStrikethrough ? 'line-through text-slate-400' : ''}">RM ${normalPrice.toFixed(2)}</div>
+                </div>
+            `);
+
+            if (memberPrice !== null) {
+                const isMemberStrikethrough = (promoPrice !== null);
+                priceColumns.push(`
+                    <div>
+                        <span class="text-[10px] text-amber-400 block uppercase">Member</span>
+                        <div class="text-sm font-orbitron font-bold text-amber-400 ${isMemberStrikethrough ? 'line-through text-slate-400' : ''}">RM ${memberPrice.toFixed(2)}</div>
+                    </div>
+                `);
+            }
+
+            if (promoPrice !== null) {
+                priceColumns.push(`
+                    <div>
+                        <span class="text-[10px] text-red-400 block uppercase">Promo</span>
+                        <div class="text-sm font-orbitron font-bold text-red-400">RM ${promoPrice.toFixed(2)}</div>
+                    </div>
+                `);
+            }
+
+            const gridColsClass = priceColumns.length === 3 ? 'grid-cols-3' : (priceColumns.length === 2 ? 'grid-cols-2' : 'grid-cols-1');
+
+            let priceDetailHtml = `
+                <div class="bg-slate-900/80 p-3.5 rounded-xl border border-slate-800 mb-4 grid ${gridColsClass} gap-2 text-center">
+                    ${priceColumns.join('')}
+                </div>
+            `;
+
             const specsHtml = (p.spec1 || p.spec2) ? `
                 <div class="glass-card rounded-xl p-3.5 border border-slate-800 text-xs space-y-2.5 mb-4">
                     ${p.spec1 ? `<div class="flex justify-between items-center pb-2 border-b border-slate-800/80"><span class="text-blue-400 font-bold uppercase flex items-center gap-1">⚡ Primary Spec:</span> <span class="text-white font-semibold bg-slate-900 px-2.5 py-1 rounded border border-blue-500/30">${p.spec1}</span></div>` : ''}
                     ${p.spec2 ? `<div class="flex justify-between items-center pt-0.5"><span class="text-slate-400 font-bold uppercase flex items-center gap-1">📌 Secondary Spec:</span> <span class="text-white font-semibold bg-slate-900 px-2.5 py-1 rounded border border-slate-700">${p.spec2}</span></div>` : ''}
                 </div>
             ` : '';
-
-            let detailMemberPriceBlock = featureToggles.member ? `<div><span class="text-[10px] text-amber-400 uppercase font-bold">Member Price</span><div class="text-xl font-orbitron font-black text-amber-400">RM ${mPrice}</div></div>` : '';
 
             let officialBtnHtml = '';
             if (p.url) {
@@ -1435,11 +1496,9 @@
                     <img src="${p.image || 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=600&q=80'}" class="max-h-full max-w-full object-contain">
                 </div>
                 <h2 class="text-lg font-bold text-white mb-2 uniform-text">${p.name}</h2>
-                <div class="grid grid-cols-2 gap-3 mb-4 bg-slate-900/80 p-3.5 rounded-xl border border-amber-500/30">
-                    <div><span class="text-[10px] text-slate-400 uppercase">Standard</span><div class="text-base font-orbitron text-slate-300">RM ${p.price}</div></div>
-                    ${detailMemberPriceBlock}
-                </div>
+                ${priceDetailHtml}
                 ${specsHtml}
+                ${p.desc ? `<div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800 text-xs text-slate-300 mb-3 leading-relaxed whitespace-pre-wrap">${p.desc}</div>` : ''}
                 ${officialBtnHtml}
                 <button onclick="promptWhatsAppSelection('${waText}')" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-2.5 rounded-xl text-sm font-medium transition">💬 Inquiry via WhatsApp</button>
             `;
@@ -1656,7 +1715,8 @@
                 id: id || Date.now().toString(),
                 name: document.getElementById('p-name').value.trim(),
                 price: parseFloat(document.getElementById('p-price').value),
-                memberPrice: parseFloat(document.getElementById('p-member-price').value),
+                memberPrice: document.getElementById('p-member-price').value ? parseFloat(document.getElementById('p-member-price').value) : '',
+                promoPrice: document.getElementById('p-promo-price').value ? parseFloat(document.getElementById('p-promo-price').value) : '',
                 category: document.getElementById('p-category').value,
                 brand: document.getElementById('p-brand').value.trim(),
                 subcategory: document.getElementById('p-subcategory').value.trim(),
@@ -1684,6 +1744,7 @@
             document.getElementById('p-name').value = p.name || '';
             document.getElementById('p-price').value = p.price || '';
             document.getElementById('p-member-price').value = p.memberPrice !== undefined ? p.memberPrice : '';
+            document.getElementById('p-promo-price').value = p.promoPrice !== undefined ? p.promoPrice : '';
             document.getElementById('p-category').value = p.category || 'CPU';
             document.getElementById('p-brand').value = p.brand || '';
             document.getElementById('p-subcategory').value = p.subcategory || '';
