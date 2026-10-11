@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PC Image Viva | Advanced Components Catalog & Builder</title>
+    <title>PC Image VIVA | Advanced Components Catalog & Builder</title>
     
-    <!-- 浏览器标签页小图标 -->
     <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAOCAYAAAAmL5yKAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAEMSURBVDhPfVK/yocwDDw7dAgUCh1cnBx8//fwFbrX0UFQ6XDf4JfSVvkdBPLHay6JmKaJAIo555r4V+2f2wQvQk/qvzX4gLUWAHAcB47jaHIvhBAYQmCMkT1yzsw592nGGKk8qBRFSon7vjcEktz3nSmlEpeRQgh0zvG6Lq7rymVZKCK01jYmIlyWheu68rouOue+FXx1V9S1ZokiUnZynicA4L7vkuuxbRumaXoC7z1FhDlnxhjpnKOIUESa043j+OmjH8EYQwA6X4nr/2EYBhpjniaqIKXElFJ5XYm1WWvpve9rjzPPc+mq8usLGGMaYlGgiXpm7/0rV5ueGQBRS+4JulCtK1n9cRz5B0qGXZpSF98bAAAAAElFTkSuQmCC" />
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -25,7 +24,6 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .spinner { animation: spin 1s linear infinite; }
 
-        /* 苹果 iOS 风格滑动开关 */
         .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #334155; transition: .3s; border-radius: 24px; }
@@ -33,11 +31,33 @@
         input:checked + .slider { background-color: #06b6d4; }
         input:checked + .slider:before { transform: translateX(20px); }
 
-        /* 动态跑马灯 CSS */
         .marquee-container { overflow: hidden; white-space: nowrap; position: relative; width: 100%; }
         .marquee-content { display: inline-block; padding-left: 100%; animation: marquee linear infinite; }
         .marquee-container:hover .marquee-content { animation-play-state: paused; }
         @keyframes marquee { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
+
+        /* 📱 专门针对手机端优化的 CSS 媒体查询 */
+        @media screen and (max-width: 768px) {
+            /* 1. 顶部分类栏：改成横向滚动，防止换行拥挤 */
+            #category-filters {
+                display: flex;
+                overflow-x: auto;
+                flex-wrap: nowrap;
+                white-space: nowrap;
+                padding-bottom: 6px;
+                -webkit-overflow-scrolling: touch;
+            }
+            #category-filters::-webkit-scrollbar {
+                display: none;
+            }
+
+            /* 2. 商品标题：手机端自动单行省略，保持排版整齐 */
+            #product-grid .uniform-text {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -69,11 +89,31 @@
     <main class="flex-grow max-w-6xl w-full mx-auto p-4">
         <!-- Customer View -->
         <div id="customer-view">
-            <div class="mb-6 text-center py-6 bg-gradient-to-r from-blue-900/20 via-slate-900/40 to-blue-900/20 rounded-2xl border border-blue-500/10">
+            <div class="mb-6 text-center py-5 bg-gradient-to-r from-blue-900/20 via-slate-900/40 to-blue-900/20 rounded-2xl border border-blue-500/10">
                 <h1 id="main-hero-title" class="text-2xl md:text-3xl font-bold font-orbitron text-white mb-2">PC Components Showcase & Builder</h1>
                 <p id="main-hero-desc" class="text-sm text-slate-400 mb-3">Explore high-performance hardware, check specifications, or build your custom PC</p>
                 <div class="flex justify-center items-center gap-4 text-xs">
                     <button onclick="openTermsModal()" class="text-blue-400 hover:underline">📄 View Terms & Conditions</button>
+                </div>
+            </div>
+
+            <!-- Spotlight Carousel -->
+            <div id="spotlight-carousel-container" class="mb-6 hidden">
+                <div class="glass-card rounded-2xl border border-amber-500/30 overflow-hidden relative shadow-xl bg-gradient-to-r from-slate-900/90 via-blue-950/40 to-slate-900/90">
+                    <div class="absolute top-3 left-4 z-10 flex items-center gap-2">
+                        <span class="bg-amber-500 text-slate-950 font-black text-[10px] px-2.5 py-0.5 rounded uppercase tracking-wider shadow">🔥 FEATURED DEAL</span>
+                        <span class="text-[11px] text-amber-300 font-mono font-semibold">镇店之宝 / 主打推荐</span>
+                    </div>
+                    
+                    <div id="spotlight-slide-content" class="p-6 pt-10 md:pt-6 min-h-[220px] flex items-center"></div>
+
+                    <div class="absolute bottom-3 right-4 flex items-center gap-3 z-10">
+                        <div id="spotlight-dots" class="flex gap-1.5 items-center"></div>
+                        <div class="flex gap-1">
+                            <button onclick="prevSpotlight()" class="w-7 h-7 rounded-lg bg-slate-800/80 hover:bg-blue-600 text-white text-xs flex items-center justify-center transition border border-slate-700">❮</button>
+                            <button onclick="nextSpotlight()" class="w-7 h-7 rounded-lg bg-slate-800/80 hover:bg-blue-600 text-white text-xs flex items-center justify-center transition border border-slate-700">❯</button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -134,7 +174,7 @@
                     <button onclick="switchAdminTab('analytics')" id="tab-btn-analytics" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-900 text-slate-300 hover:bg-slate-800 transition flex items-center space-x-1.5"><span>📊</span> <span>Analytics</span></button>
                     <button onclick="switchAdminTab('settings')" id="tab-btn-settings" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-900 text-slate-300 hover:bg-slate-800 transition flex items-center space-x-1.5"><span>⚙️</span> <span>Settings & Toggles</span></button>
                 </div>
-                <div class="text-[11px] text-slate-400 px-2 font-mono">Admin Mode</div>
+                <div class="text-[11px] text-slate-400 px-2 font-mono">Admin Mode (Cloud Synced)</div>
             </div>
 
             <!-- Tab 1: Products -->
@@ -150,7 +190,6 @@
                     </div>
                 </div>
 
-                <!-- 后台分类筛选栏 -->
                 <div class="glass-card p-3 rounded-xl border border-slate-800 space-y-2">
                     <div class="flex flex-wrap gap-1.5 items-center" id="admin-category-filters">
                         <span class="text-xs text-slate-400 font-medium mr-1">Category:</span>
@@ -195,7 +234,6 @@
                         </div>
                     </div>
 
-                    <!-- 日期范围日历选择器工具栏 -->
                     <div id="analytics-date-picker-container" class="hidden bg-slate-900/90 p-3 rounded-xl border border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs">
                         <div class="flex items-center gap-2 flex-wrap">
                             <span class="text-slate-300 font-medium">From (从):</span>
@@ -213,7 +251,6 @@
             <!-- Tab 4: Settings & Feature Toggles -->
             <div id="admin-tab-settings" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4">
                 
-                <!-- 卡片 1: 店铺标识设置 -->
                 <div class="glass-card p-4 rounded-xl border border-slate-800 space-y-3">
                     <div class="border-b border-slate-800 pb-2">
                         <h2 class="text-sm font-bold text-white flex items-center gap-1.5">🎨 Store Identity (店铺标题设置)</h2>
@@ -231,7 +268,6 @@
                     </div>
                 </div>
 
-                <!-- 卡片 2: 跑马灯公告栏设置 -->
                 <div class="glass-card p-4 rounded-xl border border-slate-800 space-y-3">
                     <div class="border-b border-slate-800 pb-2">
                         <h2 class="text-sm font-bold text-white flex items-center gap-1.5">📢 Announcement Banner (跑马灯公告栏样式)</h2>
@@ -280,11 +316,10 @@
                     </div>
                 </div>
 
-                <!-- 卡片 3: 功能管理开关 -->
                 <div class="glass-card p-4 rounded-xl border border-slate-800 space-y-3 md:col-span-2">
                     <div class="border-b border-slate-800 pb-2">
                         <h2 class="text-sm font-bold text-white flex items-center gap-1.5">🎛️ Feature Switches (功能模块开关)</h2>
-                        <p class="text-[11px] text-slate-400">Instantly toggle layout features for customers.</p>
+                        <p class="text-[11px] text-slate-400">Instantly toggle layout features for customers (Synced to Cloud).</p>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                         <div class="flex items-center justify-between bg-slate-900 p-3 rounded-xl border border-slate-800">
@@ -340,7 +375,6 @@
                     </div>
                 </div>
 
-                <!-- 卡片 4: 修改后台安全密码 -->
                 <div class="glass-card p-4 rounded-xl border border-slate-800 space-y-3 md:col-span-2">
                     <div class="border-b border-slate-800 pb-2">
                         <h2 class="text-sm font-bold text-white flex items-center gap-1.5">🔐 Security Settings (修改后台密码)</h2>
@@ -368,7 +402,7 @@
         </div>
     </main>
 
-    <!-- PC Builder Modal -->
+    <!-- Modals -->
     <div id="builder-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
         <div class="glass-card w-full max-w-2xl rounded-2xl p-6 border border-slate-700 max-h-[90vh] overflow-y-auto relative shadow-2xl">
             <button onclick="closeBuilderModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">✕</button>
@@ -395,15 +429,13 @@
         </div>
     </div>
 
-    <!-- Product Detail Modal -->
     <div id="detail-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="glass-card w-full max-w-lg rounded-2xl p-6 border border-slate-700 max-h-[90vh] overflow-y-auto relative">
-            <button onclick="closeDetailModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">✕</button>
+            <button onclick="closeDetailModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg z-50 bg-slate-900/80 w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-800 transition">✕</button>
             <div id="modal-content"></div>
         </div>
     </div>
 
-    <!-- WhatsApp Contact Selection Modal -->
     <div id="whatsapp-select-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="glass-card w-full max-w-sm rounded-2xl p-6 border border-slate-700 text-center relative">
             <button onclick="closeWhatsAppSelectModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">✕</button>
@@ -413,7 +445,6 @@
         </div>
     </div>
 
-    <!-- PDF Export Template (Hidden) -->
     <div id="pdf-export-container" class="hidden bg-white text-slate-900 p-8 max-w-xl mx-auto font-sans">
         <div class="text-center mb-6 border-b pb-4">
             <h1 class="text-xl font-bold uppercase tracking-wider text-blue-900">PC Image VIVA - Quotation</h1>
@@ -430,7 +461,6 @@
         </div>
     </div>
 
-    <!-- Password Prompt Modal -->
     <div id="password-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="glass-card w-full max-w-sm rounded-2xl p-6 border border-slate-700 text-center relative">
             <button onclick="closePasswordModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">✕</button>
@@ -443,7 +473,6 @@
         </div>
     </div>
 
-    <!-- Product Modal -->
     <div id="product-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="glass-card w-full max-w-md rounded-2xl p-6 border border-slate-700 max-h-[90vh] overflow-y-auto relative">
             <button onclick="closeProductModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">✕</button>
@@ -485,12 +514,15 @@
                     <input type="text" id="p-spec2" placeholder="Spec 2" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white">
                 </div>
                 <textarea id="p-desc" rows="2" placeholder="Description" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white"></textarea>
-                <button type="submit" class="w-full bg-blue-600 text-white py-2.5 rounded-lg text-xs font-medium">Save Item</button>
+                <div class="flex items-center gap-2 pt-1">
+                    <input type="checkbox" id="p-featured" class="w-4 h-4 bg-slate-900 border border-slate-700 rounded text-blue-600 cursor-pointer">
+                    <label for="p-featured" class="text-xs text-slate-300 cursor-pointer font-medium">🌟 Featured Carousel (设为首页镇店之宝循环播放)</label>
+                </div>
+                <button type="submit" class="w-full bg-blue-600 text-white py-2.5 rounded-lg text-xs font-medium mt-2">Save Item</button>
             </form>
         </div>
     </div>
 
-    <!-- WhatsApp Contact Edit Modal -->
     <div id="whatsapp-edit-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="glass-card w-full max-w-sm rounded-2xl p-6 border border-slate-700 relative">
             <button onclick="closeWhatsAppModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">✕</button>
@@ -504,7 +536,6 @@
         </div>
     </div>
 
-    <!-- QR Code Modal -->
     <div id="qrcode-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="glass-card w-full max-w-sm rounded-2xl p-6 border border-slate-700 text-center relative">
             <button onclick="closeQRCodeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">✕</button>
@@ -514,7 +545,6 @@
         </div>
     </div>
 
-    <!-- Terms Modal -->
     <div id="terms-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[100] flex items-center justify-center p-4">
         <div class="glass-card w-full max-w-lg rounded-2xl p-6 border border-slate-700 max-h-[90vh] overflow-y-auto relative">
             <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">📄 Terms & Conditions</h3>
@@ -541,16 +571,15 @@
         let clickStatsAllTotal = JSON.parse(localStorage.getItem('pc_click_stats_all_total') || '{}');
         let clickStatsByDate = JSON.parse(localStorage.getItem('pc_click_stats_by_date') || '{}');
 
-        let featureToggles = JSON.parse(localStorage.getItem('pc_feature_toggles') || '{"builder":true,"stock":true,"member":true,"pdf":true,"banner":true,"badges":true}');
-        let announcementMessage = localStorage.getItem('pc_announcement_text') || '🔥 Welcome to PC Image VIVA! Check out our latest hardware components and build your custom PC today.';
-        let bannerBgColor = localStorage.getItem('pc_banner_bg') || '#0891b2';
-        let bannerTextColor = localStorage.getItem('pc_banner_color') || '#020617';
-        let bannerFontSize = localStorage.getItem('pc_banner_fontsize') || '12px';
-        let bannerSpeed = localStorage.getItem('pc_banner_speed') || '18s';
+        let featureToggles = { builder: true, stock: true, member: true, pdf: true, banner: true, badges: true };
+        let announcementMessage = '🔥 Welcome to PC Image VIVA! Check out our latest hardware components and build your custom PC today.';
+        let bannerBgColor = '#0891b2';
+        let bannerTextColor = '#020617';
+        let bannerFontSize = '12px';
+        let bannerSpeed = '18s';
+        let heroTitleText = 'PC Components Showcase & Builder';
+        let heroDescText = 'Explore high-performance hardware, check specifications, or build your custom PC';
 
-        let heroTitleText = localStorage.getItem('pc_hero_title') || 'PC Components Showcase & Builder';
-        let heroDescText = localStorage.getItem('pc_hero_desc') || 'Explore high-performance hardware, check specifications, or build your custom PC';
-        
         let analyticsView = 'total';
         let todayStr = new Date().toISOString().split('T')[0];
         let analyticsStartDate = todayStr;
@@ -564,6 +593,84 @@
         let isAdmin = false;
         let adminCategoryFilter = 'all';
         let pendingInquiryText = '';
+
+        let spotlightProducts = [];
+        let currentSpotlightIndex = 0;
+        let spotlightInterval = null;
+
+        showLoadingState();
+
+        async function fetchProductsFromCloud() {
+            try {
+                const response = await fetch(GOOGLE_SCRIPT_URL);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data && Array.isArray(data.products)) {
+                        products = data.products.filter(p => p && p.name && typeof p.name === 'string');
+                    } else if (Array.isArray(data)) {
+                        products = data.filter(p => p && p.name && typeof p.name === 'string');
+                    }
+
+                    if (data && data.settings) {
+                        const s = data.settings;
+                        if (s.builder !== undefined) featureToggles.builder = String(s.builder) === 'true';
+                        if (s.stock !== undefined) featureToggles.stock = String(s.stock) === 'true';
+                        if (s.member !== undefined) featureToggles.member = String(s.member) === 'true';
+                        if (s.pdf !== undefined) featureToggles.pdf = String(s.pdf) === 'true';
+                        if (s.banner !== undefined) featureToggles.banner = String(s.banner) === 'true';
+                        if (s.badges !== undefined) featureToggles.badges = String(s.badges) === 'true';
+
+                        if (s.announcementMessage) announcementMessage = s.announcementMessage;
+                        if (s.bannerBgColor) bannerBgColor = s.bannerBgColor;
+                        if (s.bannerTextColor) bannerTextColor = s.bannerTextColor;
+                        if (s.bannerFontSize) bannerFontSize = s.bannerFontSize;
+                        if (s.bannerSpeed) bannerSpeed = s.bannerSpeed;
+                        if (s.heroTitleText) heroTitleText = s.heroTitleText;
+                        if (s.heroDescText) heroDescText = s.heroDescText;
+                    }
+                }
+            } catch (error) { console.error(error); }
+            
+            initTogglesUI();
+            updateFilterBars();
+            renderProducts();
+            initSpotlightCarousel();
+        }
+
+        async function saveProductsToCloud() {
+            try {
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ type: 'products', products: products })
+                });
+            } catch (error) { console.error(error); }
+        }
+
+        async function saveSettingsToCloud() {
+            try {
+                const settingsPayload = {
+                    builder: featureToggles.builder,
+                    stock: featureToggles.stock,
+                    member: featureToggles.member,
+                    pdf: featureToggles.pdf,
+                    banner: featureToggles.banner,
+                    badges: featureToggles.badges,
+                    announcementMessage: announcementMessage,
+                    bannerBgColor: bannerBgColor,
+                    bannerTextColor: bannerTextColor,
+                    bannerFontSize: bannerFontSize,
+                    bannerSpeed: bannerSpeed,
+                    heroTitleText: heroTitleText,
+                    heroDescText: heroDescText
+                };
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ type: 'settings', settings: settingsPayload })
+                });
+            } catch (error) { console.error(error); }
+        }
 
         function initTogglesUI() {
             document.getElementById('toggle-builder').checked = featureToggles.builder;
@@ -597,16 +704,16 @@
             if (descElem) descElem.textContent = heroDescText;
         }
 
-        function updateHeroTitle() {
+        async function updateHeroTitle() {
             heroTitleText = document.getElementById('setting-hero-title').value;
-            localStorage.setItem('pc_hero_title', heroTitleText);
             applyCustomTitles();
+            await saveSettingsToCloud();
         }
 
-        function updateHeroDesc() {
+        async function updateHeroDesc() {
             heroDescText = document.getElementById('setting-hero-desc').value;
-            localStorage.setItem('pc_hero_desc', heroDescText);
             applyCustomTitles();
+            await saveSettingsToCloud();
         }
 
         function applyBannerStyles() {
@@ -621,18 +728,14 @@
             }
         }
 
-        function updateBannerStyles() {
+        async function updateBannerStyles() {
             bannerBgColor = document.getElementById('setting-banner-bg').value;
             bannerTextColor = document.getElementById('setting-banner-color').value;
             bannerFontSize = document.getElementById('setting-banner-fontsize').value;
             bannerSpeed = document.getElementById('setting-banner-speed').value;
 
-            localStorage.setItem('pc_banner_bg', bannerBgColor);
-            localStorage.setItem('pc_banner_color', bannerTextColor);
-            localStorage.setItem('pc_banner_fontsize', bannerFontSize);
-            localStorage.setItem('pc_banner_speed', bannerSpeed);
-
             applyBannerStyles();
+            await saveSettingsToCloud();
         }
 
         function applyFeatureToggles() {
@@ -646,7 +749,7 @@
             if (pdfBtn) pdfBtn.classList.toggle('hidden', !featureToggles.pdf);
         }
 
-        function updateFeatureToggles() {
+        async function updateFeatureToggles() {
             featureToggles.builder = document.getElementById('toggle-builder').checked;
             featureToggles.stock = document.getElementById('toggle-stock').checked;
             featureToggles.member = document.getElementById('toggle-member').checked;
@@ -654,46 +757,19 @@
             featureToggles.banner = document.getElementById('toggle-banner').checked;
             featureToggles.badges = document.getElementById('toggle-badges').checked;
             
-            localStorage.setItem('pc_feature_toggles', JSON.stringify(featureToggles));
             applyFeatureToggles();
             renderProducts();
+            await saveSettingsToCloud();
         }
 
-        function updateAnnouncementText() {
+        async function updateAnnouncementText() {
             announcementMessage = document.getElementById('setting-banner-text').value;
-            localStorage.setItem('pc_announcement_text', announcementMessage);
             applyBannerStyles();
-        }
-
-        showLoadingState();
-        initTogglesUI();
-
-        async function fetchProductsFromCloud() {
-            try {
-                const response = await fetch(GOOGLE_SCRIPT_URL);
-                if (response.ok) {
-                    const data = await response.json();
-                    if (Array.isArray(data)) {
-                        products = data.filter(p => p && p.name && typeof p.name === 'string');
-                    }
-                }
-            } catch (error) { console.error(error); }
-            updateFilterBars();
-            renderProducts();
-        }
-
-        async function saveProductsToCloud() {
-            try {
-                await fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify(products)
-                });
-            } catch (error) { console.error(error); }
+            await saveSettingsToCloud();
         }
 
         function showLoadingState() {
-            document.getElementById('product-grid').innerHTML = `<div class="col-span-full text-center py-20"><div class="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full spinner mx-auto mb-3"></div><p class="text-xs text-slate-400">Loading catalog...</p></div>`;
+            document.getElementById('product-grid').innerHTML = `<div class="col-span-full text-center py-20"><div class="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full spinner mx-auto mb-3"></div><p class="text-xs text-slate-400">Loading cloud catalog & settings...</p></div>`;
         }
 
         function goHome() {
@@ -757,6 +833,90 @@
         function filterBrand(b) { currentBrand = b; currentSubcategory = 'all'; updateFilterBars(); renderProducts(); }
         function filterSubcategory(s) { currentSubcategory = s; updateFilterBars(); renderProducts(); }
 
+        function initSpotlightCarousel() {
+            spotlightProducts = products.filter(p => {
+                const f = p.featured;
+                if (!f) return false;
+                const fStr = String(f).trim().toLowerCase();
+                return fStr === 'true' || fStr === 'yes' || fStr === '1' || fStr === 'y';
+            });
+
+            const container = document.getElementById('spotlight-carousel-container');
+            if (spotlightProducts.length === 0) {
+                container.classList.add('hidden');
+                if (spotlightInterval) clearInterval(spotlightInterval);
+                return;
+            }
+            container.classList.remove('hidden');
+            currentSpotlightIndex = 0;
+            renderSpotlightSlide();
+            if (spotlightInterval) clearInterval(spotlightInterval);
+            spotlightInterval = setInterval(() => { nextSpotlight(); }, 6000);
+        }
+
+        function renderSpotlightSlide() {
+            if (spotlightProducts.length === 0) return;
+            const p = spotlightProducts[currentSpotlightIndex];
+            const mPrice = p.memberPrice !== undefined ? p.memberPrice : p.price;
+            const imgSrc = p.image || 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=600&q=80';
+
+            document.getElementById('spotlight-slide-content').innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full items-center">
+                    <div class="md:col-span-2 space-y-2 pr-2">
+                        <div class="flex items-center gap-2">
+                            <span class="bg-blue-600/30 text-blue-300 border border-blue-500/40 text-[10px] px-2 py-0.5 rounded font-mono uppercase">${p.category || 'Featured'}</span>
+                            ${p.brand ? `<span class="text-amber-400 font-bold text-xs uppercase">${p.brand}</span>` : ''}
+                        </div>
+                        <h2 class="text-base md:text-lg font-bold text-white uniform-text leading-snug">${p.name}</h2>
+                        <p class="text-xs text-slate-300 line-clamp-2">${p.desc || p.spec1 || 'Explore our flagship recommended component for elite gaming and workstation setups.'}</p>
+                        <div class="flex items-center gap-4 pt-1">
+                            <div>
+                                <span class="text-[10px] text-slate-400 block uppercase">Normal</span>
+                                <span class="text-xs text-slate-300 font-orbitron">RM ${Number(p.price || 0).toFixed(2)}</span>
+                            </div>
+                            ${featureToggles.member ? `
+                            <div>
+                                <span class="text-[10px] text-amber-400 block uppercase font-bold">Member Price</span>
+                                <span class="text-base text-amber-400 font-orbitron font-black">RM ${Number(mPrice || 0).toFixed(2)}</span>
+                            </div>` : ''}
+                        </div>
+                        <div class="pt-2 flex flex-wrap gap-2">
+                            <button onclick="openDetail('${p.id}')" class="bg-blue-600 hover:bg-blue-500 text-white text-xs px-4 py-2 rounded-xl font-medium transition">View Details</button>
+                            ${featureToggles.builder ? `<button onclick="addToBuilder('${p.id}')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs px-4 py-2 rounded-xl font-medium transition">+ Add to Builder</button>` : ''}
+                        </div>
+                    </div>
+                    <div class="h-44 md:h-40 rounded-xl bg-slate-950/80 overflow-hidden flex items-center justify-center p-2 relative cursor-pointer" onclick="openDetail('${p.id}')">
+                        <img src="${imgSrc}" class="max-h-full max-w-full object-contain hover:scale-105 transition duration-300">
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('spotlight-dots').innerHTML = spotlightProducts.map((_, idx) => `
+                <button onclick="setSpotlightIndex(${idx})" class="w-2 h-2 rounded-full transition ${idx === currentSpotlightIndex ? 'bg-amber-400 w-5' : 'bg-slate-700'}"></button>
+            `).join('');
+        }
+
+        function nextSpotlight() {
+            if (spotlightProducts.length === 0) return;
+            currentSpotlightIndex = (currentSpotlightIndex + 1) % spotlightProducts.length;
+            renderSpotlightSlide();
+        }
+
+        function prevSpotlight() {
+            if (spotlightProducts.length === 0) return;
+            currentSpotlightIndex = (currentSpotlightIndex - 1 + spotlightProducts.length) % spotlightProducts.length;
+            renderSpotlightSlide();
+        }
+
+        function setSpotlightIndex(idx) {
+            currentSpotlightIndex = idx;
+            renderSpotlightSlide();
+            if (spotlightInterval) {
+                clearInterval(spotlightInterval);
+                spotlightInterval = setInterval(() => { nextSpotlight(); }, 6000);
+            }
+        }
+
         function renderProducts() {
             const grid = document.getElementById('product-grid');
             const searchTerms = searchQuery ? searchQuery.split(/\s+/).filter(Boolean) : [];
@@ -795,6 +955,7 @@
                     let bColor = 'bg-red-600 text-white';
                     if (p.badge === 'SALE') bColor = 'bg-amber-500 text-slate-950 font-bold';
                     if (p.badge === 'NEW') bColor = 'bg-blue-600 text-white';
+                    if (p.badge === 'HOT') bColor = 'bg-amber-500 text-slate-950 font-bold';
                     customBadgeHtml = `<span class="text-[10px] px-2 py-0.5 rounded shadow uppercase font-bold ${bColor}">${p.badge}</span>`;
                 }
 
@@ -883,7 +1044,6 @@
             renderAnalyticsList();
         }
 
-        // PC Builder 逻辑
         function addToBuilder(id) {
             if (!featureToggles.builder) return;
             const p = products.find(item => item.id === id);
@@ -1195,6 +1355,7 @@
             document.getElementById('modal-title').textContent = "Add New Component";
             document.getElementById('product-form').reset();
             document.getElementById('product-id').value = '';
+            document.getElementById('p-featured').checked = false;
             document.getElementById('product-modal').classList.remove('hidden');
         }
         function closeProductModal() { document.getElementById('product-modal').classList.add('hidden'); }
@@ -1216,12 +1377,13 @@
                 url: document.getElementById('p-url').value.trim(),
                 spec1: document.getElementById('p-spec1').value.trim(),
                 spec2: document.getElementById('p-spec2').value.trim(),
-                desc: document.getElementById('p-desc').value.trim()
+                desc: document.getElementById('p-desc').value.trim(),
+                featured: document.getElementById('p-featured').checked ? 'yes' : ''
             };
             closeProductModal();
             if (id) { const idx = products.findIndex(p => p.id === id); if (idx !== -1) products[idx] = data; }
             else { products.unshift(data); }
-            await saveProductsToCloud(); renderProducts();
+            await saveProductsToCloud(); renderProducts(); initSpotlightCarousel();
         }
 
         function editProduct(id) {
@@ -1242,13 +1404,18 @@
             document.getElementById('p-spec1').value = p.spec1 || '';
             document.getElementById('p-spec2').value = p.spec2 || '';
             document.getElementById('p-desc').value = p.desc || '';
+            
+            const f = p.featured;
+            const isFeat = f && (String(f).trim().toLowerCase() === 'true' || String(f).trim().toLowerCase() === 'yes' || String(f).trim().toLowerCase() === '1');
+            document.getElementById('p-featured').checked = isFeat;
+
             document.getElementById('product-modal').classList.remove('hidden');
         }
 
         async function deleteProduct(id) {
             if(confirm('Delete this component?')) {
                 products = products.filter(p => p.id !== id);
-                await saveProductsToCloud(); renderProducts();
+                await saveProductsToCloud(); renderProducts(); initSpotlightCarousel();
             }
         }
 
