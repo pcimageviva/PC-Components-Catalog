@@ -36,10 +36,10 @@
         .marquee-container:hover .marquee-content { animation-play-state: paused; }
         @keyframes marquee { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
 
-        /* 📱 专门针对手机端优化的 CSS 媒体查询 */
+        /* 📱 手机端全面优化（前台 + 管理员后台） */
         @media screen and (max-width: 768px) {
-            /* 1. 顶部分类栏：改成横向滚动，防止换行拥挤 */
-            #category-filters {
+            /* 1. 顶部分类栏与后台分类筛选：横向滑动 */
+            #category-filters, #admin-category-filters {
                 display: flex;
                 overflow-x: auto;
                 flex-wrap: nowrap;
@@ -47,15 +47,30 @@
                 padding-bottom: 6px;
                 -webkit-overflow-scrolling: touch;
             }
-            #category-filters::-webkit-scrollbar {
+            #category-filters::-webkit-scrollbar, #admin-category-filters::-webkit-scrollbar {
                 display: none;
             }
 
-            /* 2. 商品标题：手机端自动单行省略，保持排版整齐 */
-            #product-grid .uniform-text {
+            /* 2. 商品标题单行省略，避免排版错乱 */
+            #product-grid .uniform-text, #admin-product-list .uniform-text {
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
+            }
+
+            /* 3. 管理员后台商品卡片排版防挤压 */
+            #admin-product-list .glass-card {
+                flex-direction: column;
+                align-items: stretch !important;
+                gap: 8px;
+            }
+            #admin-product-list .glass-card > div:first-child {
+                width: 100%;
+            }
+            #admin-product-list .glass-card > div:last-child {
+                display: flex;
+                justify-content: flex-end;
+                gap: 6px;
             }
         }
     </style>
@@ -1028,15 +1043,15 @@
             document.getElementById('admin-product-list').innerHTML = adminFiltered.map(p => `
                 <div draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event, '${p.id}')" data-id="${p.id}"
                      class="draggable-item glass-card p-3 rounded-xl flex items-center justify-between border border-slate-800">
-                    <div class="flex items-center space-x-3">
-                        <span class="text-slate-500 cursor-grab text-lg select-none">⠿</span>
+                    <div class="flex items-center space-x-3 min-w-0">
+                        <span class="text-slate-500 cursor-grab text-lg select-none shrink-0">⠿</span>
                         <img src="${p.image || 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=600&q=80'}" class="w-12 h-12 object-cover rounded-lg bg-slate-900 shrink-0">
                         <div class="min-w-0 pr-2">
                             <div class="font-bold text-white text-sm uniform-text truncate">${p.name}</div>
-                            <div class="text-xs text-blue-400">Normal: RM ${p.price} | <span class="text-amber-400 font-bold">Member: RM ${p.memberPrice}</span> | Today: ${todayMap[p.id] || 0} | Total: ${clickStatsAllTotal[p.id] || 0}</div>
+                            <div class="text-xs text-blue-400 truncate">Normal: RM ${p.price} | <span class="text-amber-400 font-bold">Member: RM ${p.memberPrice}</span> | Today: ${todayMap[p.id] || 0} | Total: ${clickStatsAllTotal[p.id] || 0}</div>
                         </div>
                     </div>
-                    <div class="space-x-1 shrink-0">
+                    <div class="space-x-1 shrink-0 flex items-center">
                         <button onclick="editProduct('${p.id}')" class="bg-slate-800 text-slate-300 text-xs px-3 py-1 rounded">Edit</button>
                         <button onclick="deleteProduct('${p.id}')" class="bg-red-900/30 text-red-400 text-xs px-3 py-1 rounded">Del</button>
                     </div>
