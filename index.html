@@ -73,7 +73,7 @@
         </div>
     </div>
 
-    <!-- 修复：将 Header 改为纯色背景并加上阴影，防止滚动时内容穿透 -->
+    <!-- 纯色背景防止手机滚动穿透 -->
     <header class="sticky top-0 z-50 border-b border-blue-900/50 px-4 py-3 flex justify-between items-center shadow-xl" style="background-color: #0b0f19;">
         <div onclick="goHome()" class="flex items-center space-x-2 cursor-pointer group">
             <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAOCAYAAAAmL5yKAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAEMSURBVDhPfVK/yocwDDw7dAgUCh1cnBx8//fwFbrX0UFQ6XDf4JfSVvkdBPLHay6JmKaJAIo555r4V+2f2wQvQk/qvzX4gLUWAHAcB47jaHIvhBAYQmCMkT1yzsw592nGGKk8qBRFSon7vjcEktz3nSmlEpeRQgh0zvG6Lq7rymVZKCK01jYmIlyWheu68rouOue+FXx1V9S1ZokiUnZynicA4L7vkuuxbRumaXoC7z1FhDlnxhjpnKOIUESa043j+OmjH8EYQwA6X4nr/2EYBhpjniaqIKXElFJ5XYm1WWvpve9rjzPPc+mq8usLGGMaYlGgiXpm7/0rV5ueGQBRS+4JulCtK1n9cRz5B0qGXZpSF98bAAAAAElFTkSuQmCC" alt="Logo" class="w-9 h-9 rounded-lg object-cover border border-blue-500/40 group-hover:border-blue-400 transition">
@@ -84,6 +84,7 @@
         </div>
         <div class="flex items-center space-x-2">
             <button id="nav-builder-btn" onclick="openBuilderModal()" class="text-xs bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg transition font-medium flex items-center gap-1">🖥️ PC Builder <span id="builder-badge" class="bg-amber-400 text-slate-950 px-1.5 py-0.2 rounded-full text-[10px] font-bold hidden">0</span></button>
+            <!-- 联动开关：当暗号关闭时，此按钮自动显示；开启时自动隐藏 -->
             <button onclick="handleAdminClick()" id="admin-btn" class="hidden text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 transition">Admin Panel</button>
         </div>
     </header>
@@ -92,7 +93,7 @@
         <div id="customer-view">
             <div class="mb-6 text-center py-5 bg-gradient-to-r from-blue-900/20 via-slate-900/40 to-blue-900/20 rounded-2xl border border-blue-500/10">
                 <h1 id="main-hero-title" class="text-2xl md:text-3xl font-bold font-orbitron text-white mb-2">PC Components Showcase</h1>
-                <p id="main-hero-desc" class="text-sm text-slate-400 mb-3">Explore high-performance hardware, check specifications, or build your custom PC</p>
+                <p id="main-hero-desc" class="text-sm text-slate-400 mb-3">Explore high-performance hardware and build your dream PC with custom builds & exclusive deals</p>
                 <div class="flex justify-center items-center gap-4 text-xs">
                     <button onclick="openTermsModal()" class="text-blue-400 hover:underline">📄 Terms & Conditions</button>
                 </div>
@@ -410,6 +411,16 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                         <div class="flex items-center justify-between bg-slate-900 p-3 rounded-xl border border-slate-800">
                             <div>
+                                <span class="font-bold text-white block">🔑 Admin Secret Triggers (#admin)</span>
+                                <span class="text-[10px] text-slate-400">Enable/Disable search & URL secret triggers</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="toggle-secret-triggers" onchange="updateFeatureToggles()">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="flex items-center justify-between bg-slate-900 p-3 rounded-xl border border-slate-800">
+                            <div>
                                 <span class="font-bold text-white block">🔥 Trending Ranking Widget</span>
                                 <span class="text-[10px] text-slate-400">Display most clicked product rankings on the right</span>
                             </div>
@@ -689,7 +700,7 @@
         let clickStatsAllTotal = JSON.parse(localStorage.getItem('pc_click_stats_all_total') || '{}');
         let clickStatsByDate = JSON.parse(localStorage.getItem('pc_click_stats_by_date') || '{}');
 
-        let featureToggles = { builder: true, stock: true, member: true, promo: true, pdf: true, banner: true, badges: true, carouselEnabled: true, trending: true };
+        let featureToggles = { builder: true, stock: true, member: true, promo: true, pdf: true, banner: true, badges: true, carouselEnabled: true, trending: true, secretTriggers: true };
         let carouselSpeed = '6000';
         let carouselProgressMode = 'bottom';
         let carouselFontSize = 'text-lg';
@@ -724,6 +735,48 @@
 
         showLoadingState();
 
+        // 检查 15 分钟会话是否有效（支持操作中顺延）
+        function checkAdminSessionValid() {
+            const savedPwd = sessionStorage.getItem('session_admin_pwd');
+            const savedTime = sessionStorage.getItem('session_admin_time');
+            
+            if (!savedPwd || !savedTime) return false;
+            
+            const now = Date.now();
+            const elapsedMinutes = (now - parseInt(savedTime)) / (1000 * 60);
+            
+            // 如果超过 15 分钟无操作，清除并失效
+            if (elapsedMinutes > 15) {
+                sessionStorage.removeItem('session_admin_pwd');
+                sessionStorage.removeItem('session_admin_time');
+                window.currentAdminPassword = null;
+                return false;
+            }
+            
+            // 如果在 15 分钟内，顺延刷新时间戳
+            sessionStorage.setItem('session_admin_time', now.toString());
+            window.currentAdminPassword = savedPwd;
+            return true;
+        }
+
+        // 页面加载时：检查 15 分钟会话并根据开关状态检测暗号
+        window.addEventListener('DOMContentLoaded', () => {
+            checkAdminSessionValid();
+
+            if (featureToggles.secretTriggers !== false) {
+                const hash = window.location.hash.toLowerCase().trim();
+                if (hash === '#admin' || hash === 'admin' || window.location.search.includes('admin')) {
+                    if (checkAdminSessionValid()) {
+                        toggleAdmin(true);
+                    } else {
+                        document.getElementById('password-modal').classList.remove('hidden');
+                        document.getElementById('admin-password-input').value = '';
+                        document.getElementById('admin-password-input').focus();
+                    }
+                }
+            }
+        });
+
         function getEffectivePrice(p) {
             const promo = (featureToggles.promo !== false && p.promoPrice !== undefined && p.promoPrice !== null && !isNaN(p.promoPrice) && Number(p.promoPrice) > 0) ? Number(p.promoPrice) : null;
             const member = (featureToggles.member !== false && p.memberPrice !== undefined && p.memberPrice !== null && !isNaN(p.memberPrice) && Number(p.memberPrice) > 0) ? Number(p.memberPrice) : null;
@@ -756,6 +809,7 @@
                         if (s.badges !== undefined) featureToggles.badges = String(s.badges) === 'true';
                         if (s.carouselEnabled !== undefined) featureToggles.carouselEnabled = String(s.carouselEnabled) === 'true';
                         if (s.trending !== undefined) featureToggles.trending = String(s.trending) === 'true';
+                        if (s.secretTriggers !== undefined) featureToggles.secretTriggers = String(s.secretTriggers) === 'true';
 
                         if (s.carouselSpeed) carouselSpeed = s.carouselSpeed;
                         if (s.carouselProgressMode) carouselProgressMode = s.carouselProgressMode;
@@ -786,7 +840,11 @@
                 await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({ type: 'products', products: products })
+                    body: JSON.stringify({ 
+                        type: 'products', 
+                        password: window.currentAdminPassword,
+                        products: products 
+                    })
                 });
             } catch (error) { console.error(error); }
         }
@@ -803,6 +861,7 @@
                     badges: featureToggles.badges,
                     carouselEnabled: featureToggles.carouselEnabled,
                     trending: featureToggles.trending,
+                    secretTriggers: featureToggles.secretTriggers,
                     carouselSpeed: carouselSpeed,
                     carouselProgressMode: carouselProgressMode,
                     carouselFontSize: carouselFontSize,
@@ -819,7 +878,11 @@
                 await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({ type: 'settings', settings: settingsPayload })
+                    body: JSON.stringify({ 
+                        type: 'settings', 
+                        password: window.currentAdminPassword,
+                        settings: settingsPayload 
+                    })
                 });
             } catch (error) { console.error(error); }
         }
@@ -834,6 +897,7 @@
             document.getElementById('toggle-badges').checked = featureToggles.badges !== undefined ? featureToggles.badges : true;
             document.getElementById('toggle-carousel-enabled').checked = featureToggles.carouselEnabled !== undefined ? featureToggles.carouselEnabled : true;
             document.getElementById('toggle-trending').checked = featureToggles.trending !== undefined ? featureToggles.trending : true;
+            document.getElementById('toggle-secret-triggers').checked = featureToggles.secretTriggers !== undefined ? featureToggles.secretTriggers : true;
             
             document.getElementById('setting-carousel-speed').value = carouselSpeed;
             document.getElementById('setting-carousel-progress-mode').value = carouselProgressMode;
@@ -936,6 +1000,16 @@
                     catalogContainer.className = "lg:col-span-3 space-y-4";
                 }
             }
+
+            // 核心联动逻辑：当暗号开启时，右上角 Admin 按钮隐藏；当暗号关闭时，右上角 Admin 按钮显示
+            const adminBtn = document.getElementById('admin-btn');
+            if (adminBtn) {
+                if (featureToggles.secretTriggers !== false) {
+                    adminBtn.classList.add('hidden'); // 开启暗号 -> 隐藏按钮
+                } else {
+                    adminBtn.classList.remove('hidden'); // 关闭暗号 -> 显示按钮
+                }
+            }
         }
 
         async function updateFeatureToggles() {
@@ -947,6 +1021,7 @@
             featureToggles.banner = document.getElementById('toggle-banner').checked;
             featureToggles.badges = document.getElementById('toggle-badges').checked;
             featureToggles.trending = document.getElementById('toggle-trending').checked;
+            featureToggles.secretTriggers = document.getElementById('toggle-secret-triggers').checked;
             
             applyFeatureToggles();
             renderProducts();
@@ -973,7 +1048,26 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function handleSearch() { searchQuery = document.getElementById('search-input').value.toLowerCase().trim(); renderProducts(); }
+        // 搜索框暗号检测（受后台开关控制）
+        function handleSearch() {
+            const inputField = document.getElementById('search-input');
+            const inputVal = inputField.value.trim().toLowerCase();
+            
+            if (featureToggles.secretTriggers !== false && (inputVal === '#admin' || inputVal === 'admin')) {
+                inputField.value = ''; // 瞬间清空
+                if (checkAdminSessionValid()) {
+                    toggleAdmin(true);
+                } else {
+                    document.getElementById('password-modal').classList.remove('hidden');
+                    document.getElementById('admin-password-input').value = '';
+                    document.getElementById('admin-password-input').focus();
+                }
+                return;
+            }
+            searchQuery = inputVal; 
+            renderProducts();
+        }
+
         function handleSort() { currentSort = document.getElementById('sort-select').value; renderProducts(); }
 
         function filterCategory(cat) {
@@ -1851,19 +1945,43 @@
             if (isAdmin) {
                 toggleAdmin(false);
             } else {
-                document.getElementById('password-modal').classList.remove('hidden');
-                document.getElementById('admin-password-input').value = '';
-                document.getElementById('admin-password-input').focus();
+                if (checkAdminSessionValid()) {
+                    toggleAdmin(true);
+                } else {
+                    document.getElementById('password-modal').classList.remove('hidden');
+                    document.getElementById('admin-password-input').value = '';
+                    document.getElementById('admin-password-input').focus();
+                }
             }
         }
 
-        function verifyPassword(e) {
+        async function verifyPassword(e) {
             e.preventDefault();
-            if (document.getElementById('admin-password-input').value === adminPassword) {
-                closePasswordModal();
-                toggleAdmin(true);
-            } else { 
-                alert("Incorrect password!"); 
+            const inputPwd = document.getElementById('admin-password-input').value;
+            
+            try {
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ type: 'login', password: inputPwd })
+                });
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    closePasswordModal();
+                    window.currentAdminPassword = inputPwd; 
+                    
+                    // 登录成功：存入密码和当前时间戳（15分钟超时）
+                    sessionStorage.setItem('session_admin_pwd', inputPwd);
+                    sessionStorage.setItem('session_admin_time', Date.now().toString());
+                    
+                    toggleAdmin(true);
+                } else { 
+                    alert("密码错误！"); 
+                }
+            } catch (err) {
+                alert("网络或连接错误，验证失败");
+                console.error(err);
             }
         }
 
@@ -1940,8 +2058,8 @@
             document.getElementById('p-spec2').value = p.spec2 || '';
             document.getElementById('p-desc').value = p.desc || '';
             
-            const f = p.featured;
-            const isFeat = f && (String(f).trim().toLowerCase() === 'true' || String(f).trim().toLowerCase() === 'yes' || String(f).trim().toLowerCase() === '1');
+            let f = p.featured;
+            let isFeat = f && (String(f).trim().toLowerCase() === 'true' || String(f).trim().toLowerCase() === 'yes' || String(f).trim().toLowerCase() === '1');
             document.getElementById('p-featured').checked = isFeat;
 
             document.getElementById('product-modal').classList.remove('hidden');
