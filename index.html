@@ -73,7 +73,8 @@
         </div>
     </div>
 
-    <header class="glass-card sticky top-0 z-50 border-b border-blue-900/40 px-4 py-3 flex justify-between items-center">
+    <!-- 修复：将 Header 改为纯色背景并加上阴影，防止滚动时内容穿透 -->
+    <header class="sticky top-0 z-50 border-b border-blue-900/50 px-4 py-3 flex justify-between items-center shadow-xl" style="background-color: #0b0f19;">
         <div onclick="goHome()" class="flex items-center space-x-2 cursor-pointer group">
             <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAOCAYAAAAmL5yKAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAEMSURBVDhPfVK/yocwDDw7dAgUCh1cnBx8//fwFbrX0UFQ6XDf4JfSVvkdBPLHay6JmKaJAIo555r4V+2f2wQvQk/qvzX4gLUWAHAcB47jaHIvhBAYQmCMkT1yzsw592nGGKk8qBRFSon7vjcEktz3nSmlEpeRQgh0zvG6Lq7rymVZKCK01jYmIlyWheu68rouOue+FXx1V9S1ZokiUnZynicA4L7vkuuxbRumaXoC7z1FhDlnxhjpnKOIUESa043j+OmjH8EYQwA6X4nr/2EYBhpjniaqIKXElFJ5XYm1WWvpve9rjzPPc+mq8usLGGMaYlGgiXpm7/0rV5ueGQBRS+4JulCtK1n9cRz5B0qGXZpSF98bAAAAAElFTkSuQmCC" alt="Logo" class="w-9 h-9 rounded-lg object-cover border border-blue-500/40 group-hover:border-blue-400 transition">
             <div>
@@ -83,11 +84,11 @@
         </div>
         <div class="flex items-center space-x-2">
             <button id="nav-builder-btn" onclick="openBuilderModal()" class="text-xs bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg transition font-medium flex items-center gap-1">🖥️ PC Builder <span id="builder-badge" class="bg-amber-400 text-slate-950 px-1.5 py-0.2 rounded-full text-[10px] font-bold hidden">0</span></button>
-            <button onclick="handleAdminClick()" id="admin-btn" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 transition">Admin Panel</button>
+            <button onclick="handleAdminClick()" id="admin-btn" class="hidden text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 transition">Admin Panel</button>
         </div>
     </header>
 
-    <main class="flex-grow max-w-6xl w-full mx-auto p-4">
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4">
         <div id="customer-view">
             <div class="mb-6 text-center py-5 bg-gradient-to-r from-blue-900/20 via-slate-900/40 to-blue-900/20 rounded-2xl border border-blue-500/10">
                 <h1 id="main-hero-title" class="text-2xl md:text-3xl font-bold font-orbitron text-white mb-2">PC Components Showcase</h1>
@@ -97,7 +98,7 @@
                 </div>
             </div>
 
-            <!-- Spotlight Carousel 镇店之宝轮播区域 -->
+            <!-- Spotlight Carousel -->
             <div id="spotlight-carousel-container" class="mb-6 hidden">
                 <div class="glass-card rounded-2xl border border-amber-500/30 overflow-hidden relative shadow-xl bg-gradient-to-r from-slate-900/90 via-blue-950/40 to-slate-900/90 p-5 md:p-6">
                     <div id="spotlight-slide-content" class="min-h-[220px] flex items-center"></div>
@@ -114,48 +115,89 @@
                 </div>
             </div>
 
-            <div class="mb-4 space-y-3">
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                    <div class="relative sm:col-span-2">
-                        <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">🔍</span>
-                        <input type="text" id="search-input" oninput="handleSearch()" placeholder="Search components by name, brand, specs..." class="w-full bg-slate-900/90 border border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition">
+            <!-- Main Layout (Left Catalog, Right Trending Widget) -->
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                <!-- Left: Catalog & Search -->
+                <div id="main-catalog-container" class="lg:col-span-3 space-y-4">
+                    <div class="space-y-3">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                            <div class="relative sm:col-span-2">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">🔍</span>
+                                <input type="text" id="search-input" oninput="handleSearch()" placeholder="Search components by name, brand, specs..." class="w-full bg-slate-900/90 border border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition">
+                            </div>
+                            <div>
+                                <select id="sort-select" onchange="handleSort()" class="w-full bg-slate-900/90 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition">
+                                    <option value="name-asc">Name: A to Z</option>
+                                    <option value="price-low">Price: Low to High</option>
+                                    <option value="price-high">Price: High to Low</option>
+                                    <option value="popular">Most Viewed (Today)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-wrap gap-2 pb-1" id="category-filters">
+                            <button onclick="filterCategory('all')" class="category-btn px-4 py-2 rounded-full text-xs font-medium bg-blue-600 text-white transition">All Items</button>
+                            <button onclick="filterCategory('CPU')" class="category-btn px-4 py-2 rounded-full text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">CPU</button>
+                            <button onclick="filterCategory('GPU')" class="category-btn px-4 py-2 rounded-full text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Graphics Card (GPU)</button>
+                            <button onclick="filterCategory('Motherboard')" class="category-btn px-4 py-2 rounded-full text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Motherboard</button>
+                            <button onclick="filterCategory('RAM')" class="category-btn px-4 py-2 rounded-full text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Memory (RAM)</button>
+                            <button onclick="filterCategory('Storage')" class="category-btn px-4 py-2 rounded-full text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">SSD / Storage</button>
+                            <button onclick="filterCategory('PSU')" class="category-btn px-4 py-2 rounded-full text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Power Supply (PSU)</button>
+                            <button onclick="filterCategory('Cooler')" class="category-btn px-4 py-2 rounded-full text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Cooler</button>
+                            <button onclick="filterCategory('Casing')" class="category-btn px-4 py-2 rounded-full text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">PC Casing</button>
+                            <button onclick="filterCategory('Accessories')" class="category-btn px-4 py-2 rounded-full text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Accessories</button>
+                        </div>
+
+                        <div id="filterbar-container" class="hidden space-y-2.5 pt-3 border-t border-slate-800/80">
+                            <div id="brand-container" class="hidden flex flex-wrap gap-2 items-center">
+                                <span class="text-xs text-amber-400 font-bold uppercase tracking-wider mr-2">Brand:</span>
+                                <div id="brand-buttons" class="flex flex-wrap gap-2"></div>
+                            </div>
+                            <div id="subcategory-container" class="hidden flex flex-wrap gap-2 items-center">
+                                <span class="text-xs text-blue-400 font-bold uppercase tracking-wider mr-2">Series:</span>
+                                <div id="subcategory-buttons" class="flex flex-wrap gap-2"></div>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <select id="sort-select" onchange="handleSort()" class="w-full bg-slate-900/90 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition">
-                            <option value="name-asc">Name: A to Z</option>
-                            <option value="price-low">Price: Low to High</option>
-                            <option value="price-high">Price: High to Low</option>
-                            <option value="popular">Most Viewed (Today)</option>
-                        </select>
-                    </div>
+
+                    <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
                 </div>
 
-                <div class="flex flex-wrap gap-2 pb-1" id="category-filters">
-                    <button onclick="filterCategory('all')" class="category-btn px-4 py-2 rounded-full text-xs font-medium bg-blue-600 text-white transition">All Items</button>
-                    <button onclick="filterCategory('CPU')" class="category-btn px-4 py-2 rounded-full text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">CPU</button>
-                    <button onclick="filterCategory('GPU')" class="category-btn px-4 py-2 rounded-full text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Graphics Card (GPU)</button>
-                    <button onclick="filterCategory('Motherboard')" class="category-btn px-4 py-2 rounded-full text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Motherboard</button>
-                    <button onclick="filterCategory('RAM')" class="category-btn px-4 py-2 rounded-full text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Memory (RAM)</button>
-                    <button onclick="filterCategory('Storage')" class="category-btn px-4 py-2 rounded-full text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">SSD / Storage</button>
-                    <button onclick="filterCategory('PSU')" class="category-btn px-4 py-2 rounded-full text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Power Supply (PSU)</button>
-                    <button onclick="filterCategory('Cooler')" class="category-btn px-4 py-2 rounded-full text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Cooler</button>
-                    <button onclick="filterCategory('Casing')" class="category-btn px-4 py-2 rounded-full text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">PC Casing</button>
-                    <button onclick="filterCategory('Accessories')" class="category-btn px-4 py-2 rounded-full text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Accessories</button>
-                </div>
+                <!-- Right: Trending Rank Widget -->
+                <div id="trending-sidebar-widget" class="lg:col-span-1 space-y-4">
+                    <div class="glass-card rounded-2xl p-4 border border-amber-500/30 sticky top-20 shadow-xl bg-gradient-to-b from-slate-900/90 via-slate-900/70 to-blue-950/40">
+                        <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-800">
+                            <h3 class="font-bold text-sm font-orbitron text-amber-400 flex items-center gap-1.5">
+                                <span>🔥</span> <span>Trending Rank</span>
+                            </h3>
+                            <select id="trending-range-select" onchange="changeTrendingRange(this.value)" class="bg-slate-900 border border-slate-700 text-slate-300 rounded text-[10px] px-2 py-1 focus:outline-none focus:border-amber-500">
+                                <option value="3">Past 3 Days</option>
+                                <option value="5">Past 5 Days</option>
+                                <option value="7" selected>Past 7 Days</option>
+                                <option value="30">Past 1 Month</option>
+                                <option value="all">All Time</option>
+                                <option value="custom">Custom Range</option>
+                            </select>
+                        </div>
 
-                <div id="filterbar-container" class="hidden space-y-2.5 pt-3 border-t border-slate-800/80">
-                    <div id="brand-container" class="hidden flex flex-wrap gap-2 items-center">
-                        <span class="text-xs text-amber-400 font-bold uppercase tracking-wider mr-2">Brand:</span>
-                        <div id="brand-buttons" class="flex flex-wrap gap-2"></div>
-                    </div>
-                    <div id="subcategory-container" class="hidden flex flex-wrap gap-2 items-center">
-                        <span class="text-xs text-blue-400 font-bold uppercase tracking-wider mr-2">Series:</span>
-                        <div id="subcategory-buttons" class="flex flex-wrap gap-2"></div>
+                        <!-- Custom Date Range Picker Container -->
+                        <div id="trending-custom-date-container" class="hidden mb-3 p-2.5 bg-slate-900/90 rounded-xl border border-slate-800 text-xs space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-slate-400">From:</span>
+                                <input type="date" id="trending-start-date" onchange="renderTrendingWidget()" class="bg-slate-950 border border-slate-700 text-white px-2 py-1 rounded text-xs">
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-slate-400">To:</span>
+                                <input type="date" id="trending-end-date" onchange="renderTrendingWidget()" class="bg-slate-950 border border-slate-700 text-white px-2 py-1 rounded text-xs">
+                            </div>
+                        </div>
+
+                        <div id="trending-rank-list" class="space-y-2.5 max-h-[65vh] overflow-y-auto pr-1">
+                            <!-- Populated dynamically -->
+                        </div>
                     </div>
                 </div>
             </div>
-
-            <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
         </div>
 
         <div id="admin-view" class="hidden space-y-4">
@@ -306,8 +348,8 @@
                 <div class="glass-card p-4 rounded-xl border border-slate-800 space-y-3 md:col-span-2">
                     <div class="border-b border-slate-800 pb-2 flex justify-between items-center">
                         <div>
-                            <h2 class="text-sm font-bold text-white flex items-center gap-1.5">🌟 Feature Carousel (镇店之宝轮播设置)</h2>
-                            <p class="text-[11px] text-slate-400">调整轮播速度、颜色、字体大小及进度条模式与实时预览。</p>
+                            <h2 class="text-sm font-bold text-white flex items-center gap-1.5">🌟 Feature Carousel Settings</h2>
+                            <p class="text-[11px] text-slate-400">Configure spotlight carousel speed, style and mode.</p>
                         </div>
                         <label class="switch">
                             <input type="checkbox" id="toggle-carousel-enabled" onchange="updateCarouselSettings()">
@@ -316,37 +358,47 @@
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-5 gap-3 text-xs pt-2">
                         <div>
-                            <label class="block text-slate-300 mb-1 font-medium">轮播速度 (秒):</label>
+                            <label class="block text-slate-300 mb-1 font-medium">Carousel Speed (ms):</label>
                             <select id="setting-carousel-speed" onchange="updateCarouselSettings()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-white">
-                                <option value="3000">3秒 (快)</option>
-                                <option value="6000">6秒 (标准)</option>
-                                <option value="10000">10秒 (慢)</option>
+                                <option value="3000">3s (Fast)</option>
+                                <option value="6000">6s (Standard)</option>
+                                <option value="10000">10s (Slow)</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-slate-300 mb-1 font-medium">进度条模式:</label>
+                            <label class="block text-slate-300 mb-1 font-medium">Progress Mode:</label>
                             <select id="setting-carousel-progress-mode" onchange="updateCarouselSettings()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-white">
-                                <option value="none">关闭进度条</option>
-                                <option value="bottom">模式一: 底部条状</option>
-                                <option value="dot">模式二: 圆点倒计时</option>
+                                <option value="none">Disable Progress Bar</option>
+                                <option value="bottom">Mode 1: Bottom Bar</option>
+                                <option value="dot">Mode 2: Dot Countdown</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-slate-300 mb-1 font-medium">标题字体大小:</label>
+                            <label class="block text-slate-300 mb-1 font-medium">Title Font Size:</label>
                             <select id="setting-carousel-fontsize" onchange="updateCarouselSettings()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-white">
-                                <option value="text-base">小 (Base)</option>
-                                <option value="text-lg">标准 (LG)</option>
-                                <option value="text-xl">大 (XL)</option>
+                                <option value="text-base">Small (Base)</option>
+                                <option value="text-lg">Standard (LG)</option>
+                                <option value="text-xl">Large (XL)</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-slate-300 mb-1 font-medium">卡片背景颜色:</label>
+                            <label class="block text-slate-300 mb-1 font-medium">Card Background Color:</label>
                             <input type="color" id="setting-carousel-bg" onchange="updateCarouselSettings()" value="#0f172a" class="w-full h-9 bg-slate-900 border border-slate-700 rounded cursor-pointer p-1">
                         </div>
                         <div>
-                            <label class="block text-slate-300 mb-1 font-medium">主题强调色:</label>
+                            <label class="block text-slate-300 mb-1 font-medium">Theme Accent Color:</label>
                             <input type="color" id="setting-carousel-accent" onchange="updateCarouselSettings()" value="#f59e0b" class="w-full h-9 bg-slate-900 border border-slate-700 rounded cursor-pointer p-1">
                         </div>
+                    </div>
+                </div>
+
+                <div class="glass-card p-4 rounded-xl border border-slate-800 space-y-3 md:col-span-2">
+                    <div class="border-b border-slate-800 pb-2 flex justify-between items-center">
+                        <div>
+                            <h2 class="text-sm font-bold text-white flex items-center gap-1.5">📊 Trending Stats Management</h2>
+                            <p class="text-[11px] text-slate-400">Reset click tracking statistics and restart rankings.</p>
+                        </div>
+                        <button onclick="resetClickStatistics()" class="bg-red-600/30 text-red-300 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition border border-red-500/30">Reset All Click Stats</button>
                     </div>
                 </div>
 
@@ -356,6 +408,16 @@
                         <p class="text-[11px] text-slate-400">Instantly toggle layout features for customers (Synced to Cloud).</p>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                        <div class="flex items-center justify-between bg-slate-900 p-3 rounded-xl border border-slate-800">
+                            <div>
+                                <span class="font-bold text-white block">🔥 Trending Ranking Widget</span>
+                                <span class="text-[10px] text-slate-400">Display most clicked product rankings on the right</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="toggle-trending" onchange="updateFeatureToggles()">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
                         <div class="flex items-center justify-between bg-slate-900 p-3 rounded-xl border border-slate-800">
                             <div>
                                 <span class="font-bold text-white block">🖥️ PC Builder</span>
@@ -565,12 +627,12 @@
                     <input type="text" id="p-spec1" placeholder="Spec 1" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white">
                     <input type="text" id="p-spec2" placeholder="Spec 2" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white">
                 </div>
-                <textarea id="p-desc" rows="3" placeholder="Description (支持按回车换行排版)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white"></textarea>
+                <textarea id="p-desc" rows="3" placeholder="Description" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white"></textarea>
                 
                 <div class="space-y-2 pt-1 border-t border-slate-800">
                     <div class="flex items-center gap-2">
                         <input type="checkbox" id="p-featured" class="w-4 h-4 bg-slate-900 border border-slate-700 rounded text-blue-600 cursor-pointer">
-                        <label for="p-featured" class="text-xs text-slate-300 cursor-pointer font-medium">🌟 Featured Carousel (镇店之宝推荐)</label>
+                        <label for="p-featured" class="text-xs text-slate-300 cursor-pointer font-medium">🌟 Featured Carousel Recommendation</label>
                     </div>
                 </div>
 
@@ -627,7 +689,7 @@
         let clickStatsAllTotal = JSON.parse(localStorage.getItem('pc_click_stats_all_total') || '{}');
         let clickStatsByDate = JSON.parse(localStorage.getItem('pc_click_stats_by_date') || '{}');
 
-        let featureToggles = { builder: true, stock: true, member: true, promo: true, pdf: true, banner: true, badges: true, carouselEnabled: true };
+        let featureToggles = { builder: true, stock: true, member: true, promo: true, pdf: true, banner: true, badges: true, carouselEnabled: true, trending: true };
         let carouselSpeed = '6000';
         let carouselProgressMode = 'bottom';
         let carouselFontSize = 'text-lg';
@@ -693,6 +755,7 @@
                         if (s.banner !== undefined) featureToggles.banner = String(s.banner) === 'true';
                         if (s.badges !== undefined) featureToggles.badges = String(s.badges) === 'true';
                         if (s.carouselEnabled !== undefined) featureToggles.carouselEnabled = String(s.carouselEnabled) === 'true';
+                        if (s.trending !== undefined) featureToggles.trending = String(s.trending) === 'true';
 
                         if (s.carouselSpeed) carouselSpeed = s.carouselSpeed;
                         if (s.carouselProgressMode) carouselProgressMode = s.carouselProgressMode;
@@ -715,6 +778,7 @@
             updateFilterBars();
             renderProducts();
             initSpotlightCarousel();
+            renderTrendingWidget();
         }
 
         async function saveProductsToCloud() {
@@ -738,6 +802,7 @@
                     banner: featureToggles.banner,
                     badges: featureToggles.badges,
                     carouselEnabled: featureToggles.carouselEnabled,
+                    trending: featureToggles.trending,
                     carouselSpeed: carouselSpeed,
                     carouselProgressMode: carouselProgressMode,
                     carouselFontSize: carouselFontSize,
@@ -768,6 +833,7 @@
             document.getElementById('toggle-banner').checked = featureToggles.banner;
             document.getElementById('toggle-badges').checked = featureToggles.badges !== undefined ? featureToggles.badges : true;
             document.getElementById('toggle-carousel-enabled').checked = featureToggles.carouselEnabled !== undefined ? featureToggles.carouselEnabled : true;
+            document.getElementById('toggle-trending').checked = featureToggles.trending !== undefined ? featureToggles.trending : true;
             
             document.getElementById('setting-carousel-speed').value = carouselSpeed;
             document.getElementById('setting-carousel-progress-mode').value = carouselProgressMode;
@@ -858,6 +924,18 @@
 
             const pdfBtn = document.getElementById('builder-pdf-btn');
             if (pdfBtn) pdfBtn.classList.toggle('hidden', !featureToggles.pdf);
+
+            const trendingWidget = document.getElementById('trending-sidebar-widget');
+            const catalogContainer = document.getElementById('main-catalog-container');
+            if (trendingWidget && catalogContainer) {
+                if (featureToggles.trending === false) {
+                    trendingWidget.classList.add('hidden');
+                    catalogContainer.className = "lg:col-span-4 space-y-4";
+                } else {
+                    trendingWidget.classList.remove('hidden');
+                    catalogContainer.className = "lg:col-span-3 space-y-4";
+                }
+            }
         }
 
         async function updateFeatureToggles() {
@@ -868,10 +946,12 @@
             featureToggles.pdf = document.getElementById('toggle-pdf').checked;
             featureToggles.banner = document.getElementById('toggle-banner').checked;
             featureToggles.badges = document.getElementById('toggle-badges').checked;
+            featureToggles.trending = document.getElementById('toggle-trending').checked;
             
             applyFeatureToggles();
             renderProducts();
             initSpotlightCarousel();
+            renderTrendingWidget();
             await saveSettingsToCloud();
         }
 
@@ -948,6 +1028,110 @@
         function filterBrand(b) { currentBrand = b; currentSubcategory = 'all'; updateFilterBars(); renderProducts(); }
         function filterSubcategory(s) { currentSubcategory = s; updateFilterBars(); renderProducts(); }
 
+        function changeTrendingRange(val) {
+            const customContainer = document.getElementById('trending-custom-date-container');
+            if (val === 'custom') {
+                customContainer.classList.remove('hidden');
+                if (!document.getElementById('trending-start-date').value) {
+                    document.getElementById('trending-start-date').value = todayStr;
+                    document.getElementById('trending-end-date').value = todayStr;
+                }
+            } else {
+                customContainer.classList.add('hidden');
+            }
+            renderTrendingWidget();
+        }
+
+        function renderTrendingWidget() {
+            const container = document.getElementById('trending-rank-list');
+            if (!container) return;
+
+            const rangeVal = document.getElementById('trending-range-select').value;
+            let activeProducts = products.filter(p => String(p.status || 'visible') !== 'hidden');
+            
+            let statsMap = {};
+
+            if (rangeVal === 'all') {
+                statsMap = clickStatsAllTotal;
+            } else if (rangeVal === 'custom') {
+                const startStr = document.getElementById('trending-start-date').value;
+                const endStr = document.getElementById('trending-end-date').value;
+                const startD = startStr ? new Date(startStr) : new Date(todayStr);
+                const endD = endStr ? new Date(endStr) : new Date(todayStr);
+
+                Object.keys(clickStatsByDate).forEach(dateStr => {
+                    const d = new Date(dateStr);
+                    if (d >= startD && d <= endD) {
+                        const dayData = clickStatsByDate[dateStr];
+                        Object.keys(dayData).forEach(prodId => {
+                            statsMap[prodId] = (statsMap[prodId] || 0) + dayData[prodId];
+                        });
+                    }
+                });
+            } else {
+                const days = parseInt(rangeVal) || 7;
+                const cutoffDate = new Date();
+                cutoffDate.setDate(cutoffDate.getDate() - days);
+
+                Object.keys(clickStatsByDate).forEach(dateStr => {
+                    const d = new Date(dateStr);
+                    if (d >= cutoffDate) {
+                        const dayData = clickStatsByDate[dateStr];
+                        Object.keys(dayData).forEach(prodId => {
+                            statsMap[prodId] = (statsMap[prodId] || 0) + dayData[prodId];
+                        });
+                    }
+                });
+            }
+
+            activeProducts.sort((a, b) => {
+                const countA = statsMap[a.id] || 0;
+                const countB = statsMap[b.id] || 0;
+                return countB - countA;
+            });
+
+            const topProducts = activeProducts.slice(0, 8);
+
+            container.innerHTML = topProducts.map((p, index) => {
+                const rank = index + 1;
+                const price = getEffectivePrice(p);
+                const imgSrc = p.image || 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=200&q=80';
+                
+                let rankBadgeBg = 'bg-slate-800 text-slate-300 border border-slate-700';
+                if (rank === 1) rankBadgeBg = 'bg-amber-500 text-slate-950 font-black shadow-lg shadow-amber-500/20';
+                else if (rank === 2) rankBadgeBg = 'bg-slate-300 text-slate-950 font-bold';
+                else if (rank === 3) rankBadgeBg = 'bg-amber-700 text-white font-bold';
+
+                return `
+                <div onclick="openDetail('${p.id}')" class="flex items-center gap-3 p-2 rounded-xl bg-slate-900/60 hover:bg-slate-800/80 border border-slate-800/80 hover:border-amber-500/40 transition cursor-pointer group">
+                    <div class="w-6 h-6 rounded-lg flex items-center justify-center text-xs shrink-0 font-orbitron ${rankBadgeBg}">
+                        ${rank}
+                    </div>
+                    <div class="w-10 h-10 rounded-lg bg-slate-950 overflow-hidden shrink-0 flex items-center justify-center p-1 border border-slate-800">
+                        <img src="${imgSrc}" class="w-full h-full object-contain group-hover:scale-105 transition">
+                    </div>
+                    <div class="min-w-0 flex-grow pr-1">
+                        <div class="text-xs font-bold text-white uniform-text truncate group-hover:text-amber-400 transition">${p.name}</div>
+                        <div class="flex items-center justify-between text-[10px] mt-0.5">
+                            <span class="text-amber-400 font-orbitron font-bold">RM ${price.toFixed(2)}</span>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('') || `<div class="text-center py-6 text-slate-500 text-xs">No click records found</div>`;
+        }
+
+        function resetClickStatistics() {
+            if (confirm("Are you sure you want to reset all click statistics and restart rankings?")) {
+                clickStatsAllTotal = {};
+                clickStatsByDate = {};
+                localStorage.removeItem('pc_click_stats_all_total');
+                localStorage.removeItem('pc_click_stats_by_date');
+                renderTrendingWidget();
+                renderAnalyticsList();
+                alert("Click statistics successfully reset.");
+            }
+        }
+
         function initSpotlightCarousel() {
             if (featureToggles.carouselEnabled === false) {
                 document.getElementById('spotlight-carousel-container').classList.add('hidden');
@@ -983,7 +1167,6 @@
             const promoPrice = (featureToggles.promo !== false && p.promoPrice !== undefined && p.promoPrice !== null && !isNaN(p.promoPrice) && Number(p.promoPrice) > 0) ? Number(p.promoPrice) : null;
             const memberPrice = (featureToggles.member !== false && p.memberPrice !== undefined && p.memberPrice !== null && !isNaN(p.memberPrice) && Number(p.memberPrice) > 0) ? Number(p.memberPrice) : null;
             
-            const effectivePrice = getEffectivePrice(p);
             const imgSrc = p.image || 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=600&q=80';
 
             const containerCard = document.getElementById('spotlight-carousel-container').querySelector('.glass-card');
@@ -1259,7 +1442,6 @@
                 const isVisible = !p.status || String(p.status).trim().toLowerCase() === 'visible';
                 const imgSrc = p.image || 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=600&q=80';
                 
-                // 管理员页价格明显高亮展示（字号放大、色彩分明）
                 const normVal = Number(p.price || 0).toFixed(2);
                 const membVal = (p.memberPrice !== undefined && p.memberPrice !== null && !isNaN(p.memberPrice) && Number(p.memberPrice) > 0) ? Number(p.memberPrice).toFixed(2) : null;
                 const promVal = (p.promoPrice !== undefined && p.promoPrice !== null && !isNaN(p.promoPrice) && Number(p.promoPrice) > 0) ? Number(p.promoPrice).toFixed(2) : null;
@@ -1434,6 +1616,8 @@
             if (!clickStatsByDate[todayStr]) clickStatsByDate[todayStr] = {};
             clickStatsByDate[todayStr][id] = (clickStatsByDate[todayStr][id] || 0) + 1;
             localStorage.setItem('pc_click_stats_by_date', JSON.stringify(clickStatsByDate));
+
+            renderTrendingWidget();
 
             const normalPrice = Number(p.price || 0);
             const promoPrice = (featureToggles.promo !== false && p.promoPrice !== undefined && p.promoPrice !== null && !isNaN(p.promoPrice) && Number(p.promoPrice) > 0) ? Number(p.promoPrice) : null;
@@ -1733,7 +1917,7 @@
             closeProductModal();
             if (id) { const idx = products.findIndex(p => p.id === id); if (idx !== -1) products[idx] = data; }
             else { products.unshift(data); }
-            await saveProductsToCloud(); renderProducts(); initSpotlightCarousel();
+            await saveProductsToCloud(); renderProducts(); initSpotlightCarousel(); renderTrendingWidget();
         }
 
         function editProduct(id) {
@@ -1766,7 +1950,7 @@
         async function deleteProduct(id) {
             if(confirm('Delete this component?')) {
                 products = products.filter(p => p.id !== id);
-                await saveProductsToCloud(); renderProducts(); initSpotlightCarousel();
+                await saveProductsToCloud(); renderProducts(); initSpotlightCarousel(); renderTrendingWidget();
             }
         }
 
