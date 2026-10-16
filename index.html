@@ -5,6 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PC Image VIVA | Advanced Components Catalog</title>
     
+    <!-- PWA 配置文件引用 -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+
+    <!-- 针对苹果 iOS 设备的优化支持 -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PC VIVA">
+    <link rel="apple-touch-icon" href="icon-192.png">
+
     <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAOCAYAAAAmL5yKAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAEMSURBVDhPfVK/yocwDDw7dAgUCh1cnBx8//fwFbrX0UFQ6XDf4JfSVvkdBPLHay6JmKaJAIo555r4V+2f2wQvQk/qvzX4gLUWAHAcB47jaHIvhBAYQmCMkT1yzsw592nGGKk8qBRFSon7vjcEktz3nSmlEpeRQgh0zvG6Lq7rymVZKCK01jYmIlyWheu68rouOue+FXx1V9S1ZokiUnZynicA4L7vkuuxbRumaXoC7z1FhDlnxhjpnKOIUESa043j+OmjH8EYQwA6X4nr/2EYBhpjniaqIKXElFJ5XYm1WWvpve9rjzPPc+mq8usLGGMaYlGgiXpm7/0rV5ueGQBRS+4JulCtK1n9cRz5B0qGXZpSF98bAAAAAElFTkSuQmCC" />
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -73,7 +83,6 @@
         </div>
     </div>
 
-    <!-- 纯色背景防止手机滚动穿透 -->
     <header class="sticky top-0 z-50 border-b border-blue-900/50 px-4 py-3 flex justify-between items-center shadow-xl" style="background-color: #0b0f19;">
         <div onclick="goHome()" class="flex items-center space-x-2 cursor-pointer group">
             <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAOCAYAAAAmL5yKAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAEMSURBVDhPfVK/yocwDDw7dAgUCh1cnBx8//fwFbrX0UFQ6XDf4JfSVvkdBPLHay6JmKaJAIo555r4V+2f2wQvQk/qvzX4gLUWAHAcB47jaHIvhBAYQmCMkT1yzsw592nGGKk8qBRFSon7vjcEktz3nSmlEpeRQgh0zvG6Lq7rymVZKCK01jYmIlyWheu68rouOue+FXx1V9S1ZokiUnZynicA4L7vkuuxbRumaXoC7z1FhDlnxhjpnKOIUESa043j+OmjH8EYQwA6X4nr/2EYBhpjniaqIKXElFJ5XYm1WWvpve9rjzPPc+mq8usLGGMaYlGgiXpm7/0rV5ueGQBRS+4JulCtK1n9cRz5B0qGXZpSF98bAAAAAElFTkSuQmCC" alt="Logo" class="w-9 h-9 rounded-lg object-cover border border-blue-500/40 group-hover:border-blue-400 transition">
@@ -84,7 +93,6 @@
         </div>
         <div class="flex items-center space-x-2">
             <button id="nav-builder-btn" onclick="openBuilderModal()" class="text-xs bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg transition font-medium flex items-center gap-1">🖥️ PC Builder <span id="builder-badge" class="bg-amber-400 text-slate-950 px-1.5 py-0.2 rounded-full text-[10px] font-bold hidden">0</span></button>
-            <!-- 联动开关：当暗号关闭时，此按钮自动显示；开启时自动隐藏 -->
             <button onclick="handleAdminClick()" id="admin-btn" class="hidden text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 transition">Admin Panel</button>
         </div>
     </header>
@@ -99,7 +107,6 @@
                 </div>
             </div>
 
-            <!-- Spotlight Carousel -->
             <div id="spotlight-carousel-container" class="mb-6 hidden">
                 <div class="glass-card rounded-2xl border border-amber-500/30 overflow-hidden relative shadow-xl bg-gradient-to-r from-slate-900/90 via-blue-950/40 to-slate-900/90 p-5 md:p-6">
                     <div id="spotlight-slide-content" class="min-h-[220px] flex items-center"></div>
@@ -116,9 +123,7 @@
                 </div>
             </div>
 
-            <!-- Main Layout (Left Catalog, Right Trending Widget) -->
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                <!-- Left: Catalog & Search -->
                 <div id="main-catalog-container" class="lg:col-span-3 space-y-4">
                     <div class="space-y-3">
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -128,7 +133,7 @@
                             </div>
                             <div>
                                 <select id="sort-select" onchange="handleSort()" class="w-full bg-slate-900/90 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition">
-                                    <option value="name-asc">Name: A to Z</option>
+                                    <option value="name-asc" selected>Name: A to Z</option>
                                     <option value="price-low">Price: Low to High</option>
                                     <option value="price-high">Price: High to Low</option>
                                     <option value="popular">Most Viewed (Today)</option>
@@ -164,7 +169,6 @@
                     <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
                 </div>
 
-                <!-- Right: Trending Rank Widget -->
                 <div id="trending-sidebar-widget" class="lg:col-span-1 space-y-4">
                     <div class="glass-card rounded-2xl p-4 border border-amber-500/30 sticky top-20 shadow-xl bg-gradient-to-b from-slate-900/90 via-slate-900/70 to-blue-950/40">
                         <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-800">
@@ -181,7 +185,6 @@
                             </select>
                         </div>
 
-                        <!-- Custom Date Range Picker Container -->
                         <div id="trending-custom-date-container" class="hidden mb-3 p-2.5 bg-slate-900/90 rounded-xl border border-slate-800 text-xs space-y-2">
                             <div class="flex items-center justify-between">
                                 <span class="text-slate-400">From:</span>
@@ -193,9 +196,7 @@
                             </div>
                         </div>
 
-                        <div id="trending-rank-list" class="space-y-2.5 max-h-[65vh] overflow-y-auto pr-1">
-                            <!-- Populated dynamically -->
-                        </div>
+                        <div id="trending-rank-list" class="space-y-2.5 max-h-[65vh] overflow-y-auto pr-1"></div>
                     </div>
                 </div>
             </div>
@@ -684,6 +685,9 @@
                 <p><strong>4. Price Errors:</strong> In the event of any pricing or product information error, we reserve the right to correct it and provide the correct information before completing the purchase.</p>
                 <p><strong>5. Warranty:</strong> Warranty coverage is subject to the manufacturer's terms and conditions and excludes damage caused by misuse, accidents, or unauthorized modifications.</p>
                 <p><strong>6. General:</strong> We reserve the right to amend these terms without prior notice. For the latest prices, stock availability, and details, please contact our staff before purchasing.</p>
+                <div class="p-3 bg-blue-950/40 border border-blue-500/30 rounded-xl text-[11px] text-blue-200 mt-2">
+                    <strong>Important Note:</strong> All product details, specifications, pricing, and visual representations provided are intended as a general guide. For the most accurate and up-to-date pricing or availability, please feel free to reach out directly to our team.
+                </div>
             </div>
             <button onclick="closeTermsModal()" class="mt-6 w-full bg-blue-600 hover:bg-blue-500 text-white py-2.5 rounded-xl text-xs font-bold transition">I Understand</button>
         </div>
@@ -723,7 +727,7 @@
         let currentCategory = 'all';
         let currentBrand = 'all';
         let currentSubcategory = 'all';
-        let currentSort = 'custom';
+        let currentSort = 'name-asc'; 
         let searchQuery = '';
         let isAdmin = false;
         let adminCategoryFilter = 'all';
@@ -735,7 +739,6 @@
 
         showLoadingState();
 
-        // 检查 15 分钟会话是否有效（支持操作中顺延）
         function checkAdminSessionValid() {
             const savedPwd = sessionStorage.getItem('session_admin_pwd');
             const savedTime = sessionStorage.getItem('session_admin_time');
@@ -745,7 +748,6 @@
             const now = Date.now();
             const elapsedMinutes = (now - parseInt(savedTime)) / (1000 * 60);
             
-            // 如果超过 15 分钟无操作，清除并失效
             if (elapsedMinutes > 15) {
                 sessionStorage.removeItem('session_admin_pwd');
                 sessionStorage.removeItem('session_admin_time');
@@ -753,13 +755,11 @@
                 return false;
             }
             
-            // 如果在 15 分钟内，顺延刷新时间戳
             sessionStorage.setItem('session_admin_time', now.toString());
             window.currentAdminPassword = savedPwd;
             return true;
         }
 
-        // 页面加载时：检查 15 分钟会话并根据开关状态检测暗号
         window.addEventListener('DOMContentLoaded', () => {
             checkAdminSessionValid();
 
@@ -1001,13 +1001,12 @@
                 }
             }
 
-            // 核心联动逻辑：当暗号开启时，右上角 Admin 按钮隐藏；当暗号关闭时，右上角 Admin 按钮显示
             const adminBtn = document.getElementById('admin-btn');
             if (adminBtn) {
                 if (featureToggles.secretTriggers !== false) {
-                    adminBtn.classList.add('hidden'); // 开启暗号 -> 隐藏按钮
+                    adminBtn.classList.add('hidden');
                 } else {
-                    adminBtn.classList.remove('hidden'); // 关闭暗号 -> 显示按钮
+                    adminBtn.classList.remove('hidden');
                 }
             }
         }
@@ -1048,13 +1047,12 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // 搜索框暗号检测（受后台开关控制）
         function handleSearch() {
             const inputField = document.getElementById('search-input');
             const inputVal = inputField.value.trim().toLowerCase();
             
             if (featureToggles.secretTriggers !== false && (inputVal === '#admin' || inputVal === 'admin')) {
-                inputField.value = ''; // 瞬间清空
+                inputField.value = '';
                 if (checkAdminSessionValid()) {
                     toggleAdmin(true);
                 } else {
@@ -1201,7 +1199,7 @@
                     <div class="w-6 h-6 rounded-lg flex items-center justify-center text-xs shrink-0 font-orbitron ${rankBadgeBg}">
                         ${rank}
                     </div>
-                    <div class="w-10 h-10 rounded-lg bg-slate-950 overflow-hidden shrink-0 flex items-center justify-center p-1 border border-slate-800">
+                    <div class="w-10 h-10 rounded-lg bg-slate-950 overflow-hidden shrink-0 flex items-center justify-center p-1 border border-slate-800 relative">
                         <img src="${imgSrc}" class="w-full h-full object-contain group-hover:scale-105 transition">
                     </div>
                     <div class="min-w-0 flex-grow pr-1">
@@ -1367,8 +1365,10 @@
                             ${featureToggles.builder ? `<button onclick="addToBuilder('${p.id}')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs px-4 py-2 rounded-xl font-medium transition">+ Add to Builder</button>` : ''}
                         </div>
                     </div>
-                    <div class="h-44 md:h-44 rounded-xl bg-slate-950/80 overflow-hidden flex items-center justify-center p-3 relative cursor-pointer border border-slate-800" onclick="openDetail('${p.id}')">
-                        <img src="${imgSrc}" class="max-h-full max-w-full object-contain hover:scale-105 transition duration-300">
+                    <div class="flex flex-col items-center">
+                        <div class="h-44 w-full rounded-xl bg-slate-950/80 overflow-hidden flex items-center justify-center p-3 relative cursor-pointer border border-slate-800" onclick="openDetail('${p.id}')">
+                            <img src="${imgSrc}" class="max-h-full max-w-full object-contain hover:scale-105 transition duration-300">
+                        </div>
                     </div>
                 </div>
             `;
@@ -1412,16 +1412,14 @@
 
             const todayMap = clickStatsByDate[todayStr] || {};
 
-            if (currentSort !== 'custom') {
-                filtered.sort((a, b) => {
-                    const priceA = getEffectivePrice(a);
-                    const priceB = getEffectivePrice(b);
-                    if (currentSort === 'price-low') return priceA - priceB;
-                    if (currentSort === 'price-high') return priceB - priceA;
-                    if (currentSort === 'popular') return (todayMap[b.id] || 0) - (todayMap[a.id] || 0);
-                    return (a.name || '').localeCompare(b.name || '');
-                });
-            }
+            filtered.sort((a, b) => {
+                const priceA = getEffectivePrice(a);
+                const priceB = getEffectivePrice(b);
+                if (currentSort === 'price-low') return priceA - priceB;
+                if (currentSort === 'price-high') return priceB - priceA;
+                if (currentSort === 'popular') return (todayMap[b.id] || 0) - (todayMap[a.id] || 0);
+                return (a.name || '').localeCompare(b.name || '');
+            });
 
             grid.innerHTML = filtered.map(p => {
                 const normalPrice = Number(p.price || 0);
@@ -1501,8 +1499,8 @@
                 return `
                 <div class="glass-card rounded-xl overflow-hidden border border-slate-800 hover:border-blue-500/50 transition group flex flex-col justify-between">
                     <div onclick="openDetail('${p.id}')" class="cursor-pointer">
-                        <div class="h-48 overflow-hidden bg-slate-950/85 relative flex items-center justify-center p-2">
-                            <img src="${imgSrc}" class="max-h-full max-w-full object-contain group-hover:scale-105 transition duration-300">
+                        <div class="h-48 overflow-hidden bg-slate-950/85 relative flex flex-col items-center justify-center p-2">
+                            <img src="${imgSrc}" class="max-h-[160px] max-w-full object-contain group-hover:scale-105 transition duration-300">
                             ${categoryBadgeHtml}
                             ${brandBadgeHtml}
                         </div>
@@ -1770,8 +1768,11 @@
             }
 
             document.getElementById('modal-content').innerHTML = `
-                <div class="h-64 rounded-xl overflow-hidden bg-slate-950/80 mb-4 flex items-center justify-center p-2 relative">
-                    <img src="${p.image || 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=600&q=80'}" class="max-h-full max-w-full object-contain">
+                <div class="h-64 rounded-xl overflow-hidden bg-slate-950/80 mb-2 flex flex-col items-center justify-center p-2 relative">
+                    <img src="${p.image || 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=600&q=80'}" class="max-h-[210px] max-w-full object-contain">
+                </div>
+                <div class="text-[10px] text-slate-400 text-center mb-3 leading-relaxed">
+                    * Note: Product images, specifications, and pricing are for reference purposes only and are subject to change without prior notice. Please verify exact details with our team.
                 </div>
                 <h2 class="text-lg font-bold text-white mb-2 uniform-text">${p.name}</h2>
                 ${priceDetailHtml}
@@ -1971,16 +1972,15 @@
                     closePasswordModal();
                     window.currentAdminPassword = inputPwd; 
                     
-                    // 登录成功：存入密码和当前时间戳（15分钟超时）
                     sessionStorage.setItem('session_admin_pwd', inputPwd);
                     sessionStorage.setItem('session_admin_time', Date.now().toString());
                     
                     toggleAdmin(true);
                 } else { 
-                    alert("密码错误！"); 
+                    alert("Incorrect password!"); 
                 }
             } catch (err) {
-                alert("网络或连接错误，验证失败");
+                alert("Network or connection error, verification failed");
                 console.error(err);
             }
         }
@@ -2081,6 +2081,15 @@
         function closeQRCodeModal() { document.getElementById('qrcode-modal').classList.add('hidden'); }
 
         fetchProductsFromCloud();
+
+        // PWA Service Worker 注册脚本
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').catch(err => {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
     </script>
 </body>
 </html>
