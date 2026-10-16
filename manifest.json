@@ -1,6 +1,6 @@
 {
   "name": "PC Image VIVA",
-  "short_name": "PC VIVA",
+  "short_name": "PCI VIVA",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#ffffff",

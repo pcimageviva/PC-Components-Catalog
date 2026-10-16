@@ -22,12 +22,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Noto+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        /* 已适配手机刘海屏、灵动岛及顶部安全区，防止顶部穿屏内容被遮挡 */
         body { 
             font-family: 'Noto Sans', sans-serif; 
             background-color: #0b0f19; 
             color: #f3f4f6; 
-            padding-top: env(safe-area-inset-top);
         }
         .font-orbitron { font-family: 'Orbitron', sans-serif; }
         .glass-card { background: rgba(17, 24, 39, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(59, 130, 246, 0.2); }
@@ -89,7 +87,8 @@
         </div>
     </div>
 
-    <header class="sticky top-0 z-50 border-b border-blue-900/50 px-4 py-3 flex justify-between items-center shadow-xl" style="background-color: #0b0f19;">
+    <!-- 顶部导航栏已通过 max(0.75rem, env(safe-area-inset-top)) 完美适配手机刘海与状态栏，绝不穿屏 -->
+    <header class="sticky top-0 z-50 border-b border-blue-900/50 px-4 py-3 flex justify-between items-center shadow-xl" style="background-color: #0b0f19; padding-top: max(0.75rem, env(safe-area-inset-top));">
         <div onclick="goHome()" class="flex items-center space-x-2 cursor-pointer group">
             <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAOCAYAAAAmL5yKAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAEMSURBVDhPfVK/yocwDDw7dAgUCh1cnBx8//fwFbrX0UFQ6XDf4JfSVvkdBPLHay6JmKaJAIo555r4V+2f2wQvQk/qvzX4gLUWAHAcB47jaHIvhBAYQmCMkT1yzsw592nGGKk8qBRFSon7vjcEktz3nSmlEpeRQgh0zvG6Lq7rymVZKCK01jYmIlyWheu68rouOue+FXx1V9S1ZokiUnZynicA4L7vkuuxbRumaXoC7z1FhDlnxhjpnKOIUESa043j+OmjH8EYQwA6X4nr/2EYBhpjniaqIKXElFJ5XYm1WWvpve9rjzPPc+mq8usLGGMaYlGgiXpm7/0rV5ueGQBRS+4JulCtK1n9cRz5B0qGXZpSF98bAAAAAElFTkSuQmCC" alt="Logo" class="w-9 h-9 rounded-lg object-cover border border-blue-500/40 group-hover:border-blue-400 transition">
             <div>
