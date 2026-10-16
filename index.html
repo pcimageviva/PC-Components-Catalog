@@ -2,7 +2,7 @@
 <html lang="en" id="html-root" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>PC Image VIVA | Advanced Components Catalog</title>
     
     <!-- PWA 配置文件引用 -->
@@ -22,12 +22,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Noto+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        /* 核心修改：强制给整个网页顶部腾出安全区高度，彻底解决穿屏问题 */
-        html, body { 
+        body { 
             font-family: 'Noto Sans', sans-serif; 
             background-color: #0b0f19; 
             color: #f3f4f6; 
-            padding-top: env(safe-area-inset-top);
         }
         .font-orbitron { font-family: 'Orbitron', sans-serif; }
         .glass-card { background: rgba(17, 24, 39, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(59, 130, 246, 0.2); }
@@ -89,7 +87,8 @@
         </div>
     </div>
 
-    <header class="sticky top-0 z-50 border-b border-blue-900/50 px-4 py-3 flex justify-between items-center shadow-xl" style="background-color: #0b0f19;">
+    <!-- 顶部导航栏：加入强制预留安全边距 -->
+    <header id="main-header" class="sticky top-0 z-50 border-b border-blue-900/50 px-4 py-3 flex justify-between items-center shadow-xl" style="background-color: #0b0f19; padding-top: max(2rem, env(safe-area-inset-top, 2rem));">
         <div onclick="goHome()" class="flex items-center space-x-2 cursor-pointer group">
             <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAOCAYAAAAmL5yKAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAEMSURBVDhPfVK/yocwDDw7dAgUCh1cnBx8//fwFbrX0UFQ6XDf4JfSVvkdBPLHay6JmKaJAIo555r4V+2f2wQvQk/qvzX4gLUWAHAcB47jaHIvhBAYQmCMkT1yzsw592nGGKk8qBRFSon7vjcEktz3nSmlEpeRQgh0zvG6Lq7rymVZKCK01jYmIlyWheu68rouOue+FXx1V9S1ZokiUnZynicA4L7vkuuxbRumaXoC7z1FhDlnxhjpnKOIUESa043j+OmjH8EYQwA6X4nr/2EYBhpjniaqIKXElFJ5XYm1WWvpve9rjzPPc+mq8usLGGMaYlGgiXpm7/0rV5ueGQBRS+4JulCtK1n9cRz5B0qGXZpSF98bAAAAAElFTkSuQmCC" alt="Logo" class="w-9 h-9 rounded-lg object-cover border border-blue-500/40 group-hover:border-blue-400 transition">
             <div>
@@ -700,6 +699,16 @@
     </div>
 
     <script>
+        // 强制 JS 动态计算并赋予顶部导航安全内边距，彻底杜绝穿屏
+        window.addEventListener('DOMContentLoaded', () => {
+            const header = document.getElementById('main-header');
+            if (header) {
+                // 如果系统支持安全区，使用安全区大小，否则默认顶出 38px
+                const safeAreaTop = window.getComputedStyle(document.documentElement).getPropertyValue('--sat');
+                header.style.paddingTop = 'max(38px, env(safe-area-inset-top, 38px))';
+            }
+        });
+
         let adminPassword = localStorage.getItem('pc_admin_pwd') || "123456";
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxBCgzOyVOFrbFg1mh1KzIvlUwCWBeMpa4AGmFc1yBzyGAZpcaE-eNcRXDrgJOLbRn3/exec"; 
 
