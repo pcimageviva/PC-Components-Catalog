@@ -2,7 +2,7 @@
 <html lang="en" id="html-root" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PC Image VIVA | Advanced Components Catalog</title>
     
     <!-- PWA 配置文件引用 -->
@@ -32,6 +32,12 @@
         .scrollbar-none::-webkit-scrollbar { display: none; }
         .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
         .uniform-text { text-transform: uppercase; }
+        
+        /* 针对 JPG 白底与 PNG 透明底的视觉融合优化：给图片容器添加高级微光渐变底座 */
+        #product-grid .h-48 {
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.06) 0%, rgba(15, 23, 42, 0.95) 75%);
+            border-radius: 0.75rem;
+        }
         
         .draggable-item { cursor: grab; transition: transform 0.2s ease, background-color 0.2s ease, opacity 0.2s ease; }
         .draggable-item:active { cursor: grabbing; }
@@ -87,8 +93,8 @@
         </div>
     </div>
 
-    <!-- 顶部导航栏：加入强制预留安全边距 -->
-    <header id="main-header" class="sticky top-0 z-50 border-b border-blue-900/50 px-4 py-3 flex justify-between items-center shadow-xl" style="background-color: #0b0f19; padding-top: max(2rem, env(safe-area-inset-top, 2rem));">
+    <!-- 顶部导航栏 -->
+    <header class="sticky top-0 z-50 border-b border-blue-900/50 px-4 py-3 flex justify-between items-center shadow-xl" style="background-color: #0b0f19; padding-top: max(0.75rem, env(safe-area-inset-top));">
         <div onclick="goHome()" class="flex items-center space-x-2 cursor-pointer group">
             <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAOCAYAAAAmL5yKAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAEMSURBVDhPfVK/yocwDDw7dAgUCh1cnBx8//fwFbrX0UFQ6XDf4JfSVvkdBPLHay6JmKaJAIo555r4V+2f2wQvQk/qvzX4gLUWAHAcB47jaHIvhBAYQmCMkT1yzsw592nGGKk8qBRFSon7vjcEktz3nSmlEpeRQgh0zvG6Lq7rymVZKCK01jYmIlyWheu68rouOue+FXx1V9S1ZokiUnZynicA4L7vkuuxbRumaXoC7z1FhDlnxhjpnKOIUESa043j+OmjH8EYQwA6X4nr/2EYBhpjniaqIKXElFJ5XYm1WWvpve9rjzPPc+mq8usLGGMaYlGgiXpm7/0rV5ueGQBRS+4JulCtK1n9cRz5B0qGXZpSF98bAAAAAElFTkSuQmCC" alt="Logo" class="w-9 h-9 rounded-lg object-cover border border-blue-500/40 group-hover:border-blue-400 transition">
             <div>
@@ -146,17 +152,73 @@
                             </div>
                         </div>
 
+                        <!-- 分类筛选栏图标（含 PC Package） -->
                         <div class="flex flex-wrap gap-2 pb-1" id="category-filters">
-                            <button onclick="filterCategory('all')" class="category-btn px-4 py-2 rounded-full text-xs font-medium bg-blue-600 text-white transition">All Items</button>
-                            <button onclick="filterCategory('CPU')" class="category-btn px-4 py-2 rounded-full text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">CPU</button>
-                            <button onclick="filterCategory('GPU')" class="category-btn px-4 py-2 rounded-full text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Graphics Card (GPU)</button>
-                            <button onclick="filterCategory('Motherboard')" class="category-btn px-4 py-2 rounded-full text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Motherboard</button>
-                            <button onclick="filterCategory('RAM')" class="category-btn px-4 py-2 rounded-full text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Memory (RAM)</button>
-                            <button onclick="filterCategory('Storage')" class="category-btn px-4 py-2 rounded-full text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">SSD / Storage</button>
-                            <button onclick="filterCategory('PSU')" class="category-btn px-4 py-2 rounded-full text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Power Supply (PSU)</button>
-                            <button onclick="filterCategory('Cooler')" class="category-btn px-4 py-2 rounded-full text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Cooler</button>
-                            <button onclick="filterCategory('Casing')" class="category-btn px-4 py-2 rounded-full text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">PC Casing</button>
-                            <button onclick="filterCategory('Accessories')" class="category-btn px-4 py-2 rounded-full text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Accessories</button>
+                            <!-- All Items -->
+                            <button onclick="filterCategory('all')" class="category-btn px-3.5 py-2 rounded-xl text-xs font-medium bg-blue-600 text-white transition flex items-center gap-1.5 shrink-0">
+                                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                                <span>All Items</span>
+                            </button>
+                            
+                            <!-- PC Package -->
+                            <button onclick="filterCategory('PC Package')" class="category-btn px-3.5 py-2 rounded-xl text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition flex items-center gap-1.5 shrink-0 border border-amber-500/30">
+                                <svg class="w-4 h-4 shrink-0 text-amber-400" fill="currentColor" viewBox="0 0 24 24"><path d="M20 3H4C2.89543 3 2 3.89543 2 5V15C2 16.1046 2.89543 17 4 17H10V19H7V21H17V19H14V17H20C21.1046 17 22 16.1046 22 15V5C22 3.89543 21.1046 3 20 3ZM20 15H4V5H20V15Z"/></svg>
+                                <span class="text-amber-300 font-bold">PC Package</span>
+                            </button>
+
+                            <!-- CPU -->
+                            <button onclick="filterCategory('CPU')" class="category-btn px-3.5 py-2 rounded-xl text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition flex items-center gap-1.5 shrink-0">
+                                <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M9 3V5H7C5.89543 5 5 5.89543 5 7V9H3V11H5V13H3V15H5V17C5 18.1046 5.89543 19 7 19H9V21H11V19H13V21H15V19H17C18.1046 19 19 18.1046 19 17V15H21V13H19V11H21V9H19V7C19 5.89543 18.1046 5 17 5H15V3H13V5H11V3H9ZM7 7H17V17H7V7ZM9 9V15H15V9H9Z"/></svg>
+                                <span>CPU</span>
+                            </button>
+
+                            <!-- GPU -->
+                            <button onclick="filterCategory('GPU')" class="category-btn px-3.5 py-2 rounded-xl text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition flex items-center gap-1.5 shrink-0">
+                                <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M3 5a2 2 0 00-2 2v10a1 1 0 001 1h1v1a1 1 0 001 1h12a1 1 0 001-1v-1h5a2 2 0 002-2V7a2 2 0 00-2-2H3zm2 2h16v8H5V7zm3 4a2 2 0 100-4 2 2 0 000 4zm8 0a2 2 0 100-4 2 2 0 000 4z"/></svg>
+                                <span>Graphics Card (GPU)</span>
+                            </button>
+
+                            <!-- Motherboard -->
+                            <button onclick="filterCategory('Motherboard')" class="category-btn px-3.5 py-2 rounded-xl text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition flex items-center gap-1.5 shrink-0">
+                                <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M3 4C2.44772 4 2 4.44772 2 5V19C2 19.5523 2.44772 20 3 20H21C21.5523 20 22 19.5523 22 19V5C22 4.44772 21.5523 4 21 4H3ZM4 6H15V14H4V6ZM17 6H20V8H17V6ZM17 10H20V12H17V10ZM6 16H18V18H6V16Z"/></svg>
+                                <span>Motherboard</span>
+                            </button>
+
+                            <!-- RAM -->
+                            <button onclick="filterCategory('RAM')" class="category-btn px-3.5 py-2 rounded-xl text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition flex items-center gap-1.5 shrink-0">
+                                <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M2 6a1 1 0 011-1h18a1 1 0 011 1v12a1 1 0 01-1 1H3a1 1 0 01-1-1V6zm2 2v8h16V8H4zm2 2h2v4H6v-4zm4 0h2v4h-2v-4zm4 0h2v4h-2v-4z"/></svg>
+                                <span>Memory (RAM)</span>
+                            </button>
+
+                            <!-- Storage / SSD -->
+                            <button onclick="filterCategory('Storage')" class="category-btn px-3.5 py-2 rounded-xl text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition flex items-center gap-1.5 shrink-0">
+                                <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M2 7a2 2 0 012-2h16a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V7zm3 2v6h2V9H5zm4 0v6h10V9H9zm2 2h2v2h-2v-2zm4 0h2v2h-2v-2z"/></svg>
+                                <span>SSD / Storage</span>
+                            </button>
+
+                            <!-- PSU -->
+                            <button onclick="filterCategory('PSU')" class="category-btn px-3.5 py-2 rounded-xl text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition flex items-center gap-1.5 shrink-0">
+                                <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M5 3H19C20.1046 3 21 3.89543 21 5V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V5C3 3.89543 3.89543 3 5 3ZM7 7V11H11V7H7ZM13 7V11H17V7H13ZM7 13V17H11V13H7ZM13 13V17H17V13H13Z"/></svg>
+                                <span>Power Supply (PSU)</span>
+                            </button>
+
+                            <!-- Cooler -->
+                            <button onclick="filterCategory('Cooler')" class="category-btn px-3.5 py-2 rounded-xl text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition flex items-center gap-1.5 shrink-0">
+                                <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 3a7 7 0 017 7 1 1 0 01-2 0 5 5 0 00-5-5 1 1 0 010-2zm-5 7a5 5 0 005 5 1 1 0 010 2 7 7 0 01-7-7 1 1 0 012 0zm5-3a3 3 0 100 6 3 3 0 000-6z"/></svg>
+                                <span>Cooler</span>
+                            </button>
+
+                            <!-- Casing -->
+                            <button onclick="filterCategory('Casing')" class="category-btn px-3.5 py-2 rounded-xl text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition flex items-center gap-1.5 shrink-0">
+                                <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M6 2C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V4C20 2.89543 19.1046 2 18 2H6ZM6 4H18V8H6V4ZM6 10H18V18H6V10ZM8 12V16H10V12H8Z"/></svg>
+                                <span>PC Casing</span>
+                            </button>
+
+                            <!-- Accessories -->
+                            <button onclick="filterCategory('Accessories')" class="category-btn px-3.5 py-2 rounded-xl text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition flex items-center gap-1.5 shrink-0">
+                                <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3a9 9 0 00-9 9v7a2 2 0 002 2h3a1 1 0 001-1v-5a1 1 0 00-1-1H5v-2a7 7 0 0114 0v2h-2a1 1 0 00-1 1v5a1 1 0 001 1h3a2 2 0 002-2v-7a9 9 0 00-9-9z"/></svg>
+                                <span>Accessories</span>
+                            </button>
                         </div>
 
                         <div id="filterbar-container" class="hidden space-y-2.5 pt-3 border-t border-slate-800/80">
@@ -219,21 +281,28 @@
             </div>
 
             <div id="admin-tab-products" class="space-y-3">
-                <div class="flex justify-between items-center glass-card p-3.5 rounded-xl border border-slate-800">
+                <!-- 后台顶部控制栏 -->
+                <div class="flex flex-wrap justify-between items-center gap-3 glass-card p-3.5 rounded-xl border border-slate-800">
                     <div>
                         <h2 class="text-sm font-bold text-white">Manage Components</h2>
                         <p class="text-[11px] text-slate-400">Drag or use ▲▼ arrows to reorder. Toggle status instantly.</p>
                     </div>
-                    <div class="space-x-1.5 flex">
+                    <div class="space-x-1.5 flex items-center">
                         <button onclick="showQRCodeModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs px-3 py-1.5 rounded-lg transition">QR Code</button>
                         <button onclick="openProductModal()" class="bg-blue-600 hover:bg-blue-500 text-white text-xs px-3 py-1.5 rounded-lg transition">+ Add Item</button>
                     </div>
                 </div>
 
-                <div class="glass-card p-3 rounded-xl border border-slate-800 space-y-2">
+                <!-- 后台搜索栏与分类筛选行（含 PC Package） -->
+                <div class="glass-card p-3 rounded-xl border border-slate-800 space-y-3">
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">🔍</span>
+                        <input type="text" id="admin-search-input" oninput="renderAdminProducts()" placeholder="Search components in admin panel by name, brand..." class="w-full bg-slate-900/90 border border-slate-700 rounded-lg pl-9 pr-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition">
+                    </div>
                     <div class="flex flex-wrap gap-1.5 items-center" id="admin-category-filters">
                         <span class="text-xs text-slate-400 font-medium mr-1">Category:</span>
                         <button onclick="adminFilterCategory('all')" class="admin-cat-btn px-3 py-1 rounded-lg text-xs font-medium bg-blue-600 text-white transition">All</button>
+                        <button onclick="adminFilterCategory('PC Package')" class="admin-cat-btn px-3 py-1 rounded-lg text-xs font-bold bg-slate-800 text-amber-400 hover:bg-slate-700 transition">PC Package</button>
                         <button onclick="adminFilterCategory('CPU')" class="admin-cat-btn px-3 py-1 rounded-lg text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">CPU</button>
                         <button onclick="adminFilterCategory('GPU')" class="admin-cat-btn px-3 py-1 rounded-lg text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">GPU</button>
                         <button onclick="adminFilterCategory('Motherboard')" class="admin-cat-btn px-3 py-1 rounded-lg text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Motherboard</button>
@@ -616,9 +685,16 @@
                 </div>
 
                 <select id="p-category" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white">
-                    <option value="CPU">CPU</option><option value="GPU">GPU</option><option value="Motherboard">Motherboard</option>
-                    <option value="RAM">RAM</option><option value="Storage">Storage</option><option value="PSU">PSU</option>
-                    <option value="Cooler">Cooler</option><option value="Casing">Casing</option><option value="Accessories">Accessories</option>
+                    <option value="PC Package">PC Package</option>
+                    <option value="CPU">CPU</option>
+                    <option value="GPU">GPU</option>
+                    <option value="Motherboard">Motherboard</option>
+                    <option value="RAM">RAM</option>
+                    <option value="Storage">Storage</option>
+                    <option value="PSU">PSU</option>
+                    <option value="Cooler">Cooler</option>
+                    <option value="Casing">Casing</option>
+                    <option value="Accessories">Accessories</option>
                 </select>
                 <div class="grid grid-cols-2 gap-2">
                     <input type="text" id="p-brand" placeholder="Brand" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white">
@@ -699,16 +775,6 @@
     </div>
 
     <script>
-        // 强制 JS 动态计算并赋予顶部导航安全内边距，彻底杜绝穿屏
-        window.addEventListener('DOMContentLoaded', () => {
-            const header = document.getElementById('main-header');
-            if (header) {
-                // 如果系统支持安全区，使用安全区大小，否则默认顶出 38px
-                const safeAreaTop = window.getComputedStyle(document.documentElement).getPropertyValue('--sat');
-                header.style.paddingTop = 'max(38px, env(safe-area-inset-top, 38px))';
-            }
-        });
-
         let adminPassword = localStorage.getItem('pc_admin_pwd') || "123456";
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxBCgzOyVOFrbFg1mh1KzIvlUwCWBeMpa4AGmFc1yBzyGAZpcaE-eNcRXDrgJOLbRn3/exec"; 
 
@@ -1086,7 +1152,12 @@
         function filterCategory(cat) {
             currentCategory = cat; currentBrand = 'all'; currentSubcategory = 'all';
             document.querySelectorAll('.category-btn').forEach(btn => {
-                btn.className = `category-btn px-4 py-2 rounded-full text-xs font-medium transition ${btn.textContent.toLowerCase().includes(cat === 'all' ? 'all' : cat.toLowerCase()) ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'}`;
+                const onclickAttr = btn.getAttribute('onclick') || '';
+                const isMatch = onclickAttr.includes(`'${cat}'`) || (cat === 'all' && onclickAttr.includes("'all'"));
+                
+                btn.className = `category-btn px-3.5 py-2 rounded-xl text-xs font-medium transition flex items-center gap-1.5 shrink-0 ${
+                    isMatch ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                }`;
             });
             updateFilterBars(); renderProducts();
         }
@@ -1096,7 +1167,7 @@
             document.querySelectorAll('.admin-cat-btn').forEach(btn => {
                 btn.className = `admin-cat-btn px-3 py-1 rounded-lg text-xs font-medium transition ${btn.textContent.toLowerCase().includes(cat.toLowerCase()) ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'}`;
             });
-            renderProducts();
+            renderAdminProducts();
         }
 
         function updateFilterBars() {
@@ -1514,7 +1585,7 @@
                 return `
                 <div class="glass-card rounded-xl overflow-hidden border border-slate-800 hover:border-blue-500/50 transition group flex flex-col justify-between">
                     <div onclick="openDetail('${p.id}')" class="cursor-pointer">
-                        <div class="h-48 overflow-hidden bg-slate-950/85 relative flex flex-col items-center justify-center p-2">
+                        <div class="h-48 overflow-hidden relative flex flex-col items-center justify-center p-2">
                             <img src="${imgSrc}" class="max-h-[160px] max-w-full object-contain group-hover:scale-105 transition duration-300">
                             ${categoryBadgeHtml}
                             ${brandBadgeHtml}
@@ -1540,10 +1611,15 @@
         }
 
         function renderAdminProducts() {
-            let adminFiltered = products;
-            if (adminCategoryFilter !== 'all') {
-                adminFiltered = adminFiltered.filter(p => p.category?.trim().toLowerCase() === adminCategoryFilter.toLowerCase());
-            }
+            const adminSearchVal = (document.getElementById('admin-search-input')?.value || '').trim().toLowerCase();
+            const searchTerms = adminSearchVal ? adminSearchVal.split(/\s+/).filter(Boolean) : [];
+
+            let adminFiltered = products.filter(p => {
+                if (!p || !p.name) return false;
+                const matchesCat = (adminCategoryFilter === 'all' || p.category?.trim().toLowerCase() === adminCategoryFilter.toLowerCase());
+                const matchesSearch = searchTerms.length === 0 || searchTerms.every(term => p.name.toLowerCase().includes(term) || p.category?.toLowerCase().includes(term) || p.brand?.toLowerCase().includes(term));
+                return matchesCat && matchesSearch;
+            });
 
             document.getElementById('admin-product-list').innerHTML = adminFiltered.map((p) => {
                 const isVisible = !p.status || String(p.status).trim().toLowerCase() === 'visible';
@@ -1598,7 +1674,7 @@
                         <button onclick="deleteProduct('${p.id}')" class="bg-red-900/30 text-red-400 text-xs px-3 py-1 rounded">Del</button>
                     </div>
                 </div>`;
-            }).join('') || `<div class="text-center py-6 text-slate-500 text-xs">No items</div>`;
+            }).join('') || `<div class="text-center py-6 text-slate-500 text-xs">No matching items found</div>`;
             renderAnalyticsList();
         }
 
@@ -2062,7 +2138,7 @@
             document.getElementById('p-price').value = p.price || '';
             document.getElementById('p-member-price').value = p.memberPrice !== undefined ? p.memberPrice : '';
             document.getElementById('p-promo-price').value = p.promoPrice !== undefined ? p.promoPrice : '';
-            document.getElementById('p-category').value = p.category || 'CPU';
+            document.getElementById('p-category').value = p.category || 'PC Package';
             document.getElementById('p-brand').value = p.brand || '';
             document.getElementById('p-subcategory').value = p.subcategory || '';
             document.getElementById('p-stock').value = p.stock || '';
