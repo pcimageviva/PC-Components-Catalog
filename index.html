@@ -91,34 +91,40 @@
     </div>
 
     <!-- Top Navigation Header -->
-    <header class="sticky top-0 z-50 border-b border-blue-900/50 px-4 py-3 flex justify-between items-center shadow-xl" style="background-color: #0b0f19; padding-top: max(0.75rem, env(safe-area-inset-top));">
-        <div onclick="goHome()" class="flex items-center space-x-2 cursor-pointer group">
-            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAOCAYAAAAmL5yKAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAEMSURBVDhPfVK/yocwDDw7dAgUCh1cnBx8//fwFbrX0UFQ6XDf4JfSVvkdBPLHay6JmKaJAIo555r4V+2f2wQvQk/qvzX4gLUWAHAcB47jaHIvhBAYQmCMkT1yzsw592nGGKk8qBRFSon7vjcEktz3nSmlEpeRQgh0zvG6Lq7rymVZKCK01jYmIlyWheu68rouOue+FXx1V9S1ZokiUnZynicA4L7vkuuxbRumaXoC7z1FhDlnxhjpnKOIUESa043j+OmjH8EYQwA6X4nr/2EYBhpjniaqIKXElFJ5XYm1WWvpve9rjzPPc+mq8usLGGMaYlGgiXpm7/0rV5ueGQBRS+4JulCtK1n9cRz5B0qGXZpSF98bAAAAAElFTkSuQmCC" alt="Logo" class="w-9 h-9 rounded-lg object-cover border border-blue-500/40 group-hover:border-blue-400 transition">
-            <div class="hidden sm:block">
-                <span class="text-sm font-bold font-orbitron text-white block leading-none group-hover:text-blue-400 transition">PC Image VIVA</span>
-                <span class="text-[10px] text-blue-400 tracking-wider uppercase">Viva City Megamall, Kuching</span>
+    <header class="sticky top-0 z-[100] border-b border-blue-900/50 px-2.5 sm:px-4 py-2 bg-slate-950/95 backdrop-blur-md shadow-2xl transition-all" style="padding-top: max(0.5rem, env(safe-area-inset-top));">
+        <div class="max-w-7xl mx-auto flex items-center justify-between gap-2">
+            <!-- Brand Logo & Title -->
+            <div onclick="goHome()" class="flex items-center space-x-2 cursor-pointer group shrink-0">
+                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAOCAYAAAAmL5yKAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAEMSURBVDhPfVK/yocwDDw7dAgUCh1cnBx8//fwFbrX0UFQ6XDf4JfSVvkdBPLHay6JmKaJAIo555r4V+2f2wQvQk/qvzX4gLUWAHAcB47jaHIvhBAYQmCMkT1yzsw592nGGKk8qBRFSon7vjcEktz3nSmlEpeRQgh0zvG6Lq7rymVZKCK01jYmIlyWheu68rouOue+FXx1V9S1ZokiUnZynicA4L7vkuuxbRumaXoC7z1FhDlnxhjpnKOIUESa043j+OmjH8EYQwA6X4nr/2EYBhpjniaqIKXElFJ5XYm1WWvpve9rjzPPc+mq8usLGGMaYlGgiXpm7/0rV5ueGQBRS+4JulCtK1n9cRz5B0qGXZpSF98bAAAAAElFTkSuQmCC" alt="Logo" class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg object-cover border border-blue-500/40 group-hover:border-blue-400 transition">
+                <div class="hidden md:block">
+                    <span class="text-xs sm:text-sm font-bold font-orbitron text-white block leading-none group-hover:text-blue-400 transition">PC Image VIVA</span>
+                    <span class="text-[9px] text-blue-400 tracking-wider uppercase">Viva City Megamall</span>
+                </div>
             </div>
-        </div>
 
-        <!-- Main Switcher Buttons -->
-        <div class="flex items-center space-x-1 bg-slate-900/90 p-1 rounded-xl border border-slate-800">
-            <button id="nav-store-btn" onclick="switchView('store')" class="text-xs font-medium flex items-center gap-1.5 transition px-3 py-1.5 rounded-lg bg-blue-600 text-white shadow-md">
-                <span class="text-base">🏪</span> 
-                <span>Store Catalog</span>
-            </button>
-            <button id="nav-builder-btn" onclick="switchView('builder')" class="text-xs font-medium flex items-center gap-1.5 transition px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800">
-                <span class="text-base">🖥️</span> 
-                <span>PC Builder</span>
-            </button>
-        </div>
+            <!-- Central View Navigation Tabs -->
+            <div class="flex items-center space-x-1 bg-slate-900/90 p-1 rounded-xl border border-slate-800 shrink-0">
+                <button id="nav-store-btn" onclick="switchView('store')" class="text-[11px] sm:text-xs font-medium flex items-center gap-1 transition px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-blue-600 text-white shadow-md whitespace-nowrap">
+                    <span class="text-sm sm:text-base">🏪</span> 
+                    <span class="hidden xs:inline">Store Catalog</span>
+                    <span class="xs:hidden">Catalog</span>
+                </button>
+                <button id="nav-builder-btn" onclick="switchView('builder')" class="text-[11px] sm:text-xs font-medium flex items-center gap-1 transition px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 whitespace-nowrap">
+                    <span class="text-sm sm:text-base">🖥️</span> 
+                    <span class="hidden xs:inline">PC Builder</span>
+                    <span class="xs:hidden">Builder</span>
+                </button>
+            </div>
 
-        <div class="flex items-center space-x-2">
-            <button onclick="switchView('builder')" title="View Selected Build Cart" class="relative text-xs bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white px-3 py-1.5 rounded-xl transition font-bold flex items-center gap-1.5 shadow-lg shadow-blue-500/20">
-                <span class="text-sm">🛒</span>
-                <span class="hidden sm:inline">Build List</span>
-                <span id="builder-badge" class="bg-amber-400 text-slate-950 px-1.5 py-0.2 rounded-full text-[10px] font-black hidden">0</span>
-            </button>
-            <button onclick="handleAdminClick()" id="admin-btn" class="hidden text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-xl border border-slate-700 transition">Admin Panel</button>
+            <!-- Action Buttons (Cart / Admin) -->
+            <div class="flex items-center space-x-1.5 shrink-0">
+                <button onclick="switchView('builder')" title="View Selected Build Cart" class="relative text-[11px] sm:text-xs bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl transition font-bold flex items-center gap-1 shadow-lg shadow-blue-500/20 whitespace-nowrap">
+                    <span class="text-xs sm:text-sm">🛒</span>
+                    <span class="hidden sm:inline">Build List</span>
+                    <span id="builder-badge" class="bg-amber-400 text-slate-950 px-1.5 py-0.2 rounded-full text-[10px] font-black hidden">0</span>
+                </button>
+                <button onclick="handleAdminClick()" id="admin-btn" class="hidden text-[11px] sm:text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl border border-slate-700 transition whitespace-nowrap">Admin</button>
+            </div>
         </div>
     </header>
 
