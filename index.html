@@ -75,7 +75,6 @@
             z-index: 1000;
         }
 
-        /* 针对手机端（选择组件/木马区域）的排版优化：不改动任何原有设置，仅精简优化移动端间距和网格 */
         @media screen and (max-width: 768px) {
             #category-filters, #admin-category-filters {
                 display: flex;
@@ -86,27 +85,6 @@
                 -webkit-overflow-scrolling: touch;
             }
             #category-filters::-webkit-scrollbar, #admin-category-filters::-webkit-scrollbar { display: none; }
-            #product-grid {
-                grid-template-columns: repeat(2, minmax(0, 1fr)) !important; /* 手机端每行排布2个卡片，充实且整齐 */
-                gap: 8px !important;
-            }
-            #product-grid .glass-card {
-                padding: 8px !important;
-            }
-            #product-grid .h-48 {
-                height: 110px !important; /* 调整移动端图片区域高度，使其更紧凑 */
-            }
-            #product-grid img {
-                max-height: 90px !important;
-            }
-            #product-grid h3 {
-                font-size: 11px !important;
-                line-height: 1.2 !important;
-                display: -webkit-box;
-                -webkit-line-clamp: 2;
-                -webkit-box-orient: vertical;
-                overflow: hidden;
-            }
             #product-grid .uniform-text, #admin-product-list .uniform-text { 
                 white-space: normal; 
                 word-break: break-word; 
@@ -115,17 +93,6 @@
             #admin-product-list .glass-card { flex-direction: column; align-items: stretch !important; gap: 8px; }
             #admin-product-list .glass-card > div:first-child { width: 100%; }
             #admin-product-list .glass-card > div:last-child { display: flex; justify-content: flex-end; gap: 6px; }
-            
-            /* PC Builder 选择列表在手机端的排版微调优化 */
-            #builder-slots-container > div {
-                flex-direction: column !important;
-                align-items: stretch !important;
-                gap: 6px !important;
-                padding: 10px !important;
-            }
-            #builder-slots-container > div > div:first-child {
-                width: 100% !important;
-            }
         }
     </style>
 </head>
