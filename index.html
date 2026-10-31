@@ -101,8 +101,8 @@
     <!-- Solid iOS Safe Area Shield -->
     <div class="ios-notch-shield"></div>
 
-    <!-- Fixed Header Container with Top Safe Distance & Padding -->
-    <header class="fixed top-0 left-0 right-0 z-[999] border-b border-blue-900/50 bg-[#0b0f19] shadow-2xl pt-[calc(env(safe-area-inset-top,0px)+12px)]">
+    <!-- Fixed Header Container with Extra Top Spacing -->
+    <header class="fixed top-0 left-0 right-0 z-[999] border-b border-blue-900/50 bg-[#0b0f19] shadow-2xl pt-[calc(env(safe-area-inset-top,0px)+20px)] pb-3">
         <div id="announcement-banner" class="font-bold py-1 px-4 overflow-hidden hidden shadow-sm border-b border-white/10" style="background-color: #0891b2; color: #020617;">
             <div class="marquee-container">
                 <div class="marquee-content text-xs" id="announcement-text" style="animation-duration: 18s;">
@@ -933,13 +933,13 @@
     </div>
 
     <div id="terms-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[10000] flex items-center justify-center p-3 sm:p-4" style="padding-top: calc(env(safe-area-inset-top, 0px) + 1.25rem); padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem);">
-        <div class="glass-card w-full max-w-lg rounded-2xl p-5 sm:p-6 border border-slate-700 max-h-[85vh] overflow-y-auto relative shadow-2xl">
-            <div class="flex justify-between items-center mb-4 pb-2 border-b border-slate-800/80">
-                <h3 class="text-base sm:text-lg font-bold text-white flex items-center gap-2 min-w-0 pr-2">
+        <div class="glass-card w-full max-w-lg rounded-2xl p-5 sm:p-6 border border-slate-700 max-h-[85vh] overflow-y-auto relative shadow-2xl my-auto">
+            <div class="flex items-center justify-between mb-4 pb-2 border-b border-slate-800/80">
+                <h3 class="text-base sm:text-lg font-bold text-white flex items-center gap-2 min-w-0">
                     <span class="shrink-0">📄</span> 
                     <span class="break-words">Terms & Conditions</span>
                 </h3>
-                <button onclick="closeTermsModal()" class="text-slate-400 hover:text-white bg-slate-800 hover:bg-red-600/80 w-7 h-7 rounded-full flex items-center justify-center transition border border-slate-700 shrink-0">✕</button>
+                <!-- 右上角的 X 关闭按钮已移除，强制顾客必须按底部按钮 -->
             </div>
             <div class="text-xs text-slate-300 space-y-3.5 leading-relaxed">
                 <p><strong>1. Prices & Member Price:</strong> All prices are in Malaysian Ringgit (RM) and for reference only; the final selling price is confirmed at purchase. Member prices require valid membership details.</p>
@@ -952,7 +952,8 @@
                     <strong>Important Note:</strong> All product details, specifications, pricing, and visual representations provided are intended as a general guide. For the most accurate and up-to-date pricing or availability, please feel free to reach out directly to our team.
                 </div>
             </div>
-            <button onclick="closeTermsModal()" class="mt-5 w-full bg-blue-600 hover:bg-blue-500 text-white py-2.5 rounded-xl text-xs font-bold transition shadow-lg shadow-blue-600/20">I Understand</button>
+            <!-- 唯一关闭弹窗的按钮 -->
+            <button onclick="closeTermsModal()" class="mt-5 w-full bg-blue-600 hover:bg-blue-500 text-white py-3 rounded-xl text-xs sm:text-sm font-bold transition shadow-lg shadow-blue-600/20 active:scale-95">I Understand</button>
         </div>
     </div>
 
