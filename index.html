@@ -101,9 +101,9 @@
     <!-- Solid iOS Safe Area Shield -->
     <div class="ios-notch-shield"></div>
 
-    <!-- Fixed Header Container with Extra Top Spacing -->
-    <header class="fixed top-0 left-0 right-0 z-[999] border-b border-blue-900/50 bg-[#0b0f19] shadow-2xl pt-[calc(env(safe-area-inset-top,0px)+20px)] pb-3">
-        <div id="announcement-banner" class="font-bold py-1 px-4 overflow-hidden hidden shadow-sm border-b border-white/10" style="background-color: #0891b2; color: #020617;">
+    <!-- Fixed Header Container with Max Top Space -->
+    <header class="fixed top-0 left-0 right-0 z-[999] border-b border-blue-900/50 bg-[#0b0f19] shadow-2xl pt-[calc(env(safe-area-inset-top,0px)+32px)] pb-4">
+        <div id="announcement-banner" class="font-bold py-1.5 px-4 overflow-hidden hidden shadow-sm border-b border-white/10 mb-2" style="background-color: #0891b2; color: #020617;">
             <div class="marquee-container">
                 <div class="marquee-content text-xs" id="announcement-text" style="animation-duration: 18s;">
                     🔥 Welcome to PC Image VIVA! Check out our latest hardware components and build your custom PC today.
@@ -111,39 +111,39 @@
             </div>
         </div>
 
-        <div class="max-w-7xl mx-auto px-3 py-2 flex justify-between items-center gap-2">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center gap-2">
             <div onclick="goHome()" class="flex items-center space-x-2 cursor-pointer group shrink-0">
-                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAOCAYAAAAmL5yKAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAEMSURBVDhPfVK/yocwDDw7dAgUCh1cnBx8//fwFbrX0UFQ6XDf4JfSVvkdBPLHay6JmKaJAIo555r4V+2f2wQvQk/qvzX4gLUWAHAcB47jaHIvhBAYQmCMkT1yzsw592nGGKk8qBRFSon7vjcEktz3nSmlEpeRQgh0zvG6Lq7rymVZKCK01jYmIlyWheu68rouOue+FXx1V9S1ZokiUnZynicA4L7vkuuxbRumaXoC7z1FhDlnxhjpnKOIUESa043j+OmjH8EYQwA6X4nr/2EYBhpjniaqIKXElFJ5XYm1WWvpve9rjzPPc+mq8usLGGMaYlGgiXpm7/0rV5ueGQBRS+4JulCtK1n9cRz5B0qGXZpSF98bAAAAAElFTkSuQmCC" alt="Logo" class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg object-cover border border-blue-500/40 group-hover:border-blue-400 transition">
+                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAOCAYAAAAmL5yKAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAEMSURBVDhPfVK/yocwDDw7dAgUCh1cnBx8//fwFbrX0UFQ6XDf4JfSVvkdBPLHay6JmKaJAIo555r4V+2f2wQvQk/qvzX4gLUWAHAcB47jaHIvhBAYQmCMkT1yzsw592nGGKk8qBRFSon7vjcEktz3nSmlEpeRQgh0zvG6Lq7rymVZKCK01jYmIlyWheu68rouOue+FXx1V9S1ZokiUnZynicA4L7vkuuxbRumaXoC7z1FhDlnxhjpnKOIUESa043j+OmjH8EYQwA6X4nr/2EYBhpjniaqIKXElFJ5XYm1WWvpve9rjzPPc+mq8usLGGMaYlGgiXpm7/0rV5ueGQBRS+4JulCtK1n9cRz5B0qGXZpSF98bAAAAAElFTkSuQmCC" alt="Logo" class="w-9 h-9 rounded-lg object-cover border border-blue-500/40 group-hover:border-blue-400 transition">
                 <div class="hidden md:block">
-                    <span class="text-xs sm:text-sm font-bold font-orbitron text-white block leading-none group-hover:text-blue-400 transition">PC Image VIVA</span>
+                    <span class="text-sm font-bold font-orbitron text-white block leading-none group-hover:text-blue-400 transition">PC Image VIVA</span>
                     <span class="text-[9px] text-blue-400 tracking-wider uppercase">Viva City Megamall, Kuching</span>
                 </div>
             </div>
 
             <div class="flex items-center space-x-1 bg-slate-900/90 p-1 rounded-xl border border-slate-800 shrink-0">
-                <button id="nav-store-btn" onclick="switchView('store')" class="text-[11px] sm:text-xs font-medium flex items-center gap-1 transition px-2.5 sm:px-3 py-1.5 rounded-lg bg-blue-600 text-white shadow-md">
+                <button id="nav-store-btn" onclick="switchView('store')" class="text-xs font-medium flex items-center gap-1 transition px-3.5 py-2 rounded-lg bg-blue-600 text-white shadow-md">
                     <span class="text-sm">🏪</span> 
                     <span>Catalog</span>
                 </button>
-                <button id="nav-builder-btn" onclick="switchView('builder')" class="text-[11px] sm:text-xs font-medium flex items-center gap-1 transition px-2.5 sm:px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800">
+                <button id="nav-builder-btn" onclick="switchView('builder')" class="text-xs font-medium flex items-center gap-1 transition px-3.5 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800">
                     <span class="text-sm">🖥️</span> 
                     <span>PC Builder</span>
                 </button>
             </div>
 
-            <div class="flex items-center space-x-1.5 shrink-0">
-                <button onclick="switchView('builder')" title="View Selected Build Cart" class="relative text-[11px] sm:text-xs bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white px-2.5 sm:px-3 py-1.5 rounded-xl transition font-bold flex items-center gap-1 shadow-lg shadow-blue-500/20">
-                    <span class="text-xs sm:text-sm">🛒</span>
+            <div class="flex items-center space-x-2 shrink-0">
+                <button onclick="switchView('builder')" title="View Selected Build Cart" class="relative text-xs bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white px-3 py-2 rounded-xl transition font-bold flex items-center gap-1 shadow-lg shadow-blue-500/20">
+                    <span class="text-sm">🛒</span>
                     <span class="hidden sm:inline">Build List</span>
                     <span id="builder-badge" class="bg-amber-400 text-slate-950 px-1.5 py-0.2 rounded-full text-[10px] font-black hidden">0</span>
                 </button>
-                <button onclick="handleAdminClick()" id="admin-btn" class="hidden text-[11px] sm:text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 sm:px-3 py-1.5 rounded-xl border border-slate-700 transition">Admin</button>
+                <button onclick="handleAdminClick()" id="admin-btn" class="hidden text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-2 rounded-xl border border-slate-700 transition">Admin</button>
             </div>
         </div>
     </header>
 
-    <!-- Main Content Area offset by Fixed Header Height + Safe Area -->
-    <main class="flex-grow max-w-7xl w-full mx-auto p-4" style="padding-top: calc(env(safe-area-inset-top, 0px) + 68px);">
+    <!-- Main Content Area with Massive Open Spacing -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6" style="padding-top: calc(env(safe-area-inset-top, 0px) + 135px);">
         <!-- Catalog View -->
         <div id="customer-view">
             <div class="mb-6 text-center py-5 px-3 bg-gradient-to-r from-blue-900/20 via-slate-900/40 to-blue-900/20 rounded-2xl border border-blue-500/10">
