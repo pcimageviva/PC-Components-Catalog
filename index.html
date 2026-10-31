@@ -101,8 +101,8 @@
     <!-- Solid iOS Safe Area Shield -->
     <div class="ios-notch-shield"></div>
 
-    <!-- Fixed Header Container with Top Safe Area Inset Padding -->
-    <header class="fixed top-0 left-0 right-0 z-[999] border-b border-blue-900/50 bg-[#0b0f19] shadow-2xl" style="padding-top: env(safe-area-inset-top, 0px);">
+    <!-- Fixed Header Container with Top Safe Distance & Padding -->
+    <header class="fixed top-0 left-0 right-0 z-[999] border-b border-blue-900/50 bg-[#0b0f19] shadow-2xl pt-[calc(env(safe-area-inset-top,0px)+12px)]">
         <div id="announcement-banner" class="font-bold py-1 px-4 overflow-hidden hidden shadow-sm border-b border-white/10" style="background-color: #0891b2; color: #020617;">
             <div class="marquee-container">
                 <div class="marquee-content text-xs" id="announcement-text" style="animation-duration: 18s;">
