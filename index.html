@@ -131,13 +131,18 @@
                 </button>
             </div>
 
-            <div class="flex items-center space-x-1.5 shrink-0">
-                <button onclick="switchView('builder')" title="View Selected Build Cart" class="relative text-[11px] sm:text-xs bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white px-2.5 sm:px-3 py-1.5 rounded-xl transition font-bold flex items-center gap-1 shadow-lg shadow-blue-500/20">
-                    <span class="text-xs sm:text-sm">🛒</span>
+            <div class="flex items-center space-x-2 shrink-0">
+                <!-- 右侧新增：搜索按钮 -->
+                <button onclick="focusSearchInput()" title="Search Products" class="text-xs bg-slate-800 hover:bg-blue-600 text-slate-300 hover:text-white p-2 sm:px-3 sm:py-2 rounded-xl border border-slate-700 transition flex items-center gap-1">
+                    <span class="text-sm">🔍</span>
+                    <span class="hidden sm:inline font-medium">Search</span>
+                </button>
+                <button onclick="switchView('builder')" title="View Selected Build Cart" class="relative text-xs bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white px-3 py-2 rounded-xl transition font-bold flex items-center gap-1 shadow-lg shadow-blue-500/20">
+                    <span class="text-sm">🛒</span>
                     <span class="hidden sm:inline">Build List</span>
                     <span id="builder-badge" class="bg-amber-400 text-slate-950 px-1.5 py-0.2 rounded-full text-[10px] font-black hidden">0</span>
                 </button>
-                <button onclick="handleAdminClick()" id="admin-btn" class="hidden text-[11px] sm:text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 sm:px-3 py-1.5 rounded-xl border border-slate-700 transition">Admin</button>
+                <button onclick="handleAdminClick()" id="admin-btn" class="hidden text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-2 rounded-xl border border-slate-700 transition">Admin</button>
             </div>
         </div>
     </header>
