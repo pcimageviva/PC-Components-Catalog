@@ -733,10 +733,11 @@
         </div>
     </div>
 
-    <!-- Product Detail Modal (Fixed: Left/Right margin added and close button repositioned) -->
-    <div id="detail-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div id="detail-modal-card" class="glass-card w-full max-w-lg rounded-2xl p-5 sm:p-6 border border-slate-700 max-h-[85vh] overflow-y-auto relative shadow-2xl mx-4 my-auto" style="-webkit-overflow-scrolling: touch;">
-            <div class="flex justify-end mb-1">
+    <!-- Product Detail Modal (Fixed: Top safe distance to avoid header overlapping) -->
+    <div id="detail-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[900] hidden flex items-center justify-center p-4 pt-20">
+        <div id="detail-modal-card" class="glass-card w-full max-w-lg rounded-2xl p-5 sm:p-6 border border-slate-700 max-h-[75vh] overflow-y-auto relative shadow-2xl mx-4 my-auto" style="-webkit-overflow-scrolling: touch;">
+            <!-- Sticky / Internal Close Button -->
+            <div class="flex justify-end mb-1 sticky top-0 z-10">
                 <button onclick="closeDetailModal()" class="text-slate-300 hover:text-white bg-slate-800 hover:bg-red-600/90 w-8 h-8 rounded-full flex items-center justify-center transition border border-slate-700 shadow-md">✕</button>
             </div>
             <div id="modal-content" class="pt-1"></div>
