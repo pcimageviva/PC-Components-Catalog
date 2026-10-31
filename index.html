@@ -1114,6 +1114,22 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
+        function focusSearchInput() {
+    // 如果当前不在目录页（例如在 PC Builder），先切回 store 视图
+    if (currentView !== 'store') {
+        switchView('store');
+    }
+    
+    // 延迟一点时间确保视图切换完成后，自动滚动并让搜索框聚焦
+    setTimeout(() => {
+        const input = document.getElementById('search-input');
+        if (input) {
+            input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            input.focus();
+        }
+    }, 100);
+}
+        
         function getEffectivePrice(p) {
             const promo = (featureToggles.promo !== false && p.promoPrice !== undefined && p.promoPrice !== null && !isNaN(p.promoPrice) && Number(p.promoPrice) > 0) ? Number(p.promoPrice) : null;
             const member = (featureToggles.member !== false && p.memberPrice !== undefined && p.memberPrice !== null && !isNaN(p.memberPrice) && Number(p.memberPrice) > 0) ? Number(p.memberPrice) : null;
