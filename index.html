@@ -692,14 +692,14 @@
     <!-- Modals -->
     <div id="summary-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[60] hidden flex items-center justify-center p-3 sm:p-4">
         <div class="glass-card w-full max-w-3xl rounded-2xl p-4 sm:p-6 border border-slate-700 max-h-[90vh] overflow-y-auto relative shadow-2xl">
-            <button onclick="closeSummaryModal()" class="sticky top-2 float-right text-slate-300 hover:text-white bg-slate-800 hover:bg-red-600/80 w-8 h-8 rounded-full flex items-center justify-center transition border border-slate-700 shadow-md z-50 -mb-8">✕</button>
-            <div class="flex flex-col sm:flex-row justify-between items-start pb-4 border-b border-slate-800 mb-4 gap-2">
+            <button onclick="closeSummaryModal()" aria-label="Close quotation" title="Close" class="absolute top-3 right-3 text-slate-300 hover:text-white bg-slate-800 hover:bg-red-600/80 w-8 h-8 rounded-full flex items-center justify-center transition border border-slate-700 shadow-md z-50">✕</button>
+            <div class="flex flex-col sm:flex-row justify-between items-start pb-4 border-b border-slate-800 mb-4 gap-2 pr-10">
                 <div>
                     <h2 class="font-orbitron font-bold text-white text-base sm:text-lg tracking-wider break-words">PC IMAGE VIVA</h2>
                     <p class="text-[11px] text-slate-400 mt-0.5 break-words">High Performance Custom Computer Systems & Hardware</p>
                     <p class="text-[10px] text-blue-400">Viva City Megamall, Kuching, Sarawak</p>
                 </div>
-                <div class="text-left sm:text-right w-full sm:w-auto">
+                <div class="text-left sm:text-right w-full sm:w-auto min-w-0">
                     <span class="bg-blue-950 text-blue-300 border border-blue-500/30 text-[10px] px-2.5 py-1 rounded-full font-mono uppercase font-bold inline-block">OFFICIAL QUOTATION ESTIMATE</span>
                     <div class="text-[11px] text-slate-400 mt-1 font-mono break-all">REF: <span id="summary-ref-text">PC-20261023</span> | DATE: <span id="summary-date-text"></span></div>
                 </div>
@@ -707,8 +707,8 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-950/60 p-3 rounded-xl border border-slate-800/80 mb-4 text-xs">
                 <div>
                     <span class="text-[10px] text-slate-500 uppercase block font-bold mb-0.5">Prepared For</span>
-                    <input id="summary-customer-name" type="text" maxlength="60" placeholder="Customer name * (required)" oninput="this.classList.remove('border-red-500')" class="w-full bg-slate-950 border border-slate-700 text-white rounded-lg px-2.5 py-1.5 text-xs mb-1.5 focus:outline-none focus:border-blue-500">
-                    <input id="summary-customer-contact" type="text" maxlength="60" placeholder="Contact: phone / email * (required)" oninput="this.classList.remove('border-red-500')" class="w-full bg-slate-950 border border-slate-700 text-white rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-blue-500">
+                    <input id="summary-customer-name" type="text" maxlength="60" placeholder="Customer Name * (required)" oninput="this.classList.remove('border-red-500')" class="w-full bg-slate-950 border border-slate-700 text-white rounded-lg px-2.5 py-1.5 text-xs mb-1.5 focus:outline-none focus:border-blue-500">
+                    <input id="summary-customer-contact" type="text" maxlength="60" placeholder="Customer Contact * (required)" oninput="this.classList.remove('border-red-500')" class="w-full bg-slate-950 border border-slate-700 text-white rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-blue-500">
                 </div>
                 <div class="sm:text-right">
                     <span class="text-[10px] text-slate-500 uppercase block font-bold mb-0.5">Build Specification</span>
@@ -1011,6 +1011,7 @@
         // 可以“+ Add Another”的分类：max = 最多几行。平时只显示 1 行，点按钮才展开新的一行（都在同一个框框里）
         const BUILDER_MULTI = {
             'RAM':         { max: 4,  addLabel: '+ Add Another RAM' },
+            'Storage':     { max: 4,  addLabel: '+ Add Another SSD' },
             'Accessories': { max: 10, addLabel: '+ Add Extra Accessory' }
         };
         let builderSlotCounts = {}; // 目前每个分类显示几行
@@ -2100,6 +2101,72 @@
             renderPCBuilderPage();
         }
 
+        function getBuilderPickerId(slotKey) {
+            return 'builder-picker-' + String(slotKey).replace(/[^a-zA-Z0-9_-]/g, '-');
+        }
+
+        function showBuilderProductOptions(slotKey) {
+            const targetId = getBuilderPickerId(slotKey) + '-options';
+            // Only one product dropdown may stay open at a time.
+            document.querySelectorAll('#builder-slots-container [id$="-options"]').forEach(panel => {
+                if (panel.id !== targetId) panel.classList.add('hidden');
+            });
+            const panel = document.getElementById(targetId);
+            if (panel) panel.classList.remove('hidden');
+        }
+
+        function getBuilderProductMeta(p) {
+            return [p.brand, p.spec1, p.spec2]
+                .map(value => String(value || '').trim())
+                .filter(Boolean)
+                .join(' | ');
+        }
+
+        function escapeBuilderHtml(value) {
+            return String(value == null ? '' : value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function filterBuilderProducts(slotKey, query) {
+            const input = document.getElementById(getBuilderPickerId(slotKey));
+            const panel = document.getElementById(getBuilderPickerId(slotKey) + '-options');
+            if (!panel) return;
+            const category = String(slotKey).split('__')[0];
+            const terms = String(query || '').toLowerCase().trim().split(/\\s+/).filter(Boolean);
+            const matches = products.filter(p => {
+                if (!p || !p.name || String(p.status || 'visible') === 'hidden') return false;
+                if (String(p.category || '').toLowerCase() !== category.toLowerCase()) return false;
+                const haystack = [p.id, p.name, p.brand, p.category, p.subcategory, p.spec1, p.spec2].join(' ').toLowerCase();
+                return terms.every(term => haystack.includes(term));
+            });
+            if (!matches.length) {
+                panel.innerHTML = '<div class="px-3 py-4 text-center text-xs text-slate-500">No matching products</div>';
+            } else {
+                panel.innerHTML = matches.map(p => {
+                    const price = getEffectivePrice(p);
+                    const safeId = String(p.id).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+                    const safeName = String(p.name || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+                    const isSelected = pcBuilder[slotKey] && pcBuilder[slotKey].id === p.id;
+                    return `<button type="button" onclick="selectBuilderComponent('${slotKey}', '${safeId}')" class="w-full text-left px-3 py-2.5 border ${isSelected ? 'bg-blue-600/20 border-blue-500/40' : 'border-transparent hover:bg-slate-800'} rounded-lg transition flex items-center justify-between gap-3">
+                        <span class="min-w-0"><span class="block text-white text-xs font-medium break-words">${safeName}</span><span class="block text-[10px] text-slate-500">${escapeBuilderHtml(getBuilderProductMeta(p))}</span></span>
+                        <span class="text-amber-400 text-xs font-bold whitespace-nowrap shrink-0 text-right ml-3">RM ${Number(price).toFixed(2)}</span>
+                    </button>`;
+                }).join('');
+            }
+            panel.classList.remove('hidden');
+        }
+
+        // Close product suggestions when clicking outside the picker.
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('#builder-slots-container .relative')) {
+                document.querySelectorAll('#builder-slots-container [id$="-options"]').forEach(panel => panel.classList.add('hidden'));
+            }
+        });
+
         function updateBuilderBadge() {
             const count = Object.keys(pcBuilder).length;
             const badge = document.getElementById('builder-badge');
@@ -2128,19 +2195,31 @@
                     }
                     const slotLabel = isMulti ? `${cat} ${idx + 1}` : cat;
 
-                    const optionsHtml = catProducts.map(p => {
+                    const pickerId = 'builder-picker-' + slotKey.replace(/[^a-zA-Z0-9_-]/g, '-');
+                    const selectedLabel = selectedItem ? selectedItem.name : '';
+                    const resultHtml = catProducts.map(p => {
                         const price = getEffectivePrice(p);
-                        const isSelected = selectedItem && selectedItem.id === p.id;
-                        return `<option value="${p.id}" ${isSelected ? 'selected' : ''}>${p.name} - RM ${Number(price).toFixed(2)}</option>`;
+                        const safeId = String(p.id).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+                        const safeName = String(p.name || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+                        const selectedClass = selectedItem && selectedItem.id === p.id ? 'bg-blue-600/20 border-blue-500/40' : 'border-transparent hover:bg-slate-800';
+                        return `<button type="button" onclick="selectBuilderComponent('${slotKey}', '${safeId}')" class="w-full text-left px-3 py-2.5 border ${selectedClass} rounded-lg transition flex items-center justify-between gap-3">
+                            <span class="min-w-0"><span class="block text-white text-xs font-medium break-words">${safeName}</span><span class="block text-[10px] text-slate-500">${escapeBuilderHtml(getBuilderProductMeta(p))}</span></span>
+                            <span class="text-amber-400 text-xs font-bold whitespace-nowrap shrink-0 text-right ml-3">RM ${Number(price).toFixed(2)}</span>
+                        </button>`;
                     }).join('');
 
                     return `
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${idx > 0 ? 'pt-3 border-t border-slate-800' : ''}">
-                        <div class="flex-grow min-w-0">
-                            <select onchange="selectBuilderComponent('${slotKey}', this.value)" class="w-full bg-slate-950 border border-slate-700 text-white rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-blue-500 truncate">
-                                <option value="">-- Select ${slotLabel} --</option>
-                                ${optionsHtml}
-                            </select>
+                        <div class="flex-grow min-w-0 relative">
+                            <input type="search" id="${pickerId}" value="${selectedLabel.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;')}"
+                                oninput="filterBuilderProducts('${slotKey}', this.value)"
+                                onfocus="showBuilderProductOptions('${slotKey}')"
+                                placeholder="Search or select ${slotLabel}..."
+                                autocomplete="off"
+                                class="w-full bg-slate-950 border border-slate-700 text-white rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-blue-500 placeholder-slate-500">
+                            <div id="${pickerId}-options" class="hidden absolute left-0 right-0 top-full mt-1 z-40 max-h-64 overflow-y-auto rounded-xl border border-slate-700 bg-slate-950 p-1.5 shadow-2xl space-y-1">
+                                ${resultHtml || '<div class="px-3 py-4 text-center text-xs text-slate-500">No products found</div>'}
+                            </div>
                         </div>
                         <div class="flex items-center justify-between sm:justify-end gap-3 shrink-0">
                             <span class="text-amber-400 font-orbitron font-bold text-xs min-w-[80px] text-right">
