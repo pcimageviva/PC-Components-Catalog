@@ -115,6 +115,30 @@
         @keyframes quotationSpin { to { transform: rotate(360deg); } }
 
 
+
+        /* Admin item operation progress */
+        #item-operation-overlay {
+            position: fixed; inset: 0; z-index: 100000; display: none;
+            align-items: center; justify-content: center; padding: 20px;
+            background: rgba(3, 7, 18, .72); backdrop-filter: blur(5px);
+        }
+        #item-operation-overlay.active { display: flex; }
+        .item-operation-card {
+            width: min(360px, 100%); padding: 22px; border-radius: 16px;
+            background: #111827; border: 1px solid rgba(96,165,250,.35);
+            box-shadow: 0 24px 70px rgba(0,0,0,.5);
+        }
+        .item-operation-track { height: 7px; overflow: hidden; border-radius: 999px; background: #263244; }
+        .item-operation-fill {
+            height: 100%; width: 38%; border-radius: inherit;
+            background: linear-gradient(90deg,#2563eb,#38bdf8);
+            animation: itemOperationLoading 1.15s ease-in-out infinite;
+        }
+        @keyframes itemOperationLoading {
+            0% { transform: translateX(-110%); }
+            100% { transform: translateX(290%); }
+        }
+
         /* Responsive layout improvements: phones, tablets and desktops */
         *, *::before, *::after { box-sizing: border-box; }
         html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
@@ -199,7 +223,51 @@
             #app-main-content { padding-left: 16px !important; padding-right: 16px !important; }
         }
 
-    </style>
+    
+        @media (max-width: 640px) {
+            #product-modal { align-items: center; padding: 6px !important; }
+            #product-modal > .glass-card {
+                width: 100% !important;
+                max-width: 100% !important;
+                max-height: 98dvh !important;
+                padding: 16px !important;
+                border-radius: 16px !important;
+            }
+            #product-form { gap: 16px !important; }
+            #product-form .grid.grid-cols-3 { grid-template-columns: 1fr !important; }
+            #admin-package-component-list { max-height: 48dvh !important; }
+            #admin-package-component-list label { align-items: flex-start; }
+        }
+
+
+        /* Make native date-picker controls clearly visible on dark backgrounds */
+        input[type="date"] {
+            color-scheme: dark;
+            cursor: pointer;
+            padding-right: 12px !important;
+        }
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            opacity: 1 !important;
+            display: block;
+            width: 22px;
+            height: 22px;
+            padding: 3px;
+            margin-left: 8px;
+            cursor: pointer;
+            border-radius: 6px;
+            background-color: #2563eb;
+            filter: invert(1) brightness(1.8);
+        }
+        input[type="date"]::-webkit-calendar-picker-indicator:hover {
+            background-color: #3b82f6;
+            transform: scale(1.08);
+        }
+        input[type="date"]::-moz-calendar-picker-indicator {
+            opacity: 1;
+            cursor: pointer;
+        }
+
+</style>
 </head>
 <body class="min-h-screen flex flex-col">
 
@@ -602,6 +670,21 @@
                 </div>
 
                 <div class="glass-card p-4 rounded-xl border border-slate-800 space-y-3 md:col-span-2">
+                    <div class="border-b border-slate-800 pb-2">
+                        <h2 class="text-sm font-bold text-white flex items-center gap-1.5">📄 Quotation Terms & Conditions</h2>
+                        <p class="text-[11px] text-slate-400">Edit the terms shown on the Build Summary and official PDF quotation. Enter one clause per line.</p>
+                    </div>
+                    <textarea id="setting-quotation-terms" rows="7" spellcheck="true" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-3 text-white text-xs leading-relaxed focus:outline-none focus:border-blue-500" placeholder="Enter one term per line..."></textarea>
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <span id="quotation-terms-save-status" class="text-[11px] text-slate-500">Changes are applied to new quotations after saving.</span>
+                        <div class="flex gap-2">
+                            <button type="button" onclick="resetQuotationTerms()" class="px-3 py-2 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700">Restore Default</button>
+                            <button type="button" onclick="saveQuotationTerms()" class="px-4 py-2 rounded-lg text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white">Save T&amp;C</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card p-4 rounded-xl border border-slate-800 space-y-3 md:col-span-2">
                     <div class="border-b border-slate-800 pb-2 flex justify-between items-center">
                         <div>
                             <h2 class="text-sm font-bold text-white flex items-center gap-1.5">🌟 Feature Carousel Settings</h2>
@@ -795,9 +878,9 @@
                     <input id="summary-customer-contact" type="text" maxlength="60" placeholder="Customer Contact * (required)" oninput="this.classList.remove('border-red-500')" class="w-full bg-slate-950 border border-slate-700 text-white rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-blue-500">
                 </div>
                 <div class="sm:text-right">
-                    <span class="text-[10px] text-slate-500 uppercase block font-bold mb-0.5">Build Specification</span>
-                    <span class="text-blue-400 font-semibold block">Custom High-Performance Desktop PC</span>
-                    <span class="text-slate-400 text-[11px]">Full Assembly & Diagnostic Included</span>
+                    <span class="text-[10px] text-slate-500 uppercase block font-bold mb-1">Salesperson Details <span class="text-slate-500 normal-case font-normal">(Optional)</span></span>
+                    <input id="summary-salesperson-name" type="text" maxlength="60" placeholder="Salesperson Name (Optional)" class="w-full sm:max-w-[260px] sm:ml-auto block bg-slate-950 border border-slate-700 text-white rounded-lg px-2.5 py-1.5 text-xs mb-1.5 focus:outline-none focus:border-blue-500">
+                    <input id="summary-salesperson-contact" type="text" maxlength="60" placeholder="Salesperson Contact (Optional)" class="w-full sm:max-w-[260px] sm:ml-auto block bg-slate-950 border border-slate-700 text-white rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-blue-500">
                 </div>
             </div>
             <div class="overflow-x-auto mb-4 scrollbar-none">
@@ -816,9 +899,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-slate-800 mb-6">
                 <div class="text-[10px] text-slate-400 space-y-1.5 leading-relaxed bg-slate-950/40 p-3 rounded-xl border border-slate-900">
                     <strong class="text-slate-300 block mb-1">TERMS & CONDITIONS</strong>
-                    <p>1. Quotation prices are subject to stock availability upon order confirmation.</p>
-                    <p>2. Hardware carries standard individual manufacturer warranties.</p>
-                    <p>3. This document is a computer-generated quote estimate and requires no formal signature.</p>
+                    <div id="summary-terms-content" class="space-y-1"></div>
                 </div>
                 <div class="bg-slate-900/90 p-3.5 rounded-xl border border-slate-800 space-y-2 text-xs">
                     <div class="flex justify-between text-slate-300">
@@ -895,10 +976,10 @@
                 <div style="color: #ffffff; font-weight: bold; word-break: break-word;" id="pdf-customer-name">Valued Customer</div>
                 <div style="color: #94a3b8; font-size: 10px; word-break: break-word;" id="pdf-customer-contact">PC Image Vivacity Megamall Inquiry</div>
             </div>
-            <div style="text-align: right;">
-                <div style="font-size: 9px; color: #64748b; text-transform: uppercase; font-weight: bold; margin-bottom: 2px;">Build Specification</div>
-                <div style="color: #60a5fa; font-weight: 600;">Custom High-Performance PC Build</div>
-                <div style="color: #34d399; font-size: 10px;">Full Assembly & Diagnostic Included</div>
+            <div style="text-align: right; min-width: 150px;">
+                <div style="font-size: 9px; color: #64748b; text-transform: uppercase; font-weight: bold; margin-bottom: 3px;">Salesperson</div>
+                <div id="pdf-salesperson-name" style="color: #60a5fa; font-weight: 600; word-break: break-word;"></div>
+                <div id="pdf-salesperson-contact" style="color: #94a3b8; font-size: 10px; word-break: break-word;"></div>
             </div>
         </div>
         <table style="width: 100%; border-collapse: collapse; margin-bottom: 14px; font-size: 11px;">
@@ -915,10 +996,7 @@
         <div style="display: flex; justify-content: space-between; align-items: flex-start; border-top: 1px solid #1e293b; padding-top: 16px; margin-bottom: 12px; page-break-inside: avoid; page-break-after: avoid;">
             <div style="font-size: 9px; color: #64748b; max-width: 400px; line-height: 1.5; background: rgba(15, 23, 42, 0.4); padding: 10px; border-radius: 6px; border: 1px solid #1e293b;">
                 <strong style="color: #94a3b8; display: block; margin-bottom: 3px;">TERMS & CONDITIONS</strong>
-                1. Quotation prices are subject to stock availability upon order confirmation.<br>
-                2. Hardware carries standard individual manufacturer warranty terms.<br>
-                3. This quotation estimate is valid for 7 days from the issuance date.<br>
-                4. This document is a computer-generated quote estimate and requires no formal signature.
+                <div id="pdf-terms-content"></div>
             </div>
             <div style="background: rgba(15, 23, 42, 0.95); border: 1px solid #1e293b; border-radius: 8px; padding: 12px; width: 260px;">
                 <div style="display: flex; justify-content: space-between; font-size: 11px; color: #e2e8f0; margin-bottom: 4px;">
@@ -963,36 +1041,35 @@
         </div>
     </div>
 
-    <div id="product-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="glass-card w-full max-w-md rounded-2xl p-6 border border-slate-700 max-h-[90vh] overflow-y-auto relative">
+    <div id="product-modal" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 hidden flex items-center justify-center p-2 sm:p-4">
+        <div class="glass-card w-full max-w-4xl rounded-2xl p-4 sm:p-7 border border-slate-700 max-h-[96dvh] overflow-y-auto relative">
             <button onclick="closeProductModal()" class="sticky top-4 float-right text-slate-300 hover:text-white bg-slate-800 hover:bg-red-600/80 w-8 h-8 rounded-full flex items-center justify-center transition border border-slate-700 shadow-md z-50 -mb-8">✕</button>
             <h3 id="modal-title" class="text-lg font-bold text-white mb-4">Add New Component</h3>
-            <form id="product-form" onsubmit="saveProduct(event)" class="space-y-3 text-sm">
+            <form id="product-form" onsubmit="saveProduct(event)" class="space-y-5 text-sm">
                 <input type="hidden" id="p-id-old">
                 <div>
-                    <label class="block text-[10px] text-slate-400 mb-1 font-medium">Item ID (Customizable)</label>
-                    <input type="text" id="p-id" placeholder="e.g. PROD-1001 or custom ID" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-mono text-xs">
+                    <label class="block text-xs text-slate-300 mb-2 font-semibold">Item ID (Customizable)</label>
+                    <input type="text" id="p-id" placeholder="e.g. PROD-1001 or custom ID" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-3 text-white font-mono text-sm">
                 </div>
                 <div>
-                    <label class="block text-[10px] text-slate-400 mb-1 font-medium">Item Name</label>
+                    <label class="block text-xs text-slate-300 mb-2 font-semibold">Item Name</label>
                     <input type="text" id="p-name" placeholder="Item Name" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white">
                 </div>
                 <div class="grid grid-cols-3 gap-2">
                     <div>
-                        <label class="block text-[10px] text-slate-400 mb-1">Normal Price</label>
-                        <input type="number" id="p-price" step="0.01" placeholder="Normal" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-2 text-white text-xs">
+                        <label class="block text-xs text-slate-300 mb-2">Normal Price</label>
+                        <input type="number" id="p-price" step="0.01" placeholder="Normal" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-3 text-white text-sm">
                     </div>
                     <div>
-                        <label class="block text-[10px] text-slate-400 mb-1">Member Price</label>
-                        <input type="number" id="p-member-price" step="0.01" placeholder="Member" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-2 text-white text-xs">
+                        <label class="block text-xs text-slate-300 mb-2">Member Price</label>
+                        <input type="number" id="p-member-price" step="0.01" placeholder="Member" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-3 text-white text-sm">
                     </div>
                     <div>
-                        <label class="block text-[10px] text-slate-400 mb-1">Promo Price</label>
-                        <input type="number" id="p-promo-price" step="0.01" placeholder="Promo" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-2 text-white text-xs">
+                        <label class="block text-xs text-slate-300 mb-2">Promo Price</label>
+                        <input type="number" id="p-promo-price" step="0.01" placeholder="Promo" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-3 text-white text-sm">
                     </div>
                 </div>
-                <select id="p-category" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white">
-                    <option value="PC Package">PC Package</option>
+                <select id="p-category" onchange="togglePackageDiscountField()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white">
                     <option value="CPU">CPU</option>
                     <option value="Motherboard">Motherboard</option>
                     <option value="RAM">RAM</option>
@@ -1001,8 +1078,24 @@
                     <option value="PSU">PSU</option>
                     <option value="Casing">Casing</option>
                     <option value="Cooler">Cooler</option>
+                    <option value="Monitor">Monitor</option>
                     <option value="Accessories">Accessories</option>
+                    <option value="PC Package">PC Package</option>
                 </select>
+                <div id="package-discount-field" class="hidden bg-amber-950/20 border border-amber-500/30 rounded-xl p-3">
+                    <label class="block text-[10px] text-amber-300 mb-1 font-bold uppercase">PC Package Extra Discount (RM)</label>
+                    <input type="number" id="p-package-discount" min="0" step="0.01" value="0" placeholder="e.g. 500" class="w-full bg-slate-950 border border-amber-500/30 rounded-lg px-3 py-2 text-white text-sm">
+                    <p class="text-[10px] text-slate-400 mt-1">This discount is applied only when customers configure and add this PC Package.</p>
+                </div>
+                <div id="admin-package-components-field" class="hidden bg-slate-950/70 border border-blue-500/40 rounded-2xl p-4 sm:p-5 space-y-4">
+                    <div>
+                        <div class="text-base text-white font-bold">Package Components Setup</div>
+                        <p class="text-xs leading-5 text-slate-400 mt-2">Choose one or more existing components using the category rows below. Normal Price and Member Price are calculated automatically from your selected products. You only need to enter the extra package discount.</p>
+                    </div>
+                    <input id="admin-package-component-search" type="search" oninput="renderAdminPackageComponentChoices()" placeholder="Search product name, category or model..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white">
+                    <div id="admin-package-component-list" class="max-h-[58vh] overflow-y-auto pr-2"></div>
+                    <div id="admin-package-component-count" class="text-xs text-blue-300 font-semibold">0 components selected</div>
+                </div>
                 <div class="grid grid-cols-2 gap-2">
                     <input type="text" id="p-brand" placeholder="Brand" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white">
                     <input type="text" id="p-subcategory" placeholder="Series / Subcategory" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white">
@@ -1148,6 +1241,7 @@
         let bannerSpeed = '18s';
         let heroTitleText = 'PC Components Showcase & Builder';
         let heroDescText = 'Explore high-performance hardware, check specifications, or build your custom PC';
+        let quotationTerms = ["Quotation prices are subject to stock availability upon order confirmation.", "Hardware carries standard individual manufacturer warranty terms.", "This quotation estimate is valid for 7 days from the issuance date.", "This document is a computer-generated quote estimate and requires no formal signature."];
 
         let analyticsView = 'total';
         let todayStr = new Date().toISOString().split('T')[0];
@@ -1289,10 +1383,23 @@
     }, 100);
 }
         
+        // Accept numeric prices as well as values formatted like "RM 3,299.00".
+        // This is important for PC Package products whose price may be stored as text.
+        function toPriceNumber(value) {
+            if (typeof value === 'number') return Number.isFinite(value) ? value : 0;
+            if (value === null || value === undefined || value === '') return 0;
+            const cleaned = String(value).replace(/[^0-9.\-]/g, '');
+            const parsed = Number(cleaned);
+            return Number.isFinite(parsed) ? parsed : 0;
+        }
+
         function getEffectivePrice(p) {
-            const promo = (featureToggles.promo !== false && p.promoPrice !== undefined && p.promoPrice !== null && !isNaN(p.promoPrice) && Number(p.promoPrice) > 0) ? Number(p.promoPrice) : null;
-            const member = (featureToggles.member !== false && p.memberPrice !== undefined && p.memberPrice !== null && !isNaN(p.memberPrice) && Number(p.memberPrice) > 0) ? Number(p.memberPrice) : null;
-            const normal = Number(p.price || 0);
+            if (p && p.isPackageDiscount) return -Math.abs(toPriceNumber(p.packageDiscountAmount));
+            const promoValue = toPriceNumber(p.promoPrice);
+            const memberValue = toPriceNumber(p.memberPrice);
+            const promo = (featureToggles.promo !== false && promoValue > 0) ? promoValue : null;
+            const member = (featureToggles.member !== false && memberValue > 0) ? memberValue : null;
+            const normal = toPriceNumber(p.price);
 
             let lowest = normal;
             if (promo !== null && promo < lowest) lowest = promo;
@@ -1307,8 +1414,24 @@
                     const data = await response.json();
                     if (data && Array.isArray(data.products)) {
                         products = data.products.filter(p => p && p.name && typeof p.name === 'string');
+                        products = products.map(p => {
+                            const match = String(p.desc || '').match(/<!--PCPKG_IDS:([^>]*)-->/);
+                            if (match) {
+                                try { p.packageComponents = JSON.parse(decodeURIComponent(match[1])); } catch (e) {}
+                                p.desc = String(p.desc || '').replace(/\n?<!--PCPKG_IDS:[^>]*-->/g, '').trim();
+                            }
+                            return p;
+                        });
                     } else if (Array.isArray(data)) {
                         products = data.filter(p => p && p.name && typeof p.name === 'string');
+                        products = products.map(p => {
+                            const match = String(p.desc || '').match(/<!--PCPKG_IDS:([^>]*)-->/);
+                            if (match) {
+                                try { p.packageComponents = JSON.parse(decodeURIComponent(match[1])); } catch (e) {}
+                                p.desc = String(p.desc || '').replace(/\n?<!--PCPKG_IDS:[^>]*-->/g, '').trim();
+                            }
+                            return p;
+                        });
                     }
 
                     if (data && data.settings) {
@@ -1337,11 +1460,13 @@
                         if (s.bannerSpeed) bannerSpeed = s.bannerSpeed;
                         if (s.heroTitleText) heroTitleText = s.heroTitleText;
                         if (s.heroDescText) heroDescText = s.heroDescText;
+                        if (Array.isArray(s.quotationTerms)) quotationTerms = s.quotationTerms.map(String);
                     }
                 }
             } catch (error) { console.error(error); }
             
             initTogglesUI();
+            renderQuotationTerms();
             updateFilterBars();
             renderProducts();
             initSpotlightCarousel();
@@ -1358,7 +1483,14 @@
                     body: JSON.stringify({ 
                         type: 'products', 
                         password: window.currentAdminPassword,
-                        products: products 
+                        products: products.map(product => {
+                            const cleanDesc = String(product.desc || '').replace(/\n?<!--PCPKG_IDS:[^>]*-->/g, '');
+                            const ids = Array.isArray(product.packageComponents) ? product.packageComponents.map(String) : [];
+                            return {
+                                ...product,
+                                desc: ids.length ? `${cleanDesc}\n<!--PCPKG_IDS:${encodeURIComponent(JSON.stringify(ids))}-->` : cleanDesc
+                            };
+                        })
                     })
                 });
             } catch (error) { console.error(error); }
@@ -1388,9 +1520,10 @@
                     bannerFontSize: bannerFontSize,
                     bannerSpeed: bannerSpeed,
                     heroTitleText: heroTitleText,
-                    heroDescText: heroDescText
+                    heroDescText: heroDescText,
+                    quotationTerms: quotationTerms
                 };
-                await fetch(GOOGLE_SCRIPT_URL, {
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify({ 
@@ -1399,7 +1532,11 @@
                         settings: settingsPayload 
                     })
                 });
-            } catch (error) { console.error(error); }
+                return response.ok;
+            } catch (error) {
+                console.error(error);
+                return false;
+            }
         }
 
         function initTogglesUI() {
@@ -1428,6 +1565,8 @@
 
             document.getElementById('setting-hero-title').value = heroTitleText;
             document.getElementById('setting-hero-desc').value = heroDescText;
+            const termsEditor = document.getElementById('setting-quotation-terms');
+            if (termsEditor) termsEditor.value = quotationTerms.join('\n');
             
             document.getElementById('analytics-start-date').value = analyticsStartDate;
             document.getElementById('analytics-end-date').value = analyticsEndDate;
@@ -2145,11 +2284,482 @@
             }
         }
 
+
+        function normalizePackageComponentName(value) {
+            return String(value || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim();
+        }
+
+        function parsePackageDescription(description) {
+            const parsed = [];
+            const aliases = {
+                'graphics': 'GPU', 'graphic': 'GPU', 'vga': 'GPU',
+                'motherboard': 'Motherboard', 'mainboard': 'Motherboard',
+                'processor': 'CPU', 'cpu': 'CPU', 'memory': 'RAM', 'ram': 'RAM',
+                'ssd': 'Storage', 'storage': 'Storage',
+                'power supply': 'PSU', 'psu': 'PSU',
+                'case': 'Casing', 'casing': 'Casing',
+                'cooler': 'Cooler', 'cpu cooler': 'Cooler',
+                'monitor': 'Monitor', 'display': 'Monitor',
+                'accessory': 'Accessories', 'accessories': 'Accessories'
+            };
+            String(description || '').split(/\r?\n/).forEach(line => {
+                const match = line.trim().match(/^[•●▪\-*]?\s*([^:]+):\s*(.+)$/);
+                if (!match) return;
+                const category = aliases[match[1].trim().toLowerCase()];
+                if (category) parsed.push({ category, name: match[2].trim() });
+            });
+            return parsed;
+        }
+
+        // Package components intentionally use the exact names from Description.
+        // Do not fuzzy-match against the product catalog: similar model names can be wrong.
+
+        function importPackageComponents(packageProduct) {
+            pcBuilder = {};
+            builderSlotCounts = {};
+            pcBuilder['PC Package'] = packageProduct;
+
+            const components = parsePackageDescription(packageProduct.desc || packageProduct.description || '');
+            if (!components.length) {
+                alert('No readable component lines found in this PC Package Description. Use lines like "• GPU: product name".');
+                return;
+            }
+
+            components.forEach(component => {
+                const category = component.category;
+
+                // Monitor is intentionally not shown as a Builder slot.
+                if (category === 'Monitor') return;
+
+                const keys = getSlotKeys(category);
+                let targetKey = keys.find(key => !pcBuilder[key]);
+                if (!targetKey) {
+                    const cfg = BUILDER_MULTI[category];
+                    if (cfg && keys.length < cfg.max) {
+                        builderSlotCounts[category] = keys.length + 1;
+                        targetKey = slotKeyOf(category, keys.length + 1);
+                    } else {
+                        // Keep additional components visible instead of replacing an existing one.
+                        builderSlotCounts[category] = keys.length + 1;
+                        targetKey = slotKeyOf(category, keys.length + 1);
+                    }
+                }
+
+                // Always display the exact original component name from Description.
+                // The PC Package price already includes these components.
+                pcBuilder[targetKey] = {
+                    id: `included-${packageProduct.id}-${category}-${targetKey}`,
+                    category,
+                    name: component.name,
+                    price: 0,
+                    memberPrice: 0,
+                    promoPrice: 0,
+                    includedInPackage: true,
+                    status: 'visible'
+                };
+            });
+            updateBuilderBadge();
+        }
+
+
+
+        let pendingPackageProduct = null;
+        let pendingPackageComponents = [];
+        let adminPackageComponentIds = [];
+
+        function togglePackageDiscountField() {
+            const category = document.getElementById('p-category');
+            const discountField = document.getElementById('package-discount-field');
+            const componentsField = document.getElementById('admin-package-components-field');
+            const isPackage = !!category && category.value === 'PC Package';
+            if (discountField) discountField.classList.toggle('hidden', !isPackage);
+            if (componentsField) {
+                componentsField.classList.toggle('hidden', !isPackage);
+                if (isPackage) renderAdminPackageComponentChoices();
+            }
+        }
+
+
+
+        function getAdminPackageRows() {
+            return [
+                { category: 'CPU', label: 'CPU' },
+                { category: 'Motherboard', label: 'Motherboard' },
+                { category: 'RAM', label: 'RAM 1' },
+                { category: 'RAM', label: 'RAM 2' },
+                { category: 'Storage', label: 'Storage 1' },
+                { category: 'Storage', label: 'Storage 2' },
+                { category: 'GPU', label: 'GPU' },
+                { category: 'PSU', label: 'PSU' },
+                { category: 'Casing', label: 'Casing' },
+                { category: 'Cooler', label: 'Cooler' },
+                { category: 'Monitor', label: 'Monitor' },
+                { category: 'Accessories', label: 'Accessories' }
+            ];
+        }
+
+        function renderAdminPackageComponentChoices() {
+            const list = document.getElementById('admin-package-component-list');
+            if (!list) return;
+            const query = String(document.getElementById('admin-package-component-search')?.value || '').toLowerCase().trim();
+            const rows = getAdminPackageRows();
+            const activeProducts = products.filter(p => {
+                if (!p || !p.name || String(p.status || 'visible') === 'hidden') return false;
+                if (String(p.category || '').toLowerCase() === 'pc package') return false;
+                const text = [p.name, p.category, p.brand, p.subcategory, p.spec1, p.spec2, p.id].join(' ').toLowerCase();
+                return !query || text.includes(query);
+            });
+
+            const used = new Set();
+            list.innerHTML = rows.map((row, index) => {
+                const candidates = activeProducts.filter(p => String(p.category || '').toLowerCase() === row.category.toLowerCase());
+                const selectedId = adminPackageComponentIds.find(id => {
+                    const p = products.find(item => String(item.id) === String(id));
+                    return p && String(p.category || '').toLowerCase() === row.category.toLowerCase() && !used.has(String(id));
+                }) || '';
+                if (selectedId) used.add(String(selectedId));
+
+                const options = candidates.map(p => {
+                    const id = String(p.id);
+                    const selected = id === String(selectedId);
+                    const disabled = adminPackageComponentIds.includes(id) && !selected;
+                    return `<option value="${escapeBuilderHtml(id)}" ${selected ? 'selected' : ''} ${disabled ? 'disabled' : ''}>${escapeBuilderHtml(p.name)} — RM ${toPriceNumber(p.price).toFixed(2)} / Member RM ${toPriceNumber(p.memberPrice || p.price).toFixed(2)}</option>`;
+                }).join('');
+
+                return `<div class="grid grid-cols-[112px_minmax(0,1fr)] sm:grid-cols-[145px_minmax(0,1fr)] gap-3 items-center py-2 border-b border-slate-800/80 last:border-b-0">
+                    <div class="rounded-lg bg-blue-600/20 border border-blue-500/30 px-2 py-2 text-center text-[10px] sm:text-xs font-bold text-blue-200 uppercase">${escapeBuilderHtml(row.label)}</div>
+                    <select id="admin-package-row-${index}" data-category="${escapeBuilderHtml(row.category)}" onchange="updateAdminPackageComponentRow(${index})" class="min-w-0 w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-3 text-xs sm:text-sm text-white">
+                        <option value="">Search or select ${escapeBuilderHtml(row.category)}...</option>
+                        ${options}
+                    </select>
+                </div>`;
+            }).join('');
+
+            const count = document.getElementById('admin-package-component-count');
+            if (count) count.textContent = `${adminPackageComponentIds.length} components selected`;
+            updateAdminPackageTotals();
+        }
+
+        function updateAdminPackageComponentRow(rowIndex) {
+            const select = document.getElementById(`admin-package-row-${rowIndex}`);
+            if (!select) return;
+            const category = select.dataset.category;
+            const sameCategoryRows = getAdminPackageRows()
+                .map((row, index) => ({ row, index }))
+                .filter(item => item.row.category === category);
+            const selectedForCategory = sameCategoryRows
+                .map(item => document.getElementById(`admin-package-row-${item.index}`)?.value)
+                .filter(Boolean);
+            adminPackageComponentIds = adminPackageComponentIds.filter(id => {
+                const product = products.find(p => String(p.id) === String(id));
+                return !product || String(product.category || '').toLowerCase() !== category.toLowerCase();
+            });
+            selectedForCategory.forEach(id => {
+                if (!adminPackageComponentIds.includes(String(id))) adminPackageComponentIds.push(String(id));
+            });
+            renderAdminPackageComponentChoices();
+        }
+
+        function updateAdminPackageTotals() {
+            const selectedProducts = adminPackageComponentIds
+                .map(id => products.find(p => String(p.id) === String(id)))
+                .filter(Boolean);
+            const normalTotal = selectedProducts.reduce((sum, p) => sum + toPriceNumber(p.price), 0);
+            const memberTotal = selectedProducts.reduce((sum, p) => {
+                const member = toPriceNumber(p.memberPrice);
+                return sum + (member > 0 ? member : toPriceNumber(p.price));
+            }, 0);
+
+            const normalInput = document.getElementById('p-price');
+            const memberInput = document.getElementById('p-member-price');
+            const category = document.getElementById('p-category')?.value;
+            if (category === 'PC Package') {
+                if (normalInput) normalInput.value = normalTotal ? normalTotal.toFixed(2) : '';
+                if (memberInput) memberInput.value = memberTotal ? memberTotal.toFixed(2) : '';
+            }
+            const count = document.getElementById('admin-package-component-count');
+            if (count) count.textContent = `${adminPackageComponentIds.length} components selected · Normal RM ${normalTotal.toFixed(2)} · Member RM ${memberTotal.toFixed(2)}`;
+        }
+
+        function openPackageConfigurator(packageProduct) {
+            pendingPackageProduct = packageProduct;
+            const savedIds = Array.isArray(packageProduct.packageComponents) ? packageProduct.packageComponents.map(String) : [];
+            pendingPackageComponents = savedIds
+                .map(id => products.find(p => String(p.id) === String(id)))
+                .filter(p => p && String(p.status || 'visible') !== 'hidden');
+
+            if (!pendingPackageComponents.length) {
+                alert('This PC Package has no saved components loaded. Please open Admin, edit this package, select its components again and save. If you already saved it, refresh the page once so the latest package data is loaded.');
+                pendingPackageProduct = null;
+                return;
+            }
+
+            const packageNameEl = document.getElementById('package-configurator-name');
+            const rows = document.getElementById('package-configurator-rows');
+            const packageModal = document.getElementById('package-configurator-modal');
+            if (!packageNameEl || !rows || !packageModal) {
+                console.error('PC Package configurator markup is incomplete.', {
+                    name: !!packageNameEl, rows: !!rows, modal: !!packageModal
+                });
+                alert('PC Package window is missing required page elements. Please update the website HTML.');
+                return;
+            }
+            packageNameEl.textContent = packageProduct.name || 'PC Package';
+            rows.innerHTML = pendingPackageComponents.map((product, index) => `
+                <label class="flex items-start gap-3 bg-slate-900/70 border border-slate-800 rounded-xl p-3 cursor-pointer">
+                    <input type="checkbox" id="package-component-${index}" checked onchange="updatePackageConfiguratorTotals()" class="mt-1 accent-blue-500 shrink-0">
+                    <span class="min-w-0 flex-1">
+                        <span class="inline-flex bg-blue-600/20 text-blue-300 border border-blue-500/30 rounded-lg px-2 py-1 text-[10px] font-bold uppercase">${escapeBuilderHtml(product.category || 'Component')}</span>
+                        <span class="block text-xs text-white font-semibold mt-1 break-words">${escapeBuilderHtml(product.name)}</span>
+                        <span class="block text-[10px] text-slate-500 mt-1">${escapeBuilderHtml(getBuilderProductMeta(product))}</span>
+                    </span>
+                    <span class="text-right shrink-0">
+                        <span class="block text-[10px] text-slate-500 line-through">RM ${toPriceNumber(product.price).toFixed(2)}</span>
+                        <span class="block text-xs text-amber-300 font-bold">RM ${toPriceNumber(getEffectivePrice(product)).toFixed(2)}</span>
+                    </span>
+                </label>
+            `).join('');
+
+            const fixedHeader = document.querySelector('header');
+            const headerBottom = fixedHeader ? Math.ceil(fixedHeader.getBoundingClientRect().bottom) : 0;
+            packageModal.style.top = `${headerBottom}px`;
+            packageModal.style.bottom = 'auto';
+            packageModal.style.height = `calc(100dvh - ${headerBottom}px)`;
+            packageModal.style.alignItems = 'flex-start';
+            packageModal.style.paddingTop = '12px';
+            const modalCard = packageModal.firstElementChild;
+            if (modalCard) {
+                modalCard.style.maxHeight = `calc(100dvh - ${headerBottom}px - 24px)`;
+                modalCard.style.marginBottom = '12px';
+            }
+            packageModal.classList.remove('hidden');
+            updatePackageConfiguratorTotals();
+        }
+
+        function closePackageConfigurator() {
+            document.getElementById('package-configurator-modal').classList.add('hidden');
+            pendingPackageProduct = null;
+            pendingPackageComponents = [];
+        }
+
+        function getPendingPackageSelections() {
+            return pendingPackageComponents.map((product, index) => {
+                const checkbox = document.getElementById(`package-component-${index}`);
+                return { product, selected: !!(checkbox && checkbox.checked) };
+            });
+        }
+
+        function safeSetTextContent(elementId, value) {
+            const element = document.getElementById(elementId);
+            if (element) element.textContent = value;
+            else console.warn('Missing UI element while setting text:', elementId);
+        }
+
+        function updatePackageConfiguratorTotals() {
+            const selections = getPendingPackageSelections();
+            const selected = selections.filter(item => item.selected);
+            const allKept = selections.length > 0 && selected.length === selections.length;
+            let normal = 0;
+            let member = 0;
+
+            selected.forEach(({ product }) => {
+                normal += toPriceNumber(product.price);
+                member += toPriceNumber(getEffectivePrice(product));
+            });
+
+            const discount = pendingPackageProduct && allKept
+                ? Math.max(0, toPriceNumber(pendingPackageProduct.packageDiscount))
+                : 0;
+            const finalTotal = Math.max(0, member - discount);
+
+            safeSetTextContent('package-config-normal', `RM ${normal.toFixed(2)}`);
+            safeSetTextContent('package-config-member', `RM ${member.toFixed(2)}`);
+            safeSetTextContent('package-config-discount', allKept
+                ? `- RM ${discount.toFixed(2)}`
+                : 'Not applicable');
+            safeSetTextContent('package-config-total', `RM ${finalTotal.toFixed(2)}`);
+            const confirmButton = document.getElementById('package-configurator-confirm');
+            if (confirmButton) confirmButton.disabled = selected.length === 0;
+            safeSetTextContent('package-configurator-hint', selected.length === 0
+                ? 'Please keep at least one component.'
+                : (allKept
+                    ? 'All package components are selected. Extra package discount is applied.'
+                    : 'A component has been removed. Extra package discount is cancelled.'));
+        }
+
+
+
+        function syncPackageDiscountState() {
+            const packageItem = pcBuilder['PC Package'];
+            if (!packageItem) {
+                delete pcBuilder['PackageDiscount'];
+                return;
+            }
+
+            const requiredIds = Array.isArray(packageItem.packageRequiredComponentIds)
+                ? packageItem.packageRequiredComponentIds.map(String)
+                : [];
+            const currentItems = Object.values(pcBuilder).filter(item =>
+                item && !item.isPackageDiscount && item.category !== 'PC Package'
+            );
+            const allRequiredComponentsPresent = requiredIds.length > 0 &&
+                requiredIds.every(requiredId =>
+                    currentItems.some(item => String(item.id) === requiredId)
+                );
+
+            const discountAmount = Math.max(0, toPriceNumber(packageItem.packageDiscountAmount));
+            if (allRequiredComponentsPresent && discountAmount > 0) {
+                pcBuilder['PackageDiscount'] = {
+                    id: `package-discount-${packageItem.id}`,
+                    category: 'Package Discount',
+                    name: `${packageItem.name} - Extra Package Discount`,
+                    price: 0,
+                    memberPrice: 0,
+                    promoPrice: 0,
+                    packageDiscountAmount: discountAmount,
+                    isPackageDiscount: true,
+                    status: 'visible'
+                };
+            } else {
+                delete pcBuilder['PackageDiscount'];
+            }
+        }
+
+        function confirmPackageConfiguration() {
+            if (!pendingPackageProduct) return;
+
+            const selections = getPendingPackageSelections();
+            const selected = selections.filter(item => item.selected && item.product);
+            if (!selected.length) {
+                alert('Please keep at least one component.');
+                return;
+            }
+
+            // Start with a clean builder, then add every chosen component to a canonical slot.
+            pcBuilder = {};
+            builderSlotCounts = {};
+
+            pcBuilder['PC Package'] = {
+                id: `package-${pendingPackageProduct.id}`,
+                category: 'PC Package',
+                name: pendingPackageProduct.name,
+                price: 0,
+                memberPrice: 0,
+                promoPrice: 0,
+                includedInPackage: true,
+                packageRequiredComponentIds: selections.map(({ product }) => String(product.id)),
+                packageDiscountAmount: Math.max(0, toPriceNumber(pendingPackageProduct.packageDiscount)),
+                status: 'visible'
+            };
+
+            const categoryCounts = {};
+            const importedComponents = [];
+
+            selected.forEach(({ product }, index) => {
+                const rawCategory = String(product.category || 'Accessories').trim();
+                const matchedCategory = HARDWARE_CATEGORY_ORDER.find(
+                    category => category.toLowerCase() === rawCategory.toLowerCase()
+                );
+
+                if (matchedCategory) {
+                    const nextIndex = (categoryCounts[matchedCategory] || 0) + 1;
+                    categoryCounts[matchedCategory] = nextIndex;
+
+                    // Expand multi-item rows (RAM / Storage / Accessories) as needed.
+                    const multiConfig = BUILDER_MULTI[matchedCategory];
+                    if (nextIndex > 1 && multiConfig) {
+                        builderSlotCounts[matchedCategory] = Math.min(nextIndex, multiConfig.max);
+                    } else if (nextIndex > 1) {
+                        // For single-slot categories, preserve extra selected parts in the summary
+                        // rather than silently overwriting the previously selected component.
+                        const extraKey = `PackageComponent__${index + 1}`;
+                        pcBuilder[extraKey] = {
+                            ...product,
+                            category: matchedCategory,
+                            selectedForPackage: true,
+                            packageGroupId: String(pendingPackageProduct.id)
+                        };
+                        importedComponents.push(product.name);
+                        return;
+                    }
+
+                    const slotKey = nextIndex === 1
+                        ? matchedCategory
+                        : `${matchedCategory}__${nextIndex}`;
+
+                    pcBuilder[slotKey] = {
+                        ...product,
+                        category: matchedCategory,
+                        selectedForPackage: true,
+                        packageGroupId: String(pendingPackageProduct.id)
+                    };
+                } else {
+                    // Monitor and any non-builder category remain visible in Build Summary.
+                    pcBuilder[`PackageComponent__${index + 1}`] = {
+                        ...product,
+                        category: rawCategory,
+                        selectedForPackage: true,
+                        packageGroupId: String(pendingPackageProduct.id)
+                    };
+                }
+
+                importedComponents.push(product.name);
+            });
+
+            const allKept = selections.length > 0 && selected.length === selections.length;
+            const extraDiscount = allKept
+                ? Math.max(0, toPriceNumber(pendingPackageProduct.packageDiscount))
+                : 0;
+
+            syncPackageDiscountState();
+
+            console.log('PC Package components imported into Builder:', {
+                packageName: pendingPackageProduct.name,
+                selectedCount: selected.length,
+                selectionsCount: selections.length,
+                importedComponents,
+                builderKeys: Object.keys(pcBuilder),
+                extraDiscount
+            });
+
+            closePackageConfigurator();
+            updateBuilderBadge();
+            switchView('builder');
+        }
+
         function addToBuilder(id) {
-            if (!featureToggles.builder) return;
-            const p = products.find(item => item.id === id);
-            if (!p) return;
-            let catKey = p.category || 'CPU';
+            try {
+                if (!featureToggles.builder) {
+                    alert('PC Builder is currently disabled. Please enable it in Admin Settings.');
+                    return;
+                }
+                // Product IDs may arrive from Google Sheets as numbers while onclick passes strings.
+                const p = products.find(item => String(item.id) === String(id));
+                if (!p) {
+                    console.error('Add to Builder: product not found for ID:', id);
+                    alert('Unable to find this product. Please refresh the page and try again.');
+                    return;
+                }
+                let catKey = String(p.category || 'CPU').trim();
+                if (catKey.toLowerCase() === 'pc package') {
+                    // Read component IDs from either the structured property or the fallback saved in Description.
+                    if (!Array.isArray(p.packageComponents) || p.packageComponents.length === 0) {
+                        const marker = String(p.desc || '').match(/<!--PCPKG_IDS:([^>]*)-->/);
+                        if (marker) {
+                            try { p.packageComponents = JSON.parse(decodeURIComponent(marker[1])).map(String); }
+                            catch (error) { console.error('Invalid saved PC Package component IDs:', error); }
+                        }
+                    }
+                    console.log('PC Package clicked:', {
+                        id: p.id,
+                        name: p.name,
+                        category: p.category,
+                        packageComponents: p.packageComponents,
+                        description: p.desc
+                    });
+                    openPackageConfigurator(p);
+                    return;
+                }
             const matchedCat = HARDWARE_CATEGORY_ORDER.find(c => c.toLowerCase() === String(catKey).toLowerCase());
             if (matchedCat) {
                 // 放进第一个空位；全满的话：可扩展分类自动加一行，否则替换最后一格
@@ -2166,9 +2776,15 @@
                 }
                 catKey = target;
             }
-            pcBuilder[catKey] = p;
-            updateBuilderBadge();
-            switchView('builder');
+                pcBuilder[catKey] = p;
+                updateBuilderBadge();
+                switchView('builder');
+            } catch (error) {
+                console.error('Add to PC Builder failed:', error, error && error.stack);
+                const detail = error && error.message ? error.message : String(error);
+                const stack = error && error.stack ? error.stack : '';
+                alert('PC Builder error: ' + detail + (stack ? '\n\n' + stack : '') + '\n\nPlease send this full message to the administrator.');
+            }
         }
 
         function selectBuilderComponent(slotKey, prodId) {
@@ -2253,14 +2869,25 @@
         function updateBuilderBadge() {
             const count = Object.keys(pcBuilder).length;
             const badge = document.getElementById('builder-badge');
+            if (!badge) {
+                console.warn('Builder badge element is not present; skipping badge update.');
+                return;
+            }
             if (count > 0) { badge.textContent = count; badge.classList.remove('hidden'); }
             else { badge.classList.add('hidden'); }
         }
 
         function renderPCBuilderPage() {
             if (!featureToggles.builder) return;
+            syncPackageDiscountState();
             const container = document.getElementById('builder-slots-container');
             const summaryMiniList = document.getElementById('builder-summary-mini-list');
+            const selectedCountEl = document.getElementById('builder-selected-count');
+            const totalPriceEl = document.getElementById('builder-total-price');
+            if (!container) {
+                console.error('PC Builder layout is missing #builder-slots-container.');
+                return;
+            }
             let totalOfferPrice = 0;
 
             let activeProducts = products.filter(p => String(p.status || 'visible') !== 'hidden');
@@ -2306,7 +2933,7 @@
                         </div>
                         <div class="flex items-center justify-between sm:justify-end gap-3 shrink-0">
                             <span class="text-amber-400 font-orbitron font-bold text-xs min-w-[80px] text-right">
-                                ${selectedItem ? 'RM ' + Number(getEffectivePrice(selectedItem)).toFixed(2) : 'RM 0.00'}
+                                ${selectedItem ? (selectedItem.includedInPackage ? 'INCLUDED' : 'RM ' + Number(getEffectivePrice(selectedItem)).toFixed(2)) : 'RM 0.00'}
                             </span>
                             ${(selectedItem || idx > 0) ? `<button onclick="removeBuilderSlot('${slotKey}')" title="${idx > 0 ? 'Remove this row' : 'Clear'}" class="text-red-400 hover:text-red-300 px-2 py-1 rounded-lg bg-red-900/20 border border-red-800/30 transition">✕</button>` : `<div class="w-7"></div>`}
                         </div>
@@ -2326,11 +2953,11 @@
             }).join('');
 
             const selectedKeys = Object.keys(pcBuilder);
-            document.getElementById('builder-selected-count').textContent = `${selectedKeys.length} items`;
+            if (selectedCountEl) selectedCountEl.textContent = `${selectedKeys.length} items`;
 
-            if (selectedKeys.length === 0) {
+            if (summaryMiniList && selectedKeys.length === 0) {
                 summaryMiniList.innerHTML = `<div class="text-slate-500 text-center py-6 text-xs">No component selected yet</div>`;
-            } else {
+            } else if (summaryMiniList) {
                 summaryMiniList.innerHTML = getBuilderItems().map(item => {
                     const price = getEffectivePrice(item);
                     return `
@@ -2339,13 +2966,21 @@
                                 <span class="text-blue-400 font-bold font-mono">[${item._label}]</span>
                                 <span class="text-slate-200 truncate block font-medium">${item.name}</span>
                             </div>
-                            <span class="text-amber-400 font-orbitron font-semibold shrink-0">RM ${Number(price).toFixed(2)}</span>
+                            <span class="text-amber-400 font-orbitron font-semibold shrink-0">${item.includedInPackage ? 'INCLUDED' : (item.isPackageDiscount ? '- RM ' + Math.abs(Number(price)).toFixed(2) : 'RM ' + Number(price).toFixed(2))}</span>
                         </div>
                     `;
                 }).join('');
             }
 
-            document.getElementById('builder-total-price').textContent = `RM ${totalOfferPrice.toFixed(2)}`;
+            // Recalculate from every selected builder item, including categories
+            // outside HARDWARE_CATEGORY_ORDER such as "PC Package".
+            const allSelectedBuilderItems = getBuilderItems();
+            totalOfferPrice = allSelectedBuilderItems.reduce((sum, item) => {
+                return sum + toPriceNumber(getEffectivePrice(item));
+            }, 0);
+            totalOfferPrice = Math.max(0, totalOfferPrice);
+
+            if (totalPriceEl) totalPriceEl.textContent = `RM ${totalOfferPrice.toFixed(2)}`;
         }
 
         function removeBuilderSlot(slotKey) {
@@ -2364,6 +2999,7 @@
                 delete pcBuilder[slotKeyOf(cat, total)];
                 builderSlotCounts[cat] = Math.max(1, total - 1);
             }
+            syncPackageDiscountState();
             updateBuilderBadge(); renderPCBuilderPage();
         }
         function clearBuilder() {
@@ -2395,8 +3031,8 @@
 
             const tbody = document.getElementById('summary-table-body');
             tbody.innerHTML = items.map(i => {
-                const normalPrice = Number(i.price || 0);
-                const offerPrice = Number(getEffectivePrice(i));
+                const normalPrice = toPriceNumber(i.price);
+                const offerPrice = toPriceNumber(getEffectivePrice(i));
                 
                 totalNormalPrice += normalPrice;
                 totalOfferPrice += offerPrice;
@@ -2408,9 +3044,9 @@
                             <div>${i.name}</div>
                             ${i.spec1 ? `<div class="text-[10px] text-slate-400 mt-0.5 break-words">${i.spec1}${i.spec2 ? ' | ' + i.spec2 : ''}</div>` : ''}
                         </td>
-                        <td class="py-3 px-3 text-right text-slate-300 font-mono">RM ${normalPrice.toFixed(2)}</td>
+                        <td class="py-3 px-3 text-right text-slate-300 font-mono">${i.isPackageDiscount ? '—' : (i.includedInPackage ? 'Included' : 'RM ' + normalPrice.toFixed(2))}</td>
                         <td class="py-3 px-3 text-right">
-                            ${offerPrice < normalPrice ? `<span class="text-amber-400 font-orbitron font-bold">RM ${offerPrice.toFixed(2)}</span>` : `<span class="text-slate-300 font-mono">RM ${normalPrice.toFixed(2)}</span>`}
+                            ${i.isPackageDiscount ? '<span class="text-amber-400 font-bold">- RM ' + Math.abs(offerPrice).toFixed(2) + '</span>' : (i.includedInPackage ? '<span class="text-emerald-400 font-bold">INCLUDED</span>' : (offerPrice < normalPrice ? `<span class="text-amber-400 font-orbitron font-bold">RM ${offerPrice.toFixed(2)}</span>` : `<span class="text-slate-300 font-mono">RM ${normalPrice.toFixed(2)}</span>`))}
                         </td>
                     </tr>
                 `;
@@ -2442,7 +3078,7 @@
                 items: items.map(i => ({
                     category: i.category || '', label: i._label || i.category || 'ITEM',
                     name: i.name || '', spec1: i.spec1 || '', spec2: i.spec2 || '',
-                    normalPrice: Number(i.price || 0), offerPrice: Number(getEffectivePrice(i))
+                    normalPrice: toPriceNumber(i.price), offerPrice: toPriceNumber(getEffectivePrice(i))
                 })),
                 totalNormal: Number(totalNormalPrice.toFixed(2)),
                 totalSaved: Number(saved.toFixed(2)),
@@ -2538,7 +3174,9 @@
             if (!tab || tab.closed) return;
             try {
                 tab.document.open();
-                tab.document.write(`<!doctype html><html><head><title>Preparing quotation</title><meta name="viewport" content="width=device-width,initial-scale=1"></head><body style="margin:0;background:#0b0f19;color:#e5e7eb;font:16px Arial;display:grid;place-items:center;min-height:100vh"><div style="text-align:center;padding:24px"><div style="font-size:20px;font-weight:bold">PC Image VIVA</div><p>Your quotation is being prepared...</p></div></body></html>`);
+                tab.document.write(`<!doctype html><html><head><title>Preparing quotation</title><meta name="viewport" content="width=device-width,initial-scale=1"></head><body style="margin:0;background:#0b0f19;color:#e5e7eb;font:16px Arial;display:grid;place-items:center;min-height:100vh"><div style="text-align:center;padding:24px"><div style="font-size:20px;font-weight:bold">PC Image VIVA</div><p>Your quotation is being prepared...</p></div>
+
+</body></html>`);
                 tab.document.close();
             } catch (e) {}
         }
@@ -2601,9 +3239,15 @@
             document.getElementById('summary-ref-text').textContent = refNo;
             document.getElementById('pdf-date').textContent = "DATE: " + todayStr;
             document.getElementById('pdf-ref-no').textContent = "REF: " + refNo;
+            renderQuotationTerms();
 
             document.getElementById('pdf-customer-name').textContent = custName;
             document.getElementById('pdf-customer-contact').textContent = 'Contact: ' + custContact;
+
+            const salespersonName = (document.getElementById('summary-salesperson-name')?.value || '').trim();
+            const salespersonContact = (document.getElementById('summary-salesperson-contact')?.value || '').trim();
+            document.getElementById('pdf-salesperson-name').textContent = salespersonName;
+            document.getElementById('pdf-salesperson-contact').textContent = salespersonContact ? 'Contact: ' + salespersonContact : '';
 
             items.sort((a, b) => {
                 let idxA = HARDWARE_CATEGORY_ORDER.indexOf(a.category);
@@ -2614,8 +3258,8 @@
             });
 
             document.getElementById('pdf-items-list').innerHTML = items.map(i => {
-                const normalPrice = Number(i.price || 0);
-                const offerPrice = Number(getEffectivePrice(i));
+                const normalPrice = toPriceNumber(i.price);
+                const offerPrice = toPriceNumber(getEffectivePrice(i));
                 
                 totalNormalPrice += normalPrice;
                 totalOfferPrice += offerPrice;
@@ -2627,9 +3271,9 @@
                         <div>${i.name}</div>
                         ${i.spec1 ? `<div style="font-size: 9px; color: #94a3b8; margin-top: 2px;">${i.spec1}${i.spec2 ? ' | ' + i.spec2 : ''}</div>` : ''}
                     </td>
-                    <td style="padding: 7px 10px; text-align: right; color: #94a3b8; font-family: monospace;">RM ${normalPrice.toFixed(2)}</td>
+                    <td style="padding: 7px 10px; text-align: right; color: #94a3b8; font-family: monospace;">${i.isPackageDiscount ? '—' : (i.includedInPackage ? 'Included' : 'RM ' + normalPrice.toFixed(2))}</td>
                     <td style="padding: 7px 10px; text-align: right;">
-                        ${offerPrice < normalPrice ? `<span style="color: #f59e0b; font-family: 'Orbitron', sans-serif; font-weight: bold;">RM ${offerPrice.toFixed(2)}</span>` : `<span style="color: #f3f4f6; font-family: monospace;">RM ${normalPrice.toFixed(2)}</span>`}
+                        ${i.isPackageDiscount ? '<span style="color:#f59e0b;font-weight:bold;">- RM ' + Math.abs(offerPrice).toFixed(2) + '</span>' : (i.includedInPackage ? '<span style="color:#34d399;font-weight:bold;">INCLUDED</span>' : (offerPrice < normalPrice ? `<span style="color: #f59e0b; font-family: 'Orbitron', sans-serif; font-weight: bold;">RM ${offerPrice.toFixed(2)}</span>` : `<span style="color: #f3f4f6; font-family: monospace;">RM ${normalPrice.toFixed(2)}</span>`))}
                     </td>
                 </tr>`;
             }).join('');
@@ -2771,8 +3415,8 @@
             });
 
             items.forEach(i => {
-                const normalPrice = Number(i.price || 0);
-                const offerPrice = Number(getEffectivePrice(i));
+                const normalPrice = toPriceNumber(i.price);
+                const offerPrice = toPriceNumber(getEffectivePrice(i));
                 totalNormalPrice += normalPrice;
                 totalOfferPrice += offerPrice;
 
@@ -2813,8 +3457,8 @@
             });
 
             items.forEach(i => {
-                const normalPrice = Number(i.price || 0);
-                const offerPrice = Number(getEffectivePrice(i));
+                const normalPrice = toPriceNumber(i.price);
+                const offerPrice = toPriceNumber(getEffectivePrice(i));
                 totalNormalPrice += normalPrice;
                 totalOfferPrice += offerPrice;
                 text += `- [${i._label || i.category}] ${i.name} (RM ${offerPrice.toFixed(2)})\n`;
@@ -2918,6 +3562,72 @@
         }
 
         function closeDetailModal() { document.getElementById('detail-modal').classList.add('hidden'); }
+
+        const DEFAULT_QUOTATION_TERMS = [
+            "Quotation prices are subject to stock availability upon order confirmation.",
+            "Hardware carries standard individual manufacturer warranty terms.",
+            "This quotation estimate is valid for 7 days from the issuance date.",
+            "This document is a computer-generated quote estimate and requires no formal signature."
+        ];
+
+        function escapeTermsHtml(value) {
+            return String(value == null ? '' : value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function getCleanQuotationTerms() {
+            return (Array.isArray(quotationTerms) ? quotationTerms : [])
+                .map(term => String(term || '').trim())
+                .filter(Boolean);
+        }
+
+        function renderQuotationTerms() {
+            const terms = getCleanQuotationTerms();
+            const summary = document.getElementById('summary-terms-content');
+            if (summary) {
+                summary.innerHTML = terms.map((term, index) =>
+                    `<p>${index + 1}. ${escapeTermsHtml(term)}</p>`
+                ).join('') || '<p>No terms have been added.</p>';
+            }
+            const pdfTerms = document.getElementById('pdf-terms-content');
+            if (pdfTerms) {
+                pdfTerms.innerHTML = terms.map((term, index) =>
+                    `${index + 1}. ${escapeTermsHtml(term)}`
+                ).join('<br>') || 'No terms have been added.';
+            }
+        }
+
+        async function saveQuotationTerms() {
+            const editor = document.getElementById('setting-quotation-terms');
+            if (!editor) return;
+            quotationTerms = editor.value.split(/\r?\n/).map(term => term.trim()).filter(Boolean);
+            renderQuotationTerms();
+            const status = document.getElementById('quotation-terms-save-status');
+            if (status) status.textContent = 'Saving...';
+            try {
+                const saved = await saveSettingsToCloud();
+                if (status) status.textContent = saved
+                    ? 'Saved. New quotations will use these terms.'
+                    : 'Save failed. Check your connection and try again.';
+            } catch (error) {
+                console.error('Save quotation terms failed:', error);
+                if (status) status.textContent = 'Unable to save. Please try again.';
+            }
+        }
+
+        function resetQuotationTerms() {
+            quotationTerms = [...DEFAULT_QUOTATION_TERMS];
+            const editor = document.getElementById('setting-quotation-terms');
+            if (editor) editor.value = quotationTerms.join('\n');
+            renderQuotationTerms();
+            const status = document.getElementById('quotation-terms-save-status');
+            if (status) status.textContent = 'Default terms restored locally. Press Save T&C to publish.';
+        }
+
         function openTermsModal() { document.getElementById('terms-modal').classList.remove('hidden'); }
         function closeTermsModal() { document.getElementById('terms-modal').classList.add('hidden'); }
 
@@ -3191,12 +3901,33 @@
         function openProductModal() {
             document.getElementById('modal-title').textContent = "Add New Component";
             document.getElementById('product-form').reset();
+            document.getElementById('p-category').value = 'CPU';
             document.getElementById('p-id-old').value = '';
             document.getElementById('p-id').value = 'PROD-' + Date.now().toString().slice(-6);
             document.getElementById('p-featured').checked = false;
+            document.getElementById('p-package-discount').value = 0;
+            adminPackageComponentIds = [];
+            const packageSearch = document.getElementById('admin-package-component-search');
+            if (packageSearch) packageSearch.value = '';
+            togglePackageDiscountField();
             document.getElementById('product-modal').classList.remove('hidden');
         }
         function closeProductModal() { document.getElementById('product-modal').classList.add('hidden'); }
+
+
+        function showItemOperation(title, detail = 'Please wait while the item is being processed.') {
+            const overlay = document.getElementById('item-operation-overlay');
+            const titleEl = document.getElementById('item-operation-title');
+            const detailEl = document.getElementById('item-operation-detail');
+            if (titleEl) titleEl.textContent = title;
+            if (detailEl) detailEl.textContent = detail;
+            if (overlay) overlay.classList.add('active');
+        }
+
+        function hideItemOperation() {
+            const overlay = document.getElementById('item-operation-overlay');
+            if (overlay) overlay.classList.remove('active');
+        }
 
         async function saveProduct(e) {
             e.preventDefault();
@@ -3214,12 +3945,16 @@
             }
 
             const existing = oldId ? products.find(p => p.id === oldId) : null;
+            showItemOperation(oldId ? 'Updating item...' : 'Adding item...', 'Saving changes to the product catalogue.');
+            try {
             const data = {
                 id: newId,
                 name: document.getElementById('p-name').value.trim(),
                 price: parseFloat(document.getElementById('p-price').value),
                 memberPrice: document.getElementById('p-member-price').value ? parseFloat(document.getElementById('p-member-price').value) : '',
                 promoPrice: document.getElementById('p-promo-price').value ? parseFloat(document.getElementById('p-promo-price').value) : '',
+                packageDiscount: document.getElementById('p-package-discount').value ? parseFloat(document.getElementById('p-package-discount').value) : 0,
+                packageComponents: document.getElementById('p-category').value === 'PC Package' ? adminPackageComponentIds.map(String) : [],
                 category: document.getElementById('p-category').value,
                 brand: document.getElementById('p-brand').value.trim(),
                 subcategory: document.getElementById('p-subcategory').value.trim(),
@@ -3247,11 +3982,18 @@
             renderProducts(); 
             initSpotlightCarousel(); 
             renderTrendingWidget();
+            } catch (error) {
+                console.error('Save product failed:', error);
+                alert('Unable to save this item. Please check your connection and try again.');
+            } finally {
+                hideItemOperation();
+            }
         }
 
         function editProduct(id) {
             const p = products.find(item => item.id === id);
             if(!p) return;
+            showItemOperation('Loading item details...', 'Preparing the item editor.');
             document.getElementById('modal-title').textContent = "Edit Component";
             document.getElementById('p-id-old').value = p.id;
             document.getElementById('p-id').value = p.id;
@@ -3259,7 +4001,16 @@
             document.getElementById('p-price').value = p.price || '';
             document.getElementById('p-member-price').value = p.memberPrice !== undefined ? p.memberPrice : '';
             document.getElementById('p-promo-price').value = p.promoPrice !== undefined ? p.promoPrice : '';
+            document.getElementById('p-package-discount').value = p.packageDiscount !== undefined ? p.packageDiscount : 0;
+            adminPackageComponentIds = Array.isArray(p.packageComponents) ? p.packageComponents.map(String) : [];
+            if (!adminPackageComponentIds.length) {
+                const savedIds = String(p.desc || '').match(/<!--PCPKG_IDS:([^>]*)-->/);
+                if (savedIds) { try { adminPackageComponentIds = JSON.parse(decodeURIComponent(savedIds[1])).map(String); } catch (e) {} }
+            }
+            const packageSearch = document.getElementById('admin-package-component-search');
+            if (packageSearch) packageSearch.value = '';
             document.getElementById('p-category').value = p.category || 'PC Package';
+            togglePackageDiscountField();
             document.getElementById('p-brand').value = p.brand || '';
             document.getElementById('p-subcategory').value = p.subcategory || '';
             document.getElementById('p-stock').value = p.stock || '';
@@ -3268,19 +4019,30 @@
             document.getElementById('p-url').value = p.url || '';
             document.getElementById('p-spec1').value = p.spec1 || '';
             document.getElementById('p-spec2').value = p.spec2 || '';
-            document.getElementById('p-desc').value = p.desc || '';
+            document.getElementById('p-desc').value = String(p.desc || '').replace(/\n?<!--PCPKG_IDS:[^>]*-->/g, '').trim();
             
             let f = p.featured;
             let isFeat = f && (String(f).trim().toLowerCase() === 'true' || String(f).trim().toLowerCase() === 'yes' || String(f).trim().toLowerCase() === '1');
             document.getElementById('p-featured').checked = isFeat;
 
             document.getElementById('product-modal').classList.remove('hidden');
+            requestAnimationFrame(() => hideItemOperation());
         }
 
         async function deleteProduct(id) {
-            if(confirm('Delete this component?')) {
-                products = products.filter(p => p.id !== id);
-                await saveProductsToCloud(); renderProducts(); initSpotlightCarousel(); renderTrendingWidget();
+            if (!confirm('Delete this component?')) return;
+            showItemOperation('Deleting item...', 'Removing the item from the product catalogue.');
+            try {
+                products = products.filter(p => String(p.id) !== String(id));
+                await saveProductsToCloud();
+                renderProducts();
+                initSpotlightCarousel();
+                renderTrendingWidget();
+            } catch (error) {
+                console.error('Delete product failed:', error);
+                alert('Unable to delete this item. Please check your connection and try again.');
+            } finally {
+                hideItemOperation();
             }
         }
 
@@ -3327,7 +4089,19 @@
                 });
             });
         }
-    </script>
+    
+        window.addEventListener('resize', () => {
+            const packageModal = document.getElementById('package-configurator-modal');
+            if (!packageModal || packageModal.classList.contains('hidden')) return;
+            const fixedHeader = document.querySelector('header');
+            const headerBottom = fixedHeader ? Math.ceil(fixedHeader.getBoundingClientRect().bottom) : 0;
+            packageModal.style.top = `${headerBottom}px`;
+            packageModal.style.height = `calc(100dvh - ${headerBottom}px)`;
+            const modalCard = packageModal.firstElementChild;
+            if (modalCard) modalCard.style.maxHeight = `calc(100dvh - ${headerBottom}px - 24px)`;
+        });
+
+</script>
 
 <div id="quotation-progress-overlay" aria-live="polite" aria-modal="true" role="dialog">
   <div class="quotation-progress-card">
@@ -3345,6 +4119,65 @@
     </div>
   </div>
 </div>
+
+    <!-- PC Package Configurator -->
+    <div id="package-configurator-modal" class="fixed inset-0 z-[120] hidden bg-black/85 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5">
+        <div class="glass-card w-full max-w-3xl max-h-[92vh] overflow-y-auto rounded-2xl border border-slate-700 shadow-2xl p-4 sm:p-6">
+            <div class="flex items-start justify-between gap-3 border-b border-slate-800 pb-4 mb-4">
+                <div class="min-w-0">
+                    <div class="text-[10px] uppercase tracking-widest text-blue-400 font-bold">PC Image VIVA</div>
+                    <h3 class="text-lg sm:text-xl font-bold text-white font-orbitron">Package Configurator</h3>
+                    <p id="package-configurator-name" class="text-xs text-slate-400 mt-1 break-words"></p>
+                </div>
+                <button type="button" onclick="closePackageConfigurator()" class="shrink-0 bg-slate-800 hover:bg-red-600/80 text-white rounded-lg w-9 h-9">✕</button>
+            </div>
+            <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-3 mb-4">
+                <p class="text-xs text-slate-300 font-semibold">Choose the components included in this package</p>
+                <p class="text-[10px] text-slate-500 mt-1">These are the components selected by PC Image VIVA in Admin. Customers may remove components; the extra package discount applies only when all components are kept.</p>
+            </div>
+            <div id="package-configurator-rows" class="space-y-3"></div>
+            <div class="mt-5 border-t border-slate-800 pt-4">
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+                    <div class="bg-slate-950/70 rounded-lg p-3 border border-slate-800">
+                        <div class="text-[10px] text-slate-500 uppercase">Normal Total</div>
+                        <div id="package-config-normal" class="text-white font-bold mt-1">RM 0.00</div>
+                    </div>
+                    <div class="bg-slate-950/70 rounded-lg p-3 border border-slate-800">
+                        <div class="text-[10px] text-slate-500 uppercase">Member / Promo</div>
+                        <div id="package-config-member" class="text-blue-300 font-bold mt-1">RM 0.00</div>
+                    </div>
+                    <div class="bg-slate-950/70 rounded-lg p-3 border border-amber-500/20">
+                        <div class="text-[10px] text-amber-300 uppercase">Package Discount</div>
+                        <div id="package-config-discount" class="text-amber-300 font-bold mt-1">- RM 0.00</div>
+                    </div>
+                    <div class="bg-blue-600/15 rounded-lg p-3 border border-blue-500/30">
+                        <div class="text-[10px] text-blue-300 uppercase">Package Total</div>
+                        <div id="package-config-total" class="text-amber-300 font-bold text-base mt-1">RM 0.00</div>
+                    </div>
+                </div>
+                <p id="package-configurator-hint" class="text-[10px] text-slate-500 mt-3">Select all components to continue.</p>
+                <div class="flex flex-col-reverse sm:flex-row gap-2 justify-end mt-4">
+                    <button type="button" onclick="closePackageConfigurator()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold">Cancel</button>
+                    <button type="button" id="package-configurator-confirm" onclick="confirmPackageConfiguration()" disabled class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-bold">Confirm & Add to Builder</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div id="item-operation-overlay" aria-live="polite" aria-busy="true">
+        <div class="item-operation-card">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="quotation-progress-spinner"></div>
+                <div>
+                    <div id="item-operation-title" class="text-sm font-bold text-white">Saving item...</div>
+                    <div id="item-operation-detail" class="text-xs text-slate-400 mt-1">Please wait while the item is being processed.</div>
+                </div>
+            </div>
+            <div class="item-operation-track"><div class="item-operation-fill"></div></div>
+        </div>
+    </div>
 
 </body>
 </html>
